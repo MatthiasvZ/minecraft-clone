@@ -1,3 +1,4 @@
+#include "FileManagement.h"
 #include "Window.h"
 #include "World.h"
 #include "Shader.h"
@@ -10,8 +11,12 @@
 
 #include <iostream>
 
+
 int main()
 {
+    FileManagement::setWorkingDir();
+    FileManagement::createFolders();
+
     Window window;
 
     SourcePackage srcpkg(Shader::readFromFile("src/shaders/BasicTexVertex.glsl"), \
