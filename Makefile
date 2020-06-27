@@ -40,9 +40,9 @@ OBJDIR_DEBUG = obj
 DEP_DEBUG = 
 OUT_DEBUG = bin/minecraft-clone
 
-OBJ_RELEASE = $(OBJDIR_RELEASE)/src/VertexBuffer.o $(OBJDIR_RELEASE)/src/Chunk.o $(OBJDIR_RELEASE)/src/ChunkMesh.o $(OBJDIR_RELEASE)/src/ErrorFeedback.o $(OBJDIR_RELEASE)/src/IndexBuffer.o $(OBJDIR_RELEASE)/src/Renderer.o $(OBJDIR_RELEASE)/src/Shader.o $(OBJDIR_RELEASE)/src/Texture.o $(OBJDIR_RELEASE)/src/VertexArray.o $(OBJDIR_RELEASE)/src/Camera.o $(OBJDIR_RELEASE)/src/VertexBufferLayout.o $(OBJDIR_RELEASE)/src/Window.o $(OBJDIR_RELEASE)/src/World.o $(OBJDIR_RELEASE)/src/vendor/stb_image/stb_image.o $(OBJDIR_RELEASE)/Main.o
+OBJ_RELEASE = $(OBJDIR_RELEASE)/src/VertexArray.o $(OBJDIR_RELEASE)/src/Chunk.o $(OBJDIR_RELEASE)/src/ChunkMesh.o $(OBJDIR_RELEASE)/src/ErrorFeedback.o $(OBJDIR_RELEASE)/src/FileManagement.o $(OBJDIR_RELEASE)/src/IndexBuffer.o $(OBJDIR_RELEASE)/src/Renderer.o $(OBJDIR_RELEASE)/src/Shader.o $(OBJDIR_RELEASE)/src/Texture.o $(OBJDIR_RELEASE)/src/Camera.o $(OBJDIR_RELEASE)/src/VertexBuffer.o $(OBJDIR_RELEASE)/src/VertexBufferLayout.o $(OBJDIR_RELEASE)/src/Window.o $(OBJDIR_RELEASE)/src/World.o $(OBJDIR_RELEASE)/src/vendor/stb_image/stb_image.o $(OBJDIR_RELEASE)/Main.o
 
-OBJ_DEBUG = $(OBJDIR_DEBUG)/src/VertexBuffer.o $(OBJDIR_DEBUG)/src/Chunk.o $(OBJDIR_DEBUG)/src/ChunkMesh.o $(OBJDIR_DEBUG)/src/ErrorFeedback.o $(OBJDIR_DEBUG)/src/IndexBuffer.o $(OBJDIR_DEBUG)/src/Renderer.o $(OBJDIR_DEBUG)/src/Shader.o $(OBJDIR_DEBUG)/src/Texture.o $(OBJDIR_DEBUG)/src/VertexArray.o $(OBJDIR_DEBUG)/src/Camera.o $(OBJDIR_DEBUG)/src/VertexBufferLayout.o $(OBJDIR_DEBUG)/src/Window.o $(OBJDIR_DEBUG)/src/World.o $(OBJDIR_DEBUG)/src/vendor/stb_image/stb_image.o $(OBJDIR_DEBUG)/Main.o
+OBJ_DEBUG = $(OBJDIR_DEBUG)/src/VertexArray.o $(OBJDIR_DEBUG)/src/Chunk.o $(OBJDIR_DEBUG)/src/ChunkMesh.o $(OBJDIR_DEBUG)/src/ErrorFeedback.o $(OBJDIR_DEBUG)/src/FileManagement.o $(OBJDIR_DEBUG)/src/IndexBuffer.o $(OBJDIR_DEBUG)/src/Renderer.o $(OBJDIR_DEBUG)/src/Shader.o $(OBJDIR_DEBUG)/src/Texture.o $(OBJDIR_DEBUG)/src/Camera.o $(OBJDIR_DEBUG)/src/VertexBuffer.o $(OBJDIR_DEBUG)/src/VertexBufferLayout.o $(OBJDIR_DEBUG)/src/Window.o $(OBJDIR_DEBUG)/src/World.o $(OBJDIR_DEBUG)/src/vendor/stb_image/stb_image.o $(OBJDIR_DEBUG)/Main.o
 
 all: release debug
 
@@ -61,8 +61,8 @@ release: before_release out_release after_release
 out_release: before_release $(OBJ_RELEASE) $(DEP_RELEASE)
 	$(LD) $(LIBDIR_RELEASE) -o $(OUT_RELEASE) $(OBJ_RELEASE)  $(LDFLAGS_RELEASE) $(LIB_RELEASE)
 
-$(OBJDIR_RELEASE)/src/VertexBuffer.o: src/VertexBuffer.cpp
-	$(CXX) $(CFLAGS_RELEASE) $(INC_RELEASE) -c src/VertexBuffer.cpp -o $(OBJDIR_RELEASE)/src/VertexBuffer.o
+$(OBJDIR_RELEASE)/src/VertexArray.o: src/VertexArray.cpp
+	$(CXX) $(CFLAGS_RELEASE) $(INC_RELEASE) -c src/VertexArray.cpp -o $(OBJDIR_RELEASE)/src/VertexArray.o
 
 $(OBJDIR_RELEASE)/src/Chunk.o: src/Chunk.cpp
 	$(CXX) $(CFLAGS_RELEASE) $(INC_RELEASE) -c src/Chunk.cpp -o $(OBJDIR_RELEASE)/src/Chunk.o
@@ -72,6 +72,9 @@ $(OBJDIR_RELEASE)/src/ChunkMesh.o: src/ChunkMesh.cpp
 
 $(OBJDIR_RELEASE)/src/ErrorFeedback.o: src/ErrorFeedback.cpp
 	$(CXX) $(CFLAGS_RELEASE) $(INC_RELEASE) -c src/ErrorFeedback.cpp -o $(OBJDIR_RELEASE)/src/ErrorFeedback.o
+
+$(OBJDIR_RELEASE)/src/FileManagement.o: src/FileManagement.cpp
+	$(CXX) $(CFLAGS_RELEASE) $(INC_RELEASE) -c src/FileManagement.cpp -o $(OBJDIR_RELEASE)/src/FileManagement.o
 
 $(OBJDIR_RELEASE)/src/IndexBuffer.o: src/IndexBuffer.cpp
 	$(CXX) $(CFLAGS_RELEASE) $(INC_RELEASE) -c src/IndexBuffer.cpp -o $(OBJDIR_RELEASE)/src/IndexBuffer.o
@@ -85,11 +88,11 @@ $(OBJDIR_RELEASE)/src/Shader.o: src/Shader.cpp
 $(OBJDIR_RELEASE)/src/Texture.o: src/Texture.cpp
 	$(CXX) $(CFLAGS_RELEASE) $(INC_RELEASE) -c src/Texture.cpp -o $(OBJDIR_RELEASE)/src/Texture.o
 
-$(OBJDIR_RELEASE)/src/VertexArray.o: src/VertexArray.cpp
-	$(CXX) $(CFLAGS_RELEASE) $(INC_RELEASE) -c src/VertexArray.cpp -o $(OBJDIR_RELEASE)/src/VertexArray.o
-
 $(OBJDIR_RELEASE)/src/Camera.o: src/Camera.cpp
 	$(CXX) $(CFLAGS_RELEASE) $(INC_RELEASE) -c src/Camera.cpp -o $(OBJDIR_RELEASE)/src/Camera.o
+
+$(OBJDIR_RELEASE)/src/VertexBuffer.o: src/VertexBuffer.cpp
+	$(CXX) $(CFLAGS_RELEASE) $(INC_RELEASE) -c src/VertexBuffer.cpp -o $(OBJDIR_RELEASE)/src/VertexBuffer.o
 
 $(OBJDIR_RELEASE)/src/VertexBufferLayout.o: src/VertexBufferLayout.cpp
 	$(CXX) $(CFLAGS_RELEASE) $(INC_RELEASE) -c src/VertexBufferLayout.cpp -o $(OBJDIR_RELEASE)/src/VertexBufferLayout.o
@@ -126,8 +129,8 @@ debug: before_debug out_debug after_debug
 out_debug: before_debug $(OBJ_DEBUG) $(DEP_DEBUG)
 	$(LD) $(LIBDIR_DEBUG) -o $(OUT_DEBUG) $(OBJ_DEBUG)  $(LDFLAGS_DEBUG) $(LIB_DEBUG)
 
-$(OBJDIR_DEBUG)/src/VertexBuffer.o: src/VertexBuffer.cpp
-	$(CXX) $(CFLAGS_DEBUG) $(INC_DEBUG) -c src/VertexBuffer.cpp -o $(OBJDIR_DEBUG)/src/VertexBuffer.o
+$(OBJDIR_DEBUG)/src/VertexArray.o: src/VertexArray.cpp
+	$(CXX) $(CFLAGS_DEBUG) $(INC_DEBUG) -c src/VertexArray.cpp -o $(OBJDIR_DEBUG)/src/VertexArray.o
 
 $(OBJDIR_DEBUG)/src/Chunk.o: src/Chunk.cpp
 	$(CXX) $(CFLAGS_DEBUG) $(INC_DEBUG) -c src/Chunk.cpp -o $(OBJDIR_DEBUG)/src/Chunk.o
@@ -137,6 +140,9 @@ $(OBJDIR_DEBUG)/src/ChunkMesh.o: src/ChunkMesh.cpp
 
 $(OBJDIR_DEBUG)/src/ErrorFeedback.o: src/ErrorFeedback.cpp
 	$(CXX) $(CFLAGS_DEBUG) $(INC_DEBUG) -c src/ErrorFeedback.cpp -o $(OBJDIR_DEBUG)/src/ErrorFeedback.o
+
+$(OBJDIR_DEBUG)/src/FileManagement.o: src/FileManagement.cpp
+	$(CXX) $(CFLAGS_DEBUG) $(INC_DEBUG) -c src/FileManagement.cpp -o $(OBJDIR_DEBUG)/src/FileManagement.o
 
 $(OBJDIR_DEBUG)/src/IndexBuffer.o: src/IndexBuffer.cpp
 	$(CXX) $(CFLAGS_DEBUG) $(INC_DEBUG) -c src/IndexBuffer.cpp -o $(OBJDIR_DEBUG)/src/IndexBuffer.o
@@ -150,11 +156,11 @@ $(OBJDIR_DEBUG)/src/Shader.o: src/Shader.cpp
 $(OBJDIR_DEBUG)/src/Texture.o: src/Texture.cpp
 	$(CXX) $(CFLAGS_DEBUG) $(INC_DEBUG) -c src/Texture.cpp -o $(OBJDIR_DEBUG)/src/Texture.o
 
-$(OBJDIR_DEBUG)/src/VertexArray.o: src/VertexArray.cpp
-	$(CXX) $(CFLAGS_DEBUG) $(INC_DEBUG) -c src/VertexArray.cpp -o $(OBJDIR_DEBUG)/src/VertexArray.o
-
 $(OBJDIR_DEBUG)/src/Camera.o: src/Camera.cpp
 	$(CXX) $(CFLAGS_DEBUG) $(INC_DEBUG) -c src/Camera.cpp -o $(OBJDIR_DEBUG)/src/Camera.o
+
+$(OBJDIR_DEBUG)/src/VertexBuffer.o: src/VertexBuffer.cpp
+	$(CXX) $(CFLAGS_DEBUG) $(INC_DEBUG) -c src/VertexBuffer.cpp -o $(OBJDIR_DEBUG)/src/VertexBuffer.o
 
 $(OBJDIR_DEBUG)/src/VertexBufferLayout.o: src/VertexBufferLayout.cpp
 	$(CXX) $(CFLAGS_DEBUG) $(INC_DEBUG) -c src/VertexBufferLayout.cpp -o $(OBJDIR_DEBUG)/src/VertexBufferLayout.o
