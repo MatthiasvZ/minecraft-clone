@@ -10,7 +10,7 @@
 
 Chunk::Chunk(int x, int y, int z)
 {
-    m_FileName = "saves/x" + std::to_string(x) + 'y' + std::to_string(y) + 'z' + std::to_string(z);
+    m_FileName = "saves/x" + std::to_string(x) + 'y' + std::to_string(y) + 'z' + std::to_string(z) +".chunk";
     m_PosX = x;
     m_PosY = y;
     m_PosZ = z;
@@ -38,9 +38,9 @@ void Chunk::generate()
         {
             for (int iz {0}; iz < 16; iz++)
             {
-                if (ix > 7 && iy > 7)
-                    file << static_cast<char>(0);
-                else
+                /*if (ix > 7 && iy > 7)
+                    file << static_cast<char>(0);*/
+                //else
                     file << static_cast<char>(1);
             }
         }

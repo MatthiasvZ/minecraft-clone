@@ -1,8 +1,10 @@
 #include "gl/Window.h"
 #include "gl/Camera.h"
 #include "gl/Input.h"
+#include "gl/Renderer.h"
 
 #include <GL/glew.h>
+#include <ctime>
 #include <stdio.h>
 
 Input input;
@@ -15,6 +17,8 @@ void Window::error_callback(int error, const char* description)
 
 void Window::key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
 {
+    static bool fullscreen {false};
+    static int windowPosX, windowPosY;
     if (action == GLFW_PRESS)
     {
         switch (key)
@@ -37,6 +41,18 @@ void Window::key_callback(GLFWwindow* window, int key, int scancode, int action,
         case GLFW_KEY_KP_5:         input.kp5Held = true;     break;
         case GLFW_KEY_KP_6:         input.kp6Held = true;     break;
         case GLFW_KEY_KP_8:         input.kp8Held = true;     break;
+        case GLFW_KEY_F11:
+            if (!fullscreen)
+            {
+                glfwGetWindowPos(window, &windowPosX, &windowPosY);
+                glfwSetWindowMonitor(window, glfwGetPrimaryMonitor(), 0, 0, 1920, 1080, GLFW_DONT_CARE);
+                fullscreen = true;
+            }
+            else
+            {
+                glfwSetWindowMonitor(window, nullptr, windowPosX, windowPosY, 1280, 720, GLFW_DONT_CARE);
+                fullscreen = false;
+            }
         }
     }
     if (action == GLFW_RELEASE)
@@ -69,10 +85,17 @@ void Window::cursor_position_callback(GLFWwindow* window, double xpos, double yp
 
 }
 
+void Window::framebuffer_size_callback(GLFWwindow* window, int width, int height)
+{
+    glViewport(0, 0, width, height);
+}
 GLFWwindow* window;
 
 Window::Window()
 {
+    fps = 0;
+    time(&ta);
+
     glfwSetErrorCallback(error_callback);
 
     if (!glfwInit())
@@ -80,12 +103,13 @@ Window::Window()
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-    glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
-    glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);
-    window = glfwCreateWindow(800, 600, "OpenGL", glfwGetPrimaryMonitor(), nullptr);
+    glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GLFW_TRUE);
+    glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
+    window = glfwCreateWindow(1280, 720, "OpenGL, FPS = 0", nullptr, nullptr);
 
     glfwSetKeyCallback(window, key_callback);
     glfwSetCursorPosCallback(window, cursor_position_callback);
+    glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
 
     glfwMakeContextCurrent(window);
     glfwSwapInterval(0);
@@ -142,8 +166,24 @@ void Window::updateWindow()
     glfwSwapBuffers(window);
     glfwPollEvents();
 }
+
+void Window::countfps()
+{
+    if (time(&tn) != ta)
+    {
+        ta++;
+        glfwSetWindowTitle(window, ("OpenGL, FPS =" + std::to_string(fps)).c_str());
+        fps = fps;
+        avg_fps += fps;
+        seconds++;
+        fps = 0;
+    }
+    fps++;
+}
+
 Window::~Window()
 {
+    printf("avg. Fps = %f\n", avg_fps/seconds);
     glfwDestroyWindow(window);
     glfwTerminate();
 }

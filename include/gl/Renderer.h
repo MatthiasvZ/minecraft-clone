@@ -15,16 +15,11 @@ class Renderer
         Renderer();
         void clear() const;
         void drawVA(const VertexArray& vao, const VertexBuffer& vbo, const IndexBuffer& ibo) const;
-        void countfps();
         ~Renderer();
 
     protected:
 
     private:
-        unsigned int fps;
-        float avg_fps {0};
-        int seconds {0};
-        long tn, ta;
 };
 
 #endif // RENDERER_H

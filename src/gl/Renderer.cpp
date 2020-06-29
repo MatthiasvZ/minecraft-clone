@@ -1,12 +1,8 @@
 #include "gl/Renderer.h"
 
-#include <ctime>
-#include <stdio.h>
-
 Renderer::Renderer()
 {
-    fps = 0;
-    time(&ta);
+
 }
 
 void Renderer::clear() const
@@ -28,20 +24,9 @@ void Renderer::drawVA(const VertexArray& vao, const VertexBuffer& vbo, const Ind
     #endif // DEBUG
 }
 
-void Renderer::countfps()
-{
-    if (time(&tn) != ta)
-    {
-        ta++;
-        printf("FPS = %d\n", fps);
-        avg_fps += fps;
-        seconds++;
-        fps = 0;
-    }
-    fps++;
-}
+
 
 Renderer::~Renderer()
 {
-    printf("avg. Fps = %f\n", avg_fps/seconds);
+
 }

@@ -21,6 +21,7 @@ class Input
         bool kp5Held {false};
         bool kp6Held {false};
         bool kp8Held {false};
+        bool fullscreen {false};
 
     protected:
 

@@ -41,6 +41,7 @@ int main()
 
         world.drawChunks();
 
+        window.countfps();
         window.updateWindow();
 
         #ifdef DEBUG
