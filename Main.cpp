@@ -1,12 +1,12 @@
-#include "FileManagement.h"
-#include "Window.h"
-#include "World.h"
-#include "Shader.h"
-#include "Texture.h"
-#include "Camera.h"
+#include "other/FileManagement.h"
+#include "gl/Window.h"
+#include "game/World.h"
+#include "gl/Shader.h"
+#include "gl/Texture.h"
+#include "gl/Camera.h"
 
 #ifdef DEBUG
-#include "ErrorFeedback.h"
+#include "other/ErrorFeedback.h"
 #endif //DEBUG
 
 #include <iostream>
@@ -23,7 +23,6 @@ int main()
                          Shader::readFromFile("src/shaders/BasicTexFragment.glsl"));
     Shader shader(srcpkg);
     shader.bindShader();
-
     Texture kitten("assets/texAtlas.bmp", 0);
     shader.setUniform1i("tex", 0);
 
@@ -40,7 +39,7 @@ int main()
 
         shader.setUniformMat4f("u_MVP", window.getMatrices());
 
-        world.drawChunks(shader);
+        world.drawChunks();
 
         window.updateWindow();
 

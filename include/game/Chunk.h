@@ -6,9 +6,9 @@
 #define BLOCK_DIRT  2
 #define BLOCK_STONE 3
 
-#include "VertexArray.h"
-#include "IndexBuffer.h"
-#include "Shader.h"
+#include "gl/VertexArray.h"
+#include "gl/IndexBuffer.h"
+#include "gl/Shader.h"
 #include <string>
 #include <vector>
 

@@ -1,14 +1,14 @@
 #ifndef WORLD_H
 #define WORLD_H
 
-#include "Shader.h"
+#include "gl/Shader.h"
 
 
 class World
 {
     public:
         World();
-        void drawChunks(const Shader& shader);
+        void drawChunks();
         ~World();
 
     protected:

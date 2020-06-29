@@ -1,16 +1,16 @@
-#include "Camera.h"
+#include "gl/Camera.h"
 
 #include <stdio.h>
 
 
 void Camera::sprint()
 {
-    movFac = 12;
+    movFac *= 2;
 }
 
 void Camera::stopSprinting()
 {
-    movFac = 6;
+    movFac /= 2;
 }
 
 void Camera::moveForwards()
@@ -68,7 +68,6 @@ void Camera::posReset()
 void Camera::setSpeed(const float& deltaTime)
 {
     movSpeed = movFac * deltaTime;
-    turnSpeed = turnFac * deltaTime;
 }
 
 glm::mat4 Camera::getMatrices()

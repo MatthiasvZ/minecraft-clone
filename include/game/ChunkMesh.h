@@ -8,7 +8,7 @@ class ChunkMesh
     public:
         std::vector<float> vertices;
         int vertexCount {0};
-        std::vector<unsigned short> indices;
+        std::vector<unsigned int> indices;
 
         ChunkMesh(unsigned char blockIDs[16][16][16], int x, int y, int z);
         void updateChunkMesh(unsigned char blockIDs[16][16][16]);

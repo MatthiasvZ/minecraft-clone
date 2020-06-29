@@ -1,4 +1,4 @@
-#include "Shader.h"
+#include "gl/Shader.h"
 
 #include <GL/glew.h>
 #include <iostream>
@@ -64,7 +64,7 @@ void Shader::bindShader() const
 
 void Shader::unbindShader() const
 {
-    glUseProgram(0);
+    glUseProgram(GL_FALSE);
 }
 
 

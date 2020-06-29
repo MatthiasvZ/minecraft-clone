@@ -1,19 +1,15 @@
-#include "VertexArray.h"
+#include "gl/VertexArray.h"
 
-#include "VertexBufferLayout.h"
-#include "Renderer.h"
-
-#include <iostream>
-
+#include <GL/glew.h>
 
 void VertexArray::genArray()
 {
-    glGenVertexArrays(1, &m_RendererID);
+    glGenVertexArrays(1, &vaoID);
 }
 
 void VertexArray::addBuffer(const VertexBuffer& vbo, const VertexBufferLayout& layout)
 {
-    VertexArray::bindArray();
+    bindArray();
     vbo.bindBuffer();
     const auto& elements = layout.getElements();
     unsigned long offset = 0;
@@ -25,11 +21,14 @@ void VertexArray::addBuffer(const VertexBuffer& vbo, const VertexBufferLayout& l
                 element.normalised, layout.getStride(), (const void*)offset);
         offset += element.count*VertexBufferElement::getSizeOfType(element.type);
     }
+    #ifdef DEBUG
+        unbindArray();
+    #endif // DEBUG
 }
 
 void VertexArray::bindArray() const
 {
-    glBindVertexArray(m_RendererID);
+    glBindVertexArray(vaoID);
 }
 
 void VertexArray::unbindArray() const
@@ -39,5 +38,5 @@ void VertexArray::unbindArray() const
 
 VertexArray::~VertexArray()
 {
-    glDeleteVertexArrays(1, &m_RendererID);
+    glDeleteVertexArrays(1, &vaoID);
 }

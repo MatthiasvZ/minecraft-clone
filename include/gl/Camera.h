@@ -27,9 +27,8 @@ class Camera
     private:
         void updateDirection();
         float movSpeed;
-        float movFac {6};
-        float turnSpeed;
-        const float turnFac {80};
+        float movFac {15};
+        float turnSpeed {0.7};
         float m_Pitch;
         float m_Yaw = -90.0f;
         glm::vec3 camPos   = glm::vec3(1.0f, 1.0f, 1.0f);

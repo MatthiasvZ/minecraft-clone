@@ -1,7 +1,7 @@
-#include "ChunkMesh.h"
+#include "game/ChunkMesh.h"
 
-#include "Chunk.h"
-#include "TextureCoordinates.h"
+#include "game/Chunk.h"
+#include "game/TextureCoordinates.h"
 
 #ifdef DEBUG
     #include <chrono>

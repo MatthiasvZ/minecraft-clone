@@ -1,4 +1,4 @@
-#include "Chunk.h"
+#include "game/Chunk.h"
 
 #include <sys/stat.h>
 #include <fstream>

@@ -2,25 +2,21 @@
 #define VERTEXARRAY_H
 
 #include "VertexBuffer.h"
-
-class VertexBufferLayout;
-
+#include "VertexBufferLayout.h"
 
 class VertexArray
 {
     public:
-        ~VertexArray();
-
         void genArray();
         void addBuffer(const VertexBuffer& vbo, const VertexBufferLayout& layout);
         void bindArray() const;
         void unbindArray() const;
-        unsigned int m_RendererID;
+        ~VertexArray();
 
     protected:
 
     private:
-
+        unsigned int vaoID;
 };
 
 #endif // VERTEXARRAY_H
