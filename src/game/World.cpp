@@ -1,5 +1,7 @@
 #include "game/World.h"
 
+#define CHUNKRD 10
+
 #include "game/Chunk.h"
 #include "game/ChunkMesh.h"
 #include "gl/VertexArray.h"
@@ -13,11 +15,11 @@
 
 
 Renderer renderer;
-std::vector<std::vector<std::vector<Chunk> > > chunks;
-std::vector<std::vector<std::vector<ChunkMesh> > > chunkMeshes;
-std::vector<std::vector<std::vector<VertexArray> > > vaos;
-std::vector<std::vector<std::vector<VertexBuffer> > > vbos;
-std::vector<std::vector<std::vector<IndexBuffer> > > ibos;
+std::vector<std::vector<std::vector<Chunk>>> chunks;
+std::vector<std::vector<std::vector<ChunkMesh>>> chunkMeshes;
+std::vector<std::vector<std::vector<VertexArray>>> vaos;
+std::vector<std::vector<std::vector<VertexBuffer>>> vbos;
+std::vector<std::vector<std::vector<IndexBuffer>>> ibos;
 VertexBufferLayout layout;
 
 World::World()
@@ -26,54 +28,79 @@ World::World()
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     glEnable(GL_DEPTH_TEST);
 
-    chunks.reserve(10);
-    chunkMeshes.reserve(10);
-    vaos.reserve(10);
-    vbos.reserve(10);
-    ibos.reserve(10);
+    chunks.reserve(CHUNKRD);
+    chunkMeshes.reserve(CHUNKRD);
+    vaos.reserve(CHUNKRD);
+    vbos.reserve(CHUNKRD);
+    ibos.reserve(CHUNKRD);
 
     layout.push(GL_FLOAT, 3); // positions x,y,z
     layout.push(GL_FLOAT, 2); // tex coords u,v
 
-    for (int ix {0}; ix < 10; ix++)
+    unsigned char voidChunkIDs[16][16][16];
+    for (int ix {0}; ix < 16; ix++)
+        for (int iy {0}; iy < 16; iy++)
+            for (int iz {0}; iz < 16; iz++)
+                voidChunkIDs[ix][iy][iz] = 0;
+
+    // Generate/load the chunks.
+    for (int ix {0}; ix < CHUNKRD; ix++)
     {
-        chunks.push_back(std::vector<std::vector<Chunk> >());
-        chunkMeshes.push_back(std::vector<std::vector<ChunkMesh> >());
-        vaos.push_back(std::vector<std::vector<VertexArray> >());
-        vbos.push_back(std::vector<std::vector<VertexBuffer> >());
-        ibos.push_back(std::vector<std::vector<IndexBuffer> >());
-
-        chunks.at(ix).reserve(10);
-        chunkMeshes.at(ix).reserve(10);
-        vaos.at(ix).reserve(10);
-        vbos.at(ix).reserve(10);
-        ibos.at(ix).reserve(10);
-
-        for (int iy {0}; iy < 10; iy++)
+        chunks.push_back(std::vector<std::vector<Chunk>>());
+        chunks[ix].reserve(CHUNKRD);
+        for (int iy {0}; iy < CHUNKRD; iy++)
         {
-            chunks.at(ix).push_back(std::vector<Chunk>());
-            chunkMeshes.at(ix).push_back(std::vector<ChunkMesh>());
-            vaos.at(ix).push_back(std::vector<VertexArray>());
-            vbos.at(ix).push_back(std::vector<VertexBuffer>());
-            ibos.at(ix).push_back(std::vector<IndexBuffer>());
+            chunks[ix].push_back(std::vector<Chunk>());
+            chunks[ix][iy].reserve(CHUNKRD);
+            for (int iz {0}; iz < CHUNKRD; iz++)
+                chunks[ix][iy].push_back(Chunk(ix, iy, iz));
+        }
+    }
 
-            chunks.at(ix).at(iy).reserve(10);
-            chunkMeshes.at(ix).at(iy).reserve(10);
-            vaos.at(ix).at(iy).reserve(10);
-            vbos.at(ix).at(iy).reserve(10);
-            ibos.at(ix).at(iy).reserve(10);
+    // Now that that's done, generate the chunk meshes, their vaos and buffer objects.
+    for (int ix {0}; ix < CHUNKRD; ix++)
+    {
+        chunkMeshes.push_back(std::vector<std::vector<ChunkMesh>>());
+        vaos.push_back(std::vector<std::vector<VertexArray>>());
+        vbos.push_back(std::vector<std::vector<VertexBuffer>>());
+        ibos.push_back(std::vector<std::vector<IndexBuffer>>());
 
-            for (int iz {0}; iz < 10; iz++)
+        chunkMeshes[ix].reserve(CHUNKRD);
+        vaos[ix].reserve(CHUNKRD);
+        vbos[ix].reserve(CHUNKRD);
+        ibos[ix].reserve(CHUNKRD);
+
+        for (int iy {0}; iy < CHUNKRD; iy++)
+        {
+            chunkMeshes[ix].push_back(std::vector<ChunkMesh>());
+            vaos[ix].push_back(std::vector<VertexArray>());
+            vbos[ix].push_back(std::vector<VertexBuffer>());
+            ibos[ix].push_back(std::vector<IndexBuffer>());
+
+            chunkMeshes[ix][iy].reserve(CHUNKRD);
+            vaos[ix][iy].reserve(CHUNKRD);
+            vbos[ix][iy].reserve(CHUNKRD);
+            ibos[ix][iy].reserve(CHUNKRD);
+
+            for (int iz {0}; iz < CHUNKRD; iz++)
             {
-                chunks.at(ix).at(iy).push_back(Chunk(ix, iy, iz));
-                chunkMeshes.at(ix).at(iy).push_back(ChunkMesh(chunks.at(ix).at(iy).at(iz).m_BlockIDs, ix, iy, iz));
-                vaos.at(ix).at(iy).push_back(VertexArray());
-                vaos.at(ix).at(iy).at(iz).genArray();
-                vbos.at(ix).at(iy).push_back(VertexBuffer());
-                vbos.at(ix).at(iy).at(iz).addData(chunkMeshes.at(ix).at(iy).at(iz).vertices.data(), chunkMeshes.at(ix).at(iy).at(iz).vertices.size() * sizeof(float));
-                vaos.at(ix).at(iy).at(iz).addBuffer(vbos.at(ix).at(iy).at(iz), layout);
-                ibos.at(ix).at(iy).push_back(IndexBuffer());
-                ibos.at(ix).at(iy).at(iz).addData(chunkMeshes.at(ix).at(iy).at(iz).indices.data(), chunkMeshes.at(ix).at(iy).at(iz).indices.size());
+                chunkMeshes[ix][iy].push_back(ChunkMesh(chunks[ix][iy][iz].m_BlockIDs, \
+                            iy == CHUNKRD-1 ? voidChunkIDs : chunks[ix][iy+1][iz].m_BlockIDs, \
+                            iy == 0 ? voidChunkIDs : chunks[ix][iy-1][iz].m_BlockIDs, \
+                            ix == CHUNKRD-1 ? voidChunkIDs : chunks[ix+1][iy][iz].m_BlockIDs, \
+                            ix == 0 ? voidChunkIDs : chunks[ix-1][iy][iz].m_BlockIDs, \
+                            iz == CHUNKRD-1 ? voidChunkIDs : chunks[ix][iy][iz+1].m_BlockIDs, \
+                            iz == 0 ? voidChunkIDs : chunks[ix][iy][iz-1].m_BlockIDs, \
+                            ix, iy, iz));
+                vaos[ix][iy].push_back(VertexArray());
+                vaos[ix][iy][iz].genArray();
+                vbos[ix][iy].push_back(VertexBuffer());
+                vbos[ix][iy][iz].addData(chunkMeshes[ix][iy][iz].vertices.data(), \
+                                                  chunkMeshes[ix][iy][iz].vertices.size() * sizeof(float));
+                vaos[ix][iy][iz].addBuffer(vbos[ix][iy][iz], layout);
+                ibos[ix][iy].push_back(IndexBuffer());
+                ibos[ix][iy][iz].addData(chunkMeshes[ix][iy][iz].indices.data(), \
+                                                  chunkMeshes[ix][iy][iz].indices.size());
             }
         }
     }
@@ -82,10 +109,10 @@ void World::drawChunks()
 {
     renderer.clear();
     //for (int stresstest {0}; stresstest < 20; stresstest++)
-    for (int ix {0}; ix < 10; ix++)
-        for (int iy {0}; iy < 10; iy++)
-            for (int iz {0}; iz < 10; iz++)
-            renderer.drawVA(vaos.at(ix).at(iy).at(iz), vbos.at(ix).at(iy).at(iz), ibos.at(ix).at(iy).at(iz));
+    for (int ix {0}; ix < CHUNKRD; ix++)
+        for (int iy {0}; iy < CHUNKRD; iy++)
+            for (int iz {0}; iz < CHUNKRD; iz++)
+                renderer.drawVA(vaos[ix][iy][iz], vbos[ix][iy][iz], ibos[ix][iy][iz]);
 }
 
 World::~World()

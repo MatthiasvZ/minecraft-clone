@@ -38,9 +38,9 @@ void Chunk::generate()
         {
             for (int iz {0}; iz < 16; iz++)
             {
-                /*if (ix > 7 && iy > 7)
-                    file << static_cast<char>(0);*/
-                //else
+                if (ix > 7 && iy > 7)
+                    file << static_cast<char>(0);
+                else
                     file << static_cast<char>(1);
             }
         }

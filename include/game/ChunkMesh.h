@@ -10,8 +10,22 @@ class ChunkMesh
         int vertexCount {0};
         std::vector<unsigned int> indices;
 
-        ChunkMesh(unsigned char blockIDs[16][16][16], int x, int y, int z);
-        void updateChunkMesh(unsigned char blockIDs[16][16][16]);
+        ChunkMesh(const unsigned char (&blockIDs)[16][16][16], \
+                  const unsigned char (&nbrIDsAbove)[16][16][16], \
+                  const unsigned char (&nbrIDsBelow)[16][16][16], \
+                  const unsigned char (&nbrIDsLeft)[16][16][16], \
+                  const unsigned char (&nbrIDsRight)[16][16][16], \
+                  const unsigned char (&nbrIDsInFront)[16][16][16], \
+                  const unsigned char (&nbrIDsBehind)[16][16][16], \
+                  const int& x, const int& y, const int& z);
+
+        void updateChunkMesh(const unsigned char (&blockIDs)[16][16][16], \
+                     const unsigned char (&nbrIDsAbove)[16][16][16], \
+                     const unsigned char (&nbrIDsBelow)[16][16][16], \
+                     const unsigned char (&nbrIDsLeft)[16][16][16], \
+                     const unsigned char (&nbrIDsRight)[16][16][16], \
+                     const unsigned char (&nbrIDsInFront)[16][16][16], \
+                     const unsigned char (&nbrIDsBehind)[16][16][16]);
         ~ChunkMesh();
 
     protected:

@@ -10,7 +10,6 @@
 #include "gl/IndexBuffer.h"
 #include "gl/Shader.h"
 #include <string>
-#include <vector>
 
 
 struct Positioni
