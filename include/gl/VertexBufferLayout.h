@@ -32,7 +32,7 @@ class VertexBufferLayout
 
     public:
         VertexBufferLayout()
-            : m_Stride(0) {}
+            : m_Elements(), m_Stride(0) {}
 
         void push(unsigned int attribType, unsigned int count)
         {

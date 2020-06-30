@@ -12,11 +12,11 @@ LD = g++
 WINDRES = windres
 
 INC = 
-CFLAGS = -Wall -std=c++20 -fexceptions -mtune=skylake -pipe
+CFLAGS = -Wall -std=c++20 -m64 -fexceptions -mtune=skylake -pipe
 RESINC = 
 LIBDIR = 
 LIB = 
-LDFLAGS = -s -lglfw -lGLEW -lEGL -lGLU -lGL
+LDFLAGS = -s -m64 -lglfw -lGLEW -lEGL -lGLU -lGL
 
 INC_RELEASE = $(INC) -Iinclude
 CFLAGS_RELEASE = $(CFLAGS) -O3

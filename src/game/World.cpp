@@ -1,6 +1,7 @@
 #include "game/World.h"
 
-#define CHUNKRD 10
+#define CHUNKRD 32     // 512 blocks render distance
+#define MAXHEIGHT 16 // 256 block height
 
 #include "game/Chunk.h"
 #include "game/ChunkMesh.h"
@@ -47,8 +48,8 @@ World::World()
     for (int ix {0}; ix < CHUNKRD; ix++)
     {
         chunks.push_back(std::vector<std::vector<Chunk>>());
-        chunks[ix].reserve(CHUNKRD);
-        for (int iy {0}; iy < CHUNKRD; iy++)
+        chunks[ix].reserve(MAXHEIGHT);
+        for (int iy {0}; iy < MAXHEIGHT; iy++)
         {
             chunks[ix].push_back(std::vector<Chunk>());
             chunks[ix][iy].reserve(CHUNKRD);
@@ -65,12 +66,12 @@ World::World()
         vbos.push_back(std::vector<std::vector<VertexBuffer>>());
         ibos.push_back(std::vector<std::vector<IndexBuffer>>());
 
-        chunkMeshes[ix].reserve(CHUNKRD);
-        vaos[ix].reserve(CHUNKRD);
-        vbos[ix].reserve(CHUNKRD);
-        ibos[ix].reserve(CHUNKRD);
+        chunkMeshes[ix].reserve(MAXHEIGHT);
+        vaos[ix].reserve(MAXHEIGHT);
+        vbos[ix].reserve(MAXHEIGHT);
+        ibos[ix].reserve(MAXHEIGHT);
 
-        for (int iy {0}; iy < CHUNKRD; iy++)
+        for (int iy {0}; iy < MAXHEIGHT; iy++)
         {
             chunkMeshes[ix].push_back(std::vector<ChunkMesh>());
             vaos[ix].push_back(std::vector<VertexArray>());
@@ -85,7 +86,7 @@ World::World()
             for (int iz {0}; iz < CHUNKRD; iz++)
             {
                 chunkMeshes[ix][iy].push_back(ChunkMesh(chunks[ix][iy][iz].m_BlockIDs, \
-                            iy == CHUNKRD-1 ? voidChunkIDs : chunks[ix][iy+1][iz].m_BlockIDs, \
+                            iy == MAXHEIGHT-1 ? voidChunkIDs : chunks[ix][iy+1][iz].m_BlockIDs, \
                             iy == 0 ? voidChunkIDs : chunks[ix][iy-1][iz].m_BlockIDs, \
                             ix == CHUNKRD-1 ? voidChunkIDs : chunks[ix+1][iy][iz].m_BlockIDs, \
                             ix == 0 ? voidChunkIDs : chunks[ix-1][iy][iz].m_BlockIDs, \
@@ -110,12 +111,15 @@ void World::drawChunks()
     renderer.clear();
     //for (int stresstest {0}; stresstest < 20; stresstest++)
     for (int ix {0}; ix < CHUNKRD; ix++)
-        for (int iy {0}; iy < CHUNKRD; iy++)
+        for (int iy {0}; iy < MAXHEIGHT; iy++)
             for (int iz {0}; iz < CHUNKRD; iz++)
                 renderer.drawVA(vaos[ix][iy][iz], vbos[ix][iy][iz], ibos[ix][iy][iz]);
 }
 
 World::~World()
 {
-    //dtor
+    #ifdef DEBUG
+        ChunkMesh::printTimeStats();
+    #endif // DEBUG
+    printf("Saving chunks...\n");
 }

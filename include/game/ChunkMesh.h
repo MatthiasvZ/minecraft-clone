@@ -26,6 +26,10 @@ class ChunkMesh
                      const unsigned char (&nbrIDsRight)[16][16][16], \
                      const unsigned char (&nbrIDsInFront)[16][16][16], \
                      const unsigned char (&nbrIDsBehind)[16][16][16]);
+
+        #ifdef DEBUG
+            static void printTimeStats();
+        #endif // DEBUG
         ~ChunkMesh();
 
     protected:

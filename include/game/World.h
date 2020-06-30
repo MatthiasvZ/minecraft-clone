@@ -10,7 +10,6 @@ class World
         World();
         void drawChunks();
         ~World();
-
     protected:
 
     private:

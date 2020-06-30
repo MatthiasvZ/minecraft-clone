@@ -25,9 +25,8 @@ class Window
         static void cursor_position_callback(GLFWwindow* window, double xpos, double ypos);
         static void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 
-        unsigned int fps;
-        float avg_fps {0};
-        int seconds {0};
+        unsigned int fps, seconds;
+        float avg_fps;
         long tn, ta;
 };
 

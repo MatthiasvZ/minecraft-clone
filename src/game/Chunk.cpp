@@ -27,10 +27,6 @@ bool Chunk::chunkExists()
 
 void Chunk::generate()
 {
-    #ifdef DEBUG
-        printf("Generating Chunk \"%s\"\n", m_FileName.c_str());
-    #endif // DEBUG
-
     std::fstream file(m_FileName, std::ios::out);
     for (int ix {0}; ix < 16; ix++)
     {
@@ -38,10 +34,7 @@ void Chunk::generate()
         {
             for (int iz {0}; iz < 16; iz++)
             {
-                if (ix > 7 && iy > 7)
-                    file << static_cast<char>(0);
-                else
-                    file << static_cast<char>(1);
+                file << static_cast<char>(1);
             }
         }
     }
@@ -64,9 +57,6 @@ void Chunk::readFromFile()
 
 void Chunk::saveToFile()
 {
-    #ifdef DEBUG
-        printf("Saving Chunk \"%s\"\n", m_FileName.c_str());
-    #endif // DEBUG
     std::fstream file(m_FileName, std::ios::out);
     for (int ix {0}; ix < 16; ix++)
     {

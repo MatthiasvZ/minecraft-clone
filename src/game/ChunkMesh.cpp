@@ -8,6 +8,11 @@
     #include <iostream>
 #endif // DEBUG
 
+#ifdef DEBUG
+static float timeGeneratingMeshes {0};
+static unsigned int totalMeshGens {0};
+#endif // DEBUG
+
 ChunkMesh::ChunkMesh(const unsigned char (&blockIDs)[16][16][16], \
                      const unsigned char (&nbrIDsAbove)[16][16][16], \
                      const unsigned char (&nbrIDsBelow)[16][16][16], \
@@ -98,8 +103,8 @@ void ChunkMesh::updateChunkMesh(const unsigned char (&blockIDs)[16][16][16], \
                 }
             }
     #ifdef DEBUG
-        std::cout << "Time taken to generate ChunkMesh(" << m_PosX << ',' << m_PosY << ',' << m_PosZ << ") = " << \
-                     std::chrono::duration_cast<std::chrono::duration<float>>(std::chrono::high_resolution_clock::now() - t_start).count()*1000 << "ms" << std::endl;
+        timeGeneratingMeshes += std::chrono::duration_cast<std::chrono::duration<float>>(std::chrono::high_resolution_clock::now() - t_start).count()*1000;
+        totalMeshGens++;
     #endif // DEBUG
 }
 
@@ -119,6 +124,14 @@ void ChunkMesh::addIndex(unsigned short a, unsigned short b, unsigned short c)
     indices.push_back(b);
     indices.push_back(c);
 }
+
+#ifdef DEBUG
+void ChunkMesh::printTimeStats()
+{
+    std::cout << "Average time generating a chunk mesh = " << timeGeneratingMeshes/totalMeshGens << "ms\n";
+    std::cout << "Time total spent generating chunk meshes = " << timeGeneratingMeshes << "ms\n";
+}
+#endif // DEBUG
 
 ChunkMesh::~ChunkMesh()
 {

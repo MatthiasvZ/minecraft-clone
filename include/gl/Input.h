@@ -2,9 +2,8 @@
 #define INPUT_H
 
 
-class Input
+struct Input
 {
-    public:
         bool ctrlHeld {false};
         bool spaceHeld {false};
         bool shiftHeld {false};
@@ -22,11 +21,6 @@ class Input
         bool kp6Held {false};
         bool kp8Held {false};
         bool fullscreen {false};
-
-    protected:
-
-    private:
-
 };
 
 #endif // INPUT_H

@@ -3,7 +3,7 @@
 #include "vendor/stb_image/stb_image.h"
 
 
-Texture::Texture(const std::string& path, unsigned int slot)
+Texture::Texture(const std::string& path, const unsigned int& slot)
     : m_RendererID(slot), m_FilePath(path), m_LocalBuffer(nullptr),
     m_Width(0), m_Height(0), m_BPP(0)
 {

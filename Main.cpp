@@ -48,6 +48,5 @@ int main()
             ErrorFeedback::getErrors();
         #endif //DEBUG
     }
-
     return 0; // Destructors handle the rest
 }

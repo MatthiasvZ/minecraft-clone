@@ -15,7 +15,7 @@ void Window::error_callback(int error, const char* description)
     fprintf(stderr, "Error (%d): %s\n", error, description);
 }
 
-void Window::key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
+void Window::key_callback(GLFWwindow* window, int key, __attribute__((unused))int scancode, int action, __attribute__((unused))int mods)
 {
     static bool fullscreen {false};
     static int windowPosX, windowPosY;
@@ -80,20 +80,15 @@ void Window::key_callback(GLFWwindow* window, int key, int scancode, int action,
     }
 }
 
-void Window::cursor_position_callback(GLFWwindow* window, double xpos, double ypos)
-{
-
-}
-
-void Window::framebuffer_size_callback(GLFWwindow* window, int width, int height)
+void Window::framebuffer_size_callback(__attribute__((unused))GLFWwindow* window, int width, int height)
 {
     glViewport(0, 0, width, height);
 }
 GLFWwindow* window;
 
 Window::Window()
+    : fps(0), seconds(0), avg_fps(0), tn(0), ta(0)
 {
-    fps = 0;
     time(&ta);
 
     glfwSetErrorCallback(error_callback);
@@ -108,7 +103,6 @@ Window::Window()
     window = glfwCreateWindow(1280, 720, "OpenGL, FPS = 0", nullptr, nullptr);
 
     glfwSetKeyCallback(window, key_callback);
-    glfwSetCursorPosCallback(window, cursor_position_callback);
     glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
 
     glfwMakeContextCurrent(window);
