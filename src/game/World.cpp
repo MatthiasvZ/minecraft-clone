@@ -36,6 +36,7 @@ World::World()
     ibos.reserve(CHUNKRD);
 
     layout.push(GL_FLOAT, 3); // positions x,y,z
+    layout.push(GL_FLOAT, 1); // lighting l
     layout.push(GL_FLOAT, 2); // tex coords u,v
 
     unsigned char voidChunkIDs[16][16][16];

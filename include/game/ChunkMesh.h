@@ -43,7 +43,7 @@ class ChunkMesh
         int m_PosY;
         int m_PosZ;
         float getTexCoord(bool leftOrRight, unsigned char side, unsigned char blockID);
-        void addVertex(float x, float y, float z, float u, float v);
+        void addVertex(float x, float y, float z, float l, float u, float v);
         void addIndex(unsigned short a, unsigned short b, unsigned short c);
 };
 
