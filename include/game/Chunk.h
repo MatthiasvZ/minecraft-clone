@@ -2,9 +2,10 @@
 #define CHUNK_H
 
 #define BLOCK_AIR   0
-#define BLOCK_GRASS 1
-#define BLOCK_DIRT  2
-#define BLOCK_STONE 3
+#define BLOCK_GRASS_TOP 1
+#define BLOCK_GRASS 2
+#define BLOCK_DIRT  3
+#define BLOCK_STONE 4
 
 #include "gl/VertexArray.h"
 #include "gl/IndexBuffer.h"

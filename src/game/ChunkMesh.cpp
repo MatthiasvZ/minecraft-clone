@@ -49,55 +49,79 @@ void ChunkMesh::updateChunkMesh(const unsigned char (&blockIDs)[16][16][16], \
                     continue;
                 if (ix == 0 ? nbrIDsRight[15][iy][iz] == BLOCK_AIR : 0 || blockIDs[ix - 1][iy][iz] == BLOCK_AIR) // right side
                 {
-                    addVertex(-0.5f + ix + 16*m_PosX,  0.5f + iy + 16*m_PosY, -0.5f + iz + 16*m_PosZ, TEXCOORDS_GRASS_SIDE_TL);
-                    addVertex(-0.5f + ix + 16*m_PosX,  0.5f + iy + 16*m_PosY,  0.5f + iz + 16*m_PosZ, TEXCOORDS_GRASS_SIDE_TR);
-                    addVertex(-0.5f + ix + 16*m_PosX, -0.5f + iy + 16*m_PosY,  0.5f + iz + 16*m_PosZ, TEXCOORDS_GRASS_SIDE_BR);
-                    addVertex(-0.5f + ix + 16*m_PosX, -0.5f + iy + 16*m_PosY, -0.5f + iz + 16*m_PosZ, TEXCOORDS_GRASS_SIDE_BL);
+                    addVertex(-0.5f + ix + 16*m_PosX,  0.5f + iy + 16*m_PosY, -0.5f + iz + 16*m_PosZ, \
+                              getTexCoord(0, BLOCK_SIDE, blockIDs[ix][iy][iz]), 1.0f);
+                    addVertex(-0.5f + ix + 16*m_PosX,  0.5f + iy + 16*m_PosY,  0.5f + iz + 16*m_PosZ, \
+                              getTexCoord(1, BLOCK_SIDE, blockIDs[ix][iy][iz]), 1.0f);
+                    addVertex(-0.5f + ix + 16*m_PosX, -0.5f + iy + 16*m_PosY,  0.5f + iz + 16*m_PosZ, \
+                              getTexCoord(1, BLOCK_SIDE, blockIDs[ix][iy][iz]), 0.0f);
+                    addVertex(-0.5f + ix + 16*m_PosX, -0.5f + iy + 16*m_PosY, -0.5f + iz + 16*m_PosZ, \
+                              getTexCoord(0, BLOCK_SIDE, blockIDs[ix][iy][iz]), 0.0f);
                     addIndex(vertexCount - 4, vertexCount - 3, vertexCount - 2);
                     addIndex(vertexCount - 4, vertexCount - 2, vertexCount - 1);
                 }
                 if (iy == 0 ? nbrIDsBelow[ix][15][iz] == BLOCK_AIR : 0 || blockIDs[ix][iy - 1][iz] == BLOCK_AIR) // bottom side
                 {
-                    addVertex(-0.5f + ix + 16*m_PosX, -0.5f + iy + 16*m_PosY,  0.5f + iz + 16*m_PosZ, TEXCOORDS_GRASS_BOTTOM_TL);
-                    addVertex( 0.5f + ix + 16*m_PosX, -0.5f + iy + 16*m_PosY,  0.5f + iz + 16*m_PosZ, TEXCOORDS_GRASS_BOTTOM_TR);
-                    addVertex( 0.5f + ix + 16*m_PosX, -0.5f + iy + 16*m_PosY, -0.5f + iz + 16*m_PosZ, TEXCOORDS_GRASS_BOTTOM_BR);
-                    addVertex(-0.5f + ix + 16*m_PosX, -0.5f + iy + 16*m_PosY, -0.5f + iz + 16*m_PosZ, TEXCOORDS_GRASS_BOTTOM_BL);
+                    addVertex(-0.5f + ix + 16*m_PosX, -0.5f + iy + 16*m_PosY,  0.5f + iz + 16*m_PosZ, \
+                              getTexCoord(0, BLOCK_BOTTOMSIDE, blockIDs[ix][iy][iz]), 1.0f);
+                    addVertex( 0.5f + ix + 16*m_PosX, -0.5f + iy + 16*m_PosY,  0.5f + iz + 16*m_PosZ, \
+                              getTexCoord(1, BLOCK_BOTTOMSIDE, blockIDs[ix][iy][iz]), 1.0f);
+                    addVertex( 0.5f + ix + 16*m_PosX, -0.5f + iy + 16*m_PosY, -0.5f + iz + 16*m_PosZ, \
+                              getTexCoord(1, BLOCK_BOTTOMSIDE, blockIDs[ix][iy][iz]), 0.0f);
+                    addVertex(-0.5f + ix + 16*m_PosX, -0.5f + iy + 16*m_PosY, -0.5f + iz + 16*m_PosZ, \
+                              getTexCoord(0, BLOCK_BOTTOMSIDE, blockIDs[ix][iy][iz]), 0.0f);
                     addIndex(vertexCount - 4, vertexCount - 3, vertexCount - 2);
                     addIndex(vertexCount - 4, vertexCount - 2, vertexCount - 1);
                 }
                 if (iz == 0 ? nbrIDsBehind[ix][iy][15] == BLOCK_AIR : 0 || blockIDs[ix][iy][iz - 1] == BLOCK_AIR) // back side
                 {
-                    addVertex(-0.5f + ix + 16*m_PosX,  0.5f + iy + 16*m_PosY, -0.5f + iz + 16*m_PosZ, TEXCOORDS_GRASS_SIDE_TL);
-                    addVertex( 0.5f + ix + 16*m_PosX,  0.5f + iy + 16*m_PosY, -0.5f + iz + 16*m_PosZ, TEXCOORDS_GRASS_SIDE_TR);
-                    addVertex( 0.5f + ix + 16*m_PosX, -0.5f + iy + 16*m_PosY, -0.5f + iz + 16*m_PosZ, TEXCOORDS_GRASS_SIDE_BR);
-                    addVertex(-0.5f + ix + 16*m_PosX, -0.5f + iy + 16*m_PosY, -0.5f + iz + 16*m_PosZ, TEXCOORDS_GRASS_SIDE_BL);
+                    addVertex(-0.5f + ix + 16*m_PosX,  0.5f + iy + 16*m_PosY, -0.5f + iz + 16*m_PosZ, \
+                              getTexCoord(0, BLOCK_SIDE, blockIDs[ix][iy][iz]), 1.0f);
+                    addVertex( 0.5f + ix + 16*m_PosX,  0.5f + iy + 16*m_PosY, -0.5f + iz + 16*m_PosZ, \
+                              getTexCoord(1, BLOCK_SIDE, blockIDs[ix][iy][iz]), 1.0f);
+                    addVertex( 0.5f + ix + 16*m_PosX, -0.5f + iy + 16*m_PosY, -0.5f + iz + 16*m_PosZ, \
+                              getTexCoord(1, BLOCK_SIDE, blockIDs[ix][iy][iz]), 0.0f);
+                    addVertex(-0.5f + ix + 16*m_PosX, -0.5f + iy + 16*m_PosY, -0.5f + iz + 16*m_PosZ, \
+                              getTexCoord(0, BLOCK_SIDE, blockIDs[ix][iy][iz]), 0.0f);
                     addIndex(vertexCount - 4, vertexCount - 3, vertexCount - 2);
                     addIndex(vertexCount - 4, vertexCount - 2, vertexCount - 1);
                 }
                 if (ix == 15 ? nbrIDsLeft[0][iy][iz] == BLOCK_AIR : 0 || blockIDs[ix + 1][iy][iz] == BLOCK_AIR) // left side
                 {
-                    addVertex( 0.5f + ix + 16*m_PosX,  0.5f + iy + 16*m_PosY, -0.5f + iz + 16*m_PosZ, TEXCOORDS_GRASS_SIDE_TL);
-                    addVertex( 0.5f + ix + 16*m_PosX,  0.5f + iy + 16*m_PosY,  0.5f + iz + 16*m_PosZ, TEXCOORDS_GRASS_SIDE_TR);
-                    addVertex( 0.5f + ix + 16*m_PosX, -0.5f + iy + 16*m_PosY,  0.5f + iz + 16*m_PosZ, TEXCOORDS_GRASS_SIDE_BR);
-                    addVertex( 0.5f + ix + 16*m_PosX, -0.5f + iy + 16*m_PosY, -0.5f + iz + 16*m_PosZ, TEXCOORDS_GRASS_SIDE_BL);
+                    addVertex( 0.5f + ix + 16*m_PosX,  0.5f + iy + 16*m_PosY, -0.5f + iz + 16*m_PosZ, \
+                              getTexCoord(0, BLOCK_SIDE, blockIDs[ix][iy][iz]), 1.0f);
+                    addVertex( 0.5f + ix + 16*m_PosX,  0.5f + iy + 16*m_PosY,  0.5f + iz + 16*m_PosZ, \
+                              getTexCoord(1, BLOCK_SIDE, blockIDs[ix][iy][iz]), 1.0f);
+                    addVertex( 0.5f + ix + 16*m_PosX, -0.5f + iy + 16*m_PosY,  0.5f + iz + 16*m_PosZ, \
+                              getTexCoord(1, BLOCK_SIDE, blockIDs[ix][iy][iz]), 0.0f);
+                    addVertex( 0.5f + ix + 16*m_PosX, -0.5f + iy + 16*m_PosY, -0.5f + iz + 16*m_PosZ, \
+                              getTexCoord(0, BLOCK_SIDE, blockIDs[ix][iy][iz]), 0.0f);
                     addIndex(vertexCount - 4, vertexCount - 3, vertexCount - 2);
                     addIndex(vertexCount - 4, vertexCount - 2, vertexCount - 1);
                 }
                 if (iy == 15 ? nbrIDsAbove[ix][0][iz] == BLOCK_AIR : 0 || blockIDs[ix][iy + 1][iz] == BLOCK_AIR) // top side
                 {
-                    addVertex(-0.5f + ix + 16*m_PosX,  0.5f + iy + 16*m_PosY,  0.5f + iz + 16*m_PosZ, TEXCOORDS_GRASS_TOP_TL);
-                    addVertex( 0.5f + ix + 16*m_PosX,  0.5f + iy + 16*m_PosY,  0.5f + iz + 16*m_PosZ, TEXCOORDS_GRASS_TOP_TR);
-                    addVertex( 0.5f + ix + 16*m_PosX,  0.5f + iy + 16*m_PosY, -0.5f + iz + 16*m_PosZ, TEXCOORDS_GRASS_TOP_BR);
-                    addVertex(-0.5f + ix + 16*m_PosX,  0.5f + iy + 16*m_PosY, -0.5f + iz + 16*m_PosZ, TEXCOORDS_GRASS_TOP_BL);
+                    addVertex(-0.5f + ix + 16*m_PosX,  0.5f + iy + 16*m_PosY,  0.5f + iz + 16*m_PosZ, \
+                              getTexCoord(0, BLOCK_TOPSIDE, blockIDs[ix][iy][iz]), 1.0f);
+                    addVertex( 0.5f + ix + 16*m_PosX,  0.5f + iy + 16*m_PosY,  0.5f + iz + 16*m_PosZ, \
+                              getTexCoord(1, BLOCK_TOPSIDE, blockIDs[ix][iy][iz]), 1.0f);
+                    addVertex( 0.5f + ix + 16*m_PosX,  0.5f + iy + 16*m_PosY, -0.5f + iz + 16*m_PosZ, \
+                              getTexCoord(1, BLOCK_TOPSIDE, blockIDs[ix][iy][iz]), 0.0f);
+                    addVertex(-0.5f + ix + 16*m_PosX,  0.5f + iy + 16*m_PosY, -0.5f + iz + 16*m_PosZ, \
+                              getTexCoord(0, BLOCK_TOPSIDE, blockIDs[ix][iy][iz]), 0.0f);
                     addIndex(vertexCount - 4, vertexCount - 3, vertexCount - 2);
                     addIndex(vertexCount - 4, vertexCount - 2, vertexCount - 1);
                 }
                 if (iz == 15 ? nbrIDsInFront[ix][iy][0] == BLOCK_AIR : 0 || blockIDs[ix][iy][iz + 1] == BLOCK_AIR) // front side
                 {
-                    addVertex(-0.5f + ix + 16*m_PosX,  0.5f + iy + 16*m_PosY,  0.5f + iz + 16*m_PosZ, TEXCOORDS_GRASS_SIDE_TL);
-                    addVertex( 0.5f + ix + 16*m_PosX,  0.5f + iy + 16*m_PosY,  0.5f + iz + 16*m_PosZ, TEXCOORDS_GRASS_SIDE_TR);
-                    addVertex( 0.5f + ix + 16*m_PosX, -0.5f + iy + 16*m_PosY,  0.5f + iz + 16*m_PosZ, TEXCOORDS_GRASS_SIDE_BR);
-                    addVertex(-0.5f + ix + 16*m_PosX, -0.5f + iy + 16*m_PosY,  0.5f + iz + 16*m_PosZ, TEXCOORDS_GRASS_SIDE_BL);
+                    addVertex(-0.5f + ix + 16*m_PosX,  0.5f + iy + 16*m_PosY,  0.5f + iz + 16*m_PosZ, \
+                              getTexCoord(0, BLOCK_SIDE, blockIDs[ix][iy][iz]), 1.0f);
+                    addVertex( 0.5f + ix + 16*m_PosX,  0.5f + iy + 16*m_PosY,  0.5f + iz + 16*m_PosZ, \
+                              getTexCoord(1, BLOCK_SIDE, blockIDs[ix][iy][iz]), 1.0f);
+                    addVertex( 0.5f + ix + 16*m_PosX, -0.5f + iy + 16*m_PosY,  0.5f + iz + 16*m_PosZ, \
+                              getTexCoord(1, BLOCK_SIDE, blockIDs[ix][iy][iz]), 0.0f);
+                    addVertex(-0.5f + ix + 16*m_PosX, -0.5f + iy + 16*m_PosY,  0.5f + iz + 16*m_PosZ, \
+                              getTexCoord(0, BLOCK_SIDE, blockIDs[ix][iy][iz]), 0.0f);
                     addIndex(vertexCount - 4, vertexCount - 3, vertexCount - 2);
                     addIndex(vertexCount - 4, vertexCount - 2, vertexCount - 1);
                 }
@@ -106,6 +130,24 @@ void ChunkMesh::updateChunkMesh(const unsigned char (&blockIDs)[16][16][16], \
         timeGeneratingMeshes += std::chrono::duration_cast<std::chrono::duration<float>>(std::chrono::high_resolution_clock::now() - t_start).count()*1000;
         totalMeshGens++;
     #endif // DEBUG
+}
+
+float ChunkMesh::getTexCoord(bool leftOrRight, unsigned char side, unsigned char blockID)
+{
+    switch (blockID)
+    {
+    case BLOCK_GRASS:
+        if (side == BLOCK_TOPSIDE)
+            blockID = BLOCK_GRASS_TOP;
+        if (side == BLOCK_BOTTOMSIDE)
+            blockID = BLOCK_DIRT;
+        break;
+    default:
+        break;
+    }
+    if (leftOrRight == 0)
+        return (blockID-1.0f)/4.0f;
+    return blockID/4.0f;
 }
 
 void ChunkMesh::addVertex(float x, float y, float z, float u, float v)
@@ -128,8 +170,8 @@ void ChunkMesh::addIndex(unsigned short a, unsigned short b, unsigned short c)
 #ifdef DEBUG
 void ChunkMesh::printTimeStats()
 {
-    std::cout << "Average time generating a chunk mesh = " << timeGeneratingMeshes/totalMeshGens << "ms\n";
-    std::cout << "Time total spent generating chunk meshes = " << timeGeneratingMeshes << "ms\n";
+    std::cout << "Debug: Average time generating a chunk mesh = " << timeGeneratingMeshes/totalMeshGens << "ms\n";
+    std::cout << "Debug: Time total spent generating chunk meshes = " << timeGeneratingMeshes << "ms\n";
 }
 #endif // DEBUG
 

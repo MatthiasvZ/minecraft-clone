@@ -34,7 +34,14 @@ void Chunk::generate()
         {
             for (int iz {0}; iz < 16; iz++)
             {
-                file << static_cast<char>(1);
+                if (m_PosY < 2)
+                    file << static_cast<unsigned char>(BLOCK_STONE);
+                else if (m_PosY == 2 && iy < 15)
+                    file << static_cast<unsigned char>(BLOCK_DIRT);
+                else if (m_PosY == 2)
+                    file << static_cast<unsigned char>(BLOCK_GRASS);
+                else
+                    file << static_cast<unsigned char>(0);
             }
         }
     }
@@ -64,7 +71,7 @@ void Chunk::saveToFile()
         {
             for (int iz {0}; iz < 16; iz++)
             {
-                file << static_cast<char>(m_BlockIDs[ix][iy][iz]);
+                file << static_cast<unsigned char>(m_BlockIDs[ix][iy][iz]);
             }
         }
     }

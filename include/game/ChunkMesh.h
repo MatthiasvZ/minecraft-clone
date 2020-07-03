@@ -1,6 +1,10 @@
 #ifndef CHUNKMESH_H
 #define CHUNKMESH_H
 
+#define BLOCK_SIDE 0
+#define BLOCK_TOPSIDE 1
+#define BLOCK_BOTTOMSIDE 2
+
 #include <vector>
 
 class ChunkMesh
@@ -38,6 +42,7 @@ class ChunkMesh
         int m_PosX;
         int m_PosY;
         int m_PosZ;
+        float getTexCoord(bool leftOrRight, unsigned char side, unsigned char blockID);
         void addVertex(float x, float y, float z, float u, float v);
         void addIndex(unsigned short a, unsigned short b, unsigned short c);
 };

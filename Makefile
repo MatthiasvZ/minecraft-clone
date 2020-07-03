@@ -12,7 +12,7 @@ LD = g++
 WINDRES = windres
 
 INC = 
-CFLAGS = -Wall -std=c++20 -m64 -fexceptions -mtune=skylake -pipe
+CFLAGS = -Wextra -Wall -std=c++20 -m64 -fexceptions -mtune=skylake -pipe
 RESINC = 
 LIBDIR = 
 LIB = 
@@ -40,9 +40,9 @@ OBJDIR_DEBUG = obj
 DEP_DEBUG = 
 OUT_DEBUG = bin/minecraft-clone
 
-OBJ_RELEASE = $(OBJDIR_RELEASE)/src/gl/VertexArray.o $(OBJDIR_RELEASE)/src/game/Chunk.o $(OBJDIR_RELEASE)/src/game/ChunkMesh.o $(OBJDIR_RELEASE)/src/game/World.o $(OBJDIR_RELEASE)/src/gl/Camera.o $(OBJDIR_RELEASE)/src/gl/IndexBuffer.o $(OBJDIR_RELEASE)/src/gl/Renderer.o $(OBJDIR_RELEASE)/src/gl/Shader.o $(OBJDIR_RELEASE)/src/gl/Texture.o $(OBJDIR_RELEASE)/src/gl/VertexBuffer.o $(OBJDIR_RELEASE)/src/gl/VertexBufferLayout.o $(OBJDIR_RELEASE)/src/gl/Window.o $(OBJDIR_RELEASE)/src/other/ErrorFeedback.o $(OBJDIR_RELEASE)/src/other/FileManagement.o $(OBJDIR_RELEASE)/src/vendor/stb_image/stb_image.o $(OBJDIR_RELEASE)/Main.o
+OBJ_RELEASE = $(OBJDIR_RELEASE)/src/gl/VertexArray.o $(OBJDIR_RELEASE)/src/game/ChunkMesh.o $(OBJDIR_RELEASE)/src/game/Player.o $(OBJDIR_RELEASE)/src/game/World.o $(OBJDIR_RELEASE)/src/gl/Camera.o $(OBJDIR_RELEASE)/src/gl/IndexBuffer.o $(OBJDIR_RELEASE)/src/gl/Renderer.o $(OBJDIR_RELEASE)/src/gl/Shader.o $(OBJDIR_RELEASE)/src/gl/Texture.o $(OBJDIR_RELEASE)/src/game/Chunk.o $(OBJDIR_RELEASE)/src/gl/VertexBuffer.o $(OBJDIR_RELEASE)/src/gl/VertexBufferLayout.o $(OBJDIR_RELEASE)/src/gl/Window.o $(OBJDIR_RELEASE)/src/other/ErrorFeedback.o $(OBJDIR_RELEASE)/src/other/FileManagement.o $(OBJDIR_RELEASE)/src/vendor/stb_image/stb_image.o $(OBJDIR_RELEASE)/Main.o
 
-OBJ_DEBUG = $(OBJDIR_DEBUG)/src/gl/VertexArray.o $(OBJDIR_DEBUG)/src/game/Chunk.o $(OBJDIR_DEBUG)/src/game/ChunkMesh.o $(OBJDIR_DEBUG)/src/game/World.o $(OBJDIR_DEBUG)/src/gl/Camera.o $(OBJDIR_DEBUG)/src/gl/IndexBuffer.o $(OBJDIR_DEBUG)/src/gl/Renderer.o $(OBJDIR_DEBUG)/src/gl/Shader.o $(OBJDIR_DEBUG)/src/gl/Texture.o $(OBJDIR_DEBUG)/src/gl/VertexBuffer.o $(OBJDIR_DEBUG)/src/gl/VertexBufferLayout.o $(OBJDIR_DEBUG)/src/gl/Window.o $(OBJDIR_DEBUG)/src/other/ErrorFeedback.o $(OBJDIR_DEBUG)/src/other/FileManagement.o $(OBJDIR_DEBUG)/src/vendor/stb_image/stb_image.o $(OBJDIR_DEBUG)/Main.o
+OBJ_DEBUG = $(OBJDIR_DEBUG)/src/gl/VertexArray.o $(OBJDIR_DEBUG)/src/game/ChunkMesh.o $(OBJDIR_DEBUG)/src/game/Player.o $(OBJDIR_DEBUG)/src/game/World.o $(OBJDIR_DEBUG)/src/gl/Camera.o $(OBJDIR_DEBUG)/src/gl/IndexBuffer.o $(OBJDIR_DEBUG)/src/gl/Renderer.o $(OBJDIR_DEBUG)/src/gl/Shader.o $(OBJDIR_DEBUG)/src/gl/Texture.o $(OBJDIR_DEBUG)/src/game/Chunk.o $(OBJDIR_DEBUG)/src/gl/VertexBuffer.o $(OBJDIR_DEBUG)/src/gl/VertexBufferLayout.o $(OBJDIR_DEBUG)/src/gl/Window.o $(OBJDIR_DEBUG)/src/other/ErrorFeedback.o $(OBJDIR_DEBUG)/src/other/FileManagement.o $(OBJDIR_DEBUG)/src/vendor/stb_image/stb_image.o $(OBJDIR_DEBUG)/Main.o
 
 all: release debug
 
@@ -66,11 +66,11 @@ out_release: before_release $(OBJ_RELEASE) $(DEP_RELEASE)
 $(OBJDIR_RELEASE)/src/gl/VertexArray.o: src/gl/VertexArray.cpp
 	$(CXX) $(CFLAGS_RELEASE) $(INC_RELEASE) -c src/gl/VertexArray.cpp -o $(OBJDIR_RELEASE)/src/gl/VertexArray.o
 
-$(OBJDIR_RELEASE)/src/game/Chunk.o: src/game/Chunk.cpp
-	$(CXX) $(CFLAGS_RELEASE) $(INC_RELEASE) -c src/game/Chunk.cpp -o $(OBJDIR_RELEASE)/src/game/Chunk.o
-
 $(OBJDIR_RELEASE)/src/game/ChunkMesh.o: src/game/ChunkMesh.cpp
 	$(CXX) $(CFLAGS_RELEASE) $(INC_RELEASE) -c src/game/ChunkMesh.cpp -o $(OBJDIR_RELEASE)/src/game/ChunkMesh.o
+
+$(OBJDIR_RELEASE)/src/game/Player.o: src/game/Player.cpp
+	$(CXX) $(CFLAGS_RELEASE) $(INC_RELEASE) -c src/game/Player.cpp -o $(OBJDIR_RELEASE)/src/game/Player.o
 
 $(OBJDIR_RELEASE)/src/game/World.o: src/game/World.cpp
 	$(CXX) $(CFLAGS_RELEASE) $(INC_RELEASE) -c src/game/World.cpp -o $(OBJDIR_RELEASE)/src/game/World.o
@@ -89,6 +89,9 @@ $(OBJDIR_RELEASE)/src/gl/Shader.o: src/gl/Shader.cpp
 
 $(OBJDIR_RELEASE)/src/gl/Texture.o: src/gl/Texture.cpp
 	$(CXX) $(CFLAGS_RELEASE) $(INC_RELEASE) -c src/gl/Texture.cpp -o $(OBJDIR_RELEASE)/src/gl/Texture.o
+
+$(OBJDIR_RELEASE)/src/game/Chunk.o: src/game/Chunk.cpp
+	$(CXX) $(CFLAGS_RELEASE) $(INC_RELEASE) -c src/game/Chunk.cpp -o $(OBJDIR_RELEASE)/src/game/Chunk.o
 
 $(OBJDIR_RELEASE)/src/gl/VertexBuffer.o: src/gl/VertexBuffer.cpp
 	$(CXX) $(CFLAGS_RELEASE) $(INC_RELEASE) -c src/gl/VertexBuffer.cpp -o $(OBJDIR_RELEASE)/src/gl/VertexBuffer.o
@@ -138,11 +141,11 @@ out_debug: before_debug $(OBJ_DEBUG) $(DEP_DEBUG)
 $(OBJDIR_DEBUG)/src/gl/VertexArray.o: src/gl/VertexArray.cpp
 	$(CXX) $(CFLAGS_DEBUG) $(INC_DEBUG) -c src/gl/VertexArray.cpp -o $(OBJDIR_DEBUG)/src/gl/VertexArray.o
 
-$(OBJDIR_DEBUG)/src/game/Chunk.o: src/game/Chunk.cpp
-	$(CXX) $(CFLAGS_DEBUG) $(INC_DEBUG) -c src/game/Chunk.cpp -o $(OBJDIR_DEBUG)/src/game/Chunk.o
-
 $(OBJDIR_DEBUG)/src/game/ChunkMesh.o: src/game/ChunkMesh.cpp
 	$(CXX) $(CFLAGS_DEBUG) $(INC_DEBUG) -c src/game/ChunkMesh.cpp -o $(OBJDIR_DEBUG)/src/game/ChunkMesh.o
+
+$(OBJDIR_DEBUG)/src/game/Player.o: src/game/Player.cpp
+	$(CXX) $(CFLAGS_DEBUG) $(INC_DEBUG) -c src/game/Player.cpp -o $(OBJDIR_DEBUG)/src/game/Player.o
 
 $(OBJDIR_DEBUG)/src/game/World.o: src/game/World.cpp
 	$(CXX) $(CFLAGS_DEBUG) $(INC_DEBUG) -c src/game/World.cpp -o $(OBJDIR_DEBUG)/src/game/World.o
@@ -161,6 +164,9 @@ $(OBJDIR_DEBUG)/src/gl/Shader.o: src/gl/Shader.cpp
 
 $(OBJDIR_DEBUG)/src/gl/Texture.o: src/gl/Texture.cpp
 	$(CXX) $(CFLAGS_DEBUG) $(INC_DEBUG) -c src/gl/Texture.cpp -o $(OBJDIR_DEBUG)/src/gl/Texture.o
+
+$(OBJDIR_DEBUG)/src/game/Chunk.o: src/game/Chunk.cpp
+	$(CXX) $(CFLAGS_DEBUG) $(INC_DEBUG) -c src/game/Chunk.cpp -o $(OBJDIR_DEBUG)/src/game/Chunk.o
 
 $(OBJDIR_DEBUG)/src/gl/VertexBuffer.o: src/gl/VertexBuffer.cpp
 	$(CXX) $(CFLAGS_DEBUG) $(INC_DEBUG) -c src/gl/VertexBuffer.cpp -o $(OBJDIR_DEBUG)/src/gl/VertexBuffer.o

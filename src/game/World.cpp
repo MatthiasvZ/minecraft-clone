@@ -1,7 +1,7 @@
 #include "game/World.h"
 
-#define CHUNKRD 32     // 512 blocks render distance
-#define MAXHEIGHT 16 // 256 block height
+#define CHUNKRD 16     // 256 blocks render distance
+#define MAXHEIGHT 8    // 128 block height max.
 
 #include "game/Chunk.h"
 #include "game/ChunkMesh.h"
