@@ -1,8 +1,12 @@
 #include "game/Chunk.h"
 
+#include "game/World.h"
+
 #include <sys/stat.h>
 #include <fstream>
 #include <GL/glew.h>
+
+#include "vendor/FastNoiseSIMD/FastNoiseSIMD.h"
 
 #ifdef DEBUG
     #include <iostream>
@@ -16,35 +20,14 @@ Chunk::Chunk(int x, int y, int z)
     m_PosZ = z;
     if (!chunkExists())
         generate();
-    readFromFile();
+    else
+        readFromFile();
 }
 
 bool Chunk::chunkExists()
 {
   struct stat buffer;
   return (stat (m_FileName.c_str(), &buffer) == 0);
-}
-
-void Chunk::generate()
-{
-    std::fstream file(m_FileName, std::ios::out);
-    for (int ix {0}; ix < 16; ix++)
-    {
-        for (int iy {0}; iy < 16; iy++)
-        {
-            for (int iz {0}; iz < 16; iz++)
-            {
-                if (m_PosY < 2)
-                    file << static_cast<unsigned char>(BLOCK_STONE);
-                else if (m_PosY == 2 && iy < 15)
-                    file << static_cast<unsigned char>(BLOCK_DIRT);
-                else if (m_PosY == 2)
-                    file << static_cast<unsigned char>(BLOCK_GRASS);
-                else
-                    file << static_cast<unsigned char>(0);
-            }
-        }
-    }
 }
 
 void Chunk::readFromFile()
@@ -77,10 +60,38 @@ void Chunk::saveToFile()
     }
 }
 
-
 Positioni Chunk::getPosition()
 {
     return Positioni(m_PosX, m_PosY, m_PosZ);
+}
+
+void Chunk::generate()
+{
+    FastNoiseSIMD* noise = FastNoiseSIMD::NewFastNoiseSIMD(World::getSeed());
+    std::fstream file(m_FileName, std::ios::out);
+    for (int ix {0}; ix < 16; ix++)
+    {
+        for (int iy {0}; iy < 16; iy++)
+        {
+            for (int iz {0}; iz < 16; iz++)
+            {
+                if (*noise->GetPerlinSet(m_PosX*16 + ix, m_PosY*16 + iy, m_PosZ*16 + iz, 1, 1, 1) * 20 + \
+                    *noise->GetPerlinSet(m_PosX*16 + ix + 420, m_PosY*16 + iy + 420, m_PosZ*16 + iz + 420, 1, 1, 1) * 20 + 55 > m_PosY*16 + iy)
+                {
+                    if (*noise->GetPerlinSet(m_PosX*16 + ix, m_PosY*16 + iy+1, m_PosZ*16 + iz, 1, 1, 1) * 20 + \
+                        *noise->GetPerlinSet(m_PosX*16 + ix + 420, m_PosY*16 + iy+1 + 420, m_PosZ*16 + iz + 420, 1, 1, 1) * 20 + 55 < m_PosY*16 + iy+1)
+                        m_BlockIDs[ix][iy][iz] = BLOCK_GRASS;
+                    else if (*noise->GetPerlinSet(m_PosX*16 + ix, m_PosY*16 + iy+4, m_PosZ*16 + iz, 1, 1, 1) * 20 + \
+                             *noise->GetPerlinSet(m_PosX*16 + ix + 420, m_PosY*16 + iy+4 + 420, m_PosZ*16 + iz + 420, 1, 1, 1) * 20 + 55 < m_PosY*16 + iy+4.5f)
+                        m_BlockIDs[ix][iy][iz] = BLOCK_DIRT;
+                    else
+                        m_BlockIDs[ix][iy][iz] = BLOCK_STONE;
+                }
+                else
+                    m_BlockIDs[ix][iy][iz] = BLOCK_AIR;
+            }
+        }
+    }
 }
 
 Chunk::~Chunk()

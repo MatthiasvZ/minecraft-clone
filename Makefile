@@ -18,7 +18,7 @@ LIBDIR =
 LIB = 
 LDFLAGS = -s -m64 -lglfw -lGLEW -lEGL -lGLU -lGL
 
-INC_RELEASE = $(INC) -Iinclude
+INC_RELEASE = $(INC) -Iinclude -Iinclude/vendor/PerlinNoise
 CFLAGS_RELEASE = $(CFLAGS) -O3
 RESINC_RELEASE = $(RESINC)
 RCFLAGS_RELEASE = $(RCFLAGS)
@@ -29,7 +29,7 @@ OBJDIR_RELEASE = obj
 DEP_RELEASE = 
 OUT_RELEASE = bin/minecraft-clone
 
-INC_DEBUG = $(INC) -Iinclude
+INC_DEBUG = $(INC) -Iinclude -Iinclude/vendor/PerlinNoise
 CFLAGS_DEBUG = $(CFLAGS) -Og -DDEBUG
 RESINC_DEBUG = $(RESINC)
 RCFLAGS_DEBUG = $(RCFLAGS)

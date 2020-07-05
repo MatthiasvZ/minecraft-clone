@@ -6,6 +6,8 @@
 #define BLOCK_GRASS 2
 #define BLOCK_DIRT  3
 #define BLOCK_STONE 4
+#define BLOCK_OAK_LOG 5
+#define BLOCK_OAK_LOG_OUTSIDE 6
 
 #include "gl/VertexArray.h"
 #include "gl/IndexBuffer.h"
@@ -40,9 +42,12 @@ class Chunk
 
 
         bool chunkExists();
-        void generate();
         void readFromFile();
         void saveToFile();
+        void generate();
+        float lerp(float a0, float a1, float w);
+        float dotGridGradient(int ix, int iy, float x, float y);
+        float perlin(float x, float y);
 };
 
 #endif // CHUNK_H
