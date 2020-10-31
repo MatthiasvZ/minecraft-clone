@@ -3,42 +3,48 @@
 #define CHUNKRD 16     // 256 blocks render distance
 #define MAXHEIGHT 8    // 128 block height max.
 
-#include "game/Chunk.h"
-#include "game/ChunkMesh.h"
-#include "gl/VertexArray.h"
-#include "gl/VertexBuffer.h"
-#include "gl/VertexBufferLayout.h"
-#include "gl/IndexBuffer.h"
-#include "gl/Renderer.h"
-
 #include <vector>
 #include <iostream>
+#include <sys/stat.h>
+#include <filesystem>
+#include <unistd.h>
 
-
-Renderer renderer;
 std::vector<std::vector<std::vector<Chunk>>> chunks;
 std::vector<std::vector<std::vector<ChunkMesh>>> chunkMeshes;
-std::vector<std::vector<std::vector<VertexArray>>> vaos;
-std::vector<std::vector<std::vector<VertexBuffer>>> vbos;
-std::vector<std::vector<std::vector<IndexBuffer>>> ibos;
-VertexBufferLayout layout;
+std::vector<std::vector<std::vector<PT::VertexArray>>> vaos;
+std::vector<std::vector<std::vector<PT::VertexBuffer>>> vbos;
+std::vector<std::vector<std::vector<PT::IndexBuffer>>> ibos;
+PT::Texture* atlas;
+
+std::string getDir()
+{
+    char result[ PATH_MAX ];
+    ssize_t count = readlink( "/proc/self/exe", result, PATH_MAX );
+    std::string sresult( result, (count > 0) ? count : 0 );
+    #ifdef DEBUG
+        sresult = (std::string)std::filesystem::path(sresult).parent_path().parent_path().parent_path();
+    #else
+        sresult = (std::string)std::filesystem::path(sresult).parent_path().parent_path();
+    #endif //DEBUG
+    return sresult;
+}
 
 World::World()
+    : shader(PT::Shader(PT_SHADER_XYZBUV_M))
 {
-    glEnable(GL_BLEND);
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-    glEnable(GL_DEPTH_TEST);
+    atlas = new PT::Texture(getDir() + "/assets/texAtlas.bmp", 0, GL_NEAREST, GL_NEAREST);
+
+    camera.setDrawDistance(1000.0f);
+
+    struct stat buffer;
+    if (stat ("saves", &buffer) != 0)
+        mkdir("saves", 0755);
 
     chunks.reserve(CHUNKRD);
     chunkMeshes.reserve(CHUNKRD);
     vaos.reserve(CHUNKRD);
     vbos.reserve(CHUNKRD);
     ibos.reserve(CHUNKRD);
-
-    layout.push(GL_FLOAT, 3); // positions x,y,z (floats)
-    layout.push(GL_FLOAT, 1); // lighting l (float)
-    layout.push(GL_FLOAT, 1); // tex coord u (float)
-    layout.push(GL_FLOAT, 1); // tex coord v (float)
 
     unsigned char voidChunkIDs[16][16][16];
     for (int ix {0}; ix < 16; ix++)
@@ -64,9 +70,9 @@ World::World()
     for (int ix {0}; ix < CHUNKRD; ix++)
     {
         chunkMeshes.push_back(std::vector<std::vector<ChunkMesh>>());
-        vaos.push_back(std::vector<std::vector<VertexArray>>());
-        vbos.push_back(std::vector<std::vector<VertexBuffer>>());
-        ibos.push_back(std::vector<std::vector<IndexBuffer>>());
+        vaos.push_back(std::vector<std::vector<PT::VertexArray>>());
+        vbos.push_back(std::vector<std::vector<PT::VertexBuffer>>());
+        ibos.push_back(std::vector<std::vector<PT::IndexBuffer>>());
 
         chunkMeshes[ix].reserve(MAXHEIGHT);
         vaos[ix].reserve(MAXHEIGHT);
@@ -76,9 +82,9 @@ World::World()
         for (int iy {0}; iy < MAXHEIGHT; iy++)
         {
             chunkMeshes[ix].push_back(std::vector<ChunkMesh>());
-            vaos[ix].push_back(std::vector<VertexArray>());
-            vbos[ix].push_back(std::vector<VertexBuffer>());
-            ibos[ix].push_back(std::vector<IndexBuffer>());
+            vaos[ix].push_back(std::vector<PT::VertexArray>());
+            vbos[ix].push_back(std::vector<PT::VertexBuffer>());
+            ibos[ix].push_back(std::vector<PT::IndexBuffer>());
 
             chunkMeshes[ix][iy].reserve(CHUNKRD);
             vaos[ix][iy].reserve(CHUNKRD);
@@ -95,31 +101,33 @@ World::World()
                             iz == CHUNKRD-1 ? voidChunkIDs : chunks[ix][iy][iz+1].m_BlockIDs, \
                             iz == 0 ? voidChunkIDs : chunks[ix][iy][iz-1].m_BlockIDs, \
                             ix, iy, iz));
-                vaos[ix][iy].push_back(VertexArray());
-                vaos[ix][iy][iz].genArray();
-                vbos[ix][iy].push_back(VertexBuffer());
-                vbos[ix][iy][iz].addData(chunkMeshes[ix][iy][iz].vertices.data(), \
-                                                  chunkMeshes[ix][iy][iz].vertices.size() * sizeof(float));
-                vaos[ix][iy][iz].addBuffer(vbos[ix][iy][iz], layout);
-                ibos[ix][iy].push_back(IndexBuffer());
-                ibos[ix][iy][iz].addData(chunkMeshes[ix][iy][iz].indices.data(), \
-                                                  chunkMeshes[ix][iy][iz].indices.size());
+                vaos[ix][iy].push_back(PT::VertexArray());
+                vbos[ix][iy].push_back(PT::VertexBuffer(chunkMeshes[ix][iy][iz].vertices));
+                vaos[ix][iy][iz].addBuffer(vbos[ix][iy][iz], shader.getLayout());
+                ibos[ix][iy].push_back(PT::IndexBuffer(chunkMeshes[ix][iy][iz].indices));
             }
         }
     }
 }
-void World::drawChunks()
+void World::drawChunks(float deltaTime, PT::Input* inputs)
 {
-    renderer.clear();
-    //for (int stresstest {0}; stresstest < 20; stresstest++)
+    shader.setUniformMat4f("u_MVP", camera.update(deltaTime, *inputs));
+    shader.bindShader();
+
+    // for (int stresstest {0}; stresstest < 20; stresstest++)
     for (int ix {0}; ix < CHUNKRD; ix++)
         for (int iy {0}; iy < MAXHEIGHT; iy++)
             for (int iz {0}; iz < CHUNKRD; iz++)
-                renderer.drawVA(vaos[ix][iy][iz], vbos[ix][iy][iz], ibos[ix][iy][iz]);
+            {
+                if (chunkMeshes[ix][iy][iz].vertices.size() == 0)
+                    continue;
+                PT::drawVA(vaos[ix][iy][iz], ibos[ix][iy][iz]);
+            }
 }
 
 World::~World()
 {
+    delete atlas;
     #ifdef DEBUG
         ChunkMesh::printTimeStats();
     #endif // DEBUG

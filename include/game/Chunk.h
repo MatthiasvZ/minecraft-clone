@@ -9,9 +9,6 @@
 #define BLOCK_OAK_LOG 5
 #define BLOCK_OAK_LOG_OUTSIDE 6
 
-#include "gl/VertexArray.h"
-#include "gl/IndexBuffer.h"
-#include "gl/Shader.h"
 #include <string>
 
 

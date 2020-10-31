@@ -1,51 +1,40 @@
-#include "other/FileManagement.h"
-#include "gl/Window.h"
-#include "game/World.h"
-#include "gl/Shader.h"
-#include "gl/Texture.h"
-#include "gl/Camera.h"
+#include "Petroleum.h"
 
-#ifdef DEBUG
-#include "other/ErrorFeedback.h"
-#endif //DEBUG
+#include "game/World.h"
 
 #include <iostream>
-
+#include <cstring>
 
 int main()
 {
-    FileManagement::setWorkingDir();
-    FileManagement::createFolders();
+    PT::setDataDir(strcat(std::getenv("HOME"), "/.local/share/minecraft-clone"));
+    PT::Config cfg {PT::parseConfig()};
+    cfg.clear_colour = PT_SKY_BLUE;
+    cfg.msaa = 0;
+    PT::saveConfig(cfg);
 
-    Window window;
-
-    SourcePackage srcpkg(Shader::readFromFile("src/shaders/BasicTexVertex.glsl"), \
-                         Shader::readFromFile("src/shaders/BasicTexFragment.glsl"));
-    Shader shader(srcpkg);
-    shader.bindShader();
-    Texture kitten("assets/texAtlas.bmp", 0);
-    shader.setUniform1i("tex", 0);
+    PT::Window window(cfg);
+    PT::initGL(cfg);
+    window.changeTitle("Minecraft Clone");
 
     World world;
 
     float deltaTime = 0.0f;
-    float lastFrame = 0.0f;
+    float lastFrame = glfwGetTime();
     while (window.shouldRun())
     {
-        window.updateCamera(deltaTime);
         float currentFrame = glfwGetTime();
         deltaTime = currentFrame - lastFrame;
         lastFrame = currentFrame;
 
-        shader.setUniformMat4f("u_MVP", window.getMatrices());
+        PT::clearScreen();
 
-        world.drawChunks();
+        world.drawChunks(deltaTime, window.getInputs());
 
-        window.countfps();
-        window.updateWindow();
-
+        window.update();
+        PT::doEvents();
         #ifdef DEBUG
-            ErrorFeedback::getErrors();
+            PT::getGlErrors();
         #endif //DEBUG
     }
     return 0; // Destructors handle the rest
