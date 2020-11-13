@@ -26,6 +26,22 @@ ChunkMesh::ChunkMesh(const unsigned char (&blockIDs)[16][16][16], \
     m_PosZ = z;
     updateChunkMesh(blockIDs, nbrIDsAbove, nbrIDsBelow, nbrIDsLeft, \
                     nbrIDsRight, nbrIDsInFront, nbrIDsBehind);
+
+    empty = vertices.empty();
+    vertices.reserve(49152);
+    indices.reserve(16384);
+
+    vao = new PT::VertexArray();
+    vbo = new PT::VertexBuffer(vertices);
+    PT::VertexBufferLayout layout;
+    layout.push(GL_FLOAT, 3);
+    layout.push(GL_FLOAT, 1);
+    layout.push(GL_FLOAT, 2);
+    vao->addBuffer(*vbo, layout);
+    ibo = new PT::IndexBuffer(indices);
+
+    vertices.erase(vertices.begin(), vertices.end());
+    indices.erase(indices.begin(), indices.end());
 }
 
 
@@ -171,11 +187,19 @@ void ChunkMesh::addIndex(unsigned short a, unsigned short b, unsigned short c)
 void ChunkMesh::printTimeStats()
 {
     std::cout << "Debug: Average time generating a chunk mesh = " << timeGeneratingMeshes/totalMeshGens << "ms\n";
-    std::cout << "Debug: Time total spent generating chunk meshes = " << timeGeneratingMeshes << "ms\n";
+    std::cout << "Debug: Total time spent generating chunk meshes = " << timeGeneratingMeshes << "ms\n";
 }
 #endif // DEBUG
 
+
+void ChunkMesh::freeMemory()
+{
+    delete vao;
+    delete vbo;
+    delete ibo;
+}
+
 ChunkMesh::~ChunkMesh()
 {
-    //dtor
+
 }
