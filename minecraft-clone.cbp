@@ -59,8 +59,6 @@
 		<Unit filename="src/game/ChunkMesh.cpp" />
 		<Unit filename="src/game/Player.cpp" />
 		<Unit filename="src/game/World.cpp" />
-		<Unit filename="src/shaders/BasicTexFragment.glsl" />
-		<Unit filename="src/shaders/BasicTexVertex.glsl" />
 		<Unit filename="src/vendor/FastNoiseSIMD/FastNoiseSIMD.cpp" />
 		<Unit filename="src/vendor/FastNoiseSIMD/FastNoiseSIMD_avx2.cpp" />
 		<Unit filename="src/vendor/FastNoiseSIMD/FastNoiseSIMD_avx512.cpp" />
