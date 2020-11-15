@@ -37,6 +37,7 @@
 			</Target>
 		</Build>
 		<Compiler>
+			<Add option="-Wextra" />
 			<Add option="-Wall" />
 			<Add option="-std=c++20" />
 			<Add option="-Iinclude" />
@@ -51,6 +52,7 @@
 			<Add option="-lGLU" />
 			<Add option="-lGL" />
 			<Add option="libPetroleum.a" />
+			<Add option="-pthread" />
 		</Linker>
 		<Unit filename="Main.cpp" />
 		<Unit filename="include/game/Chunk.h" />

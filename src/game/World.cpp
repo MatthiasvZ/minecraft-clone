@@ -23,7 +23,7 @@ std::string getDir()
 }
 
 World::World()
-    : shader(PT::Shader(PT_SHADER_XYZBUV_M)), lock(0)
+    : shader(PT::Shader(PT_SHADER_XYZBUV_M)), lock(0), stop(0),GLOsMissing(0)
 {
     atlas = new PT::Texture(getDir() + "/assets/texAtlas.bmp", 0, GL_NEAREST, GL_NEAREST);
 
@@ -85,6 +85,8 @@ World::World()
             }
         }
     }
+
+    chunkLoader = new std::thread(&World::loadNewChunks, this);
 }
 
 void World::drawChunks(float deltaTime, PT::Input* inputs)
@@ -92,25 +94,32 @@ void World::drawChunks(float deltaTime, PT::Input* inputs)
     shader.setUniformMat4f("u_MVP", camera.update(deltaTime, *inputs));
     shader.bindShader();
 
-    //loadNewChunks();
-
     // for (int stresstest {0}; stresstest < 20; stresstest++)
-    for (int ix {0}; ix < CHUNKRD; ix++)
-        for (int iy {0}; iy < MAXHEIGHT; iy++)
-            for (int iz {0}; iz < CHUNKRD; iz++)
+    for (long unsigned int ix {0}; ix < chunkMeshes->size(); ix++)
+        for (long unsigned int iy {0}; iy < (*chunkMeshes)[ix].size(); iy++)
+            for (long unsigned int iz {0}; iz < (*chunkMeshes)[ix][iy].size(); iz++)
             {
-                if ((*chunkMeshes)[ix][iy][iz].isEmpty() || lock)
+                if ((*chunkMeshes)[ix][iy][iz].isEmpty())
                     continue;
-                 PT::drawVA(*(*chunkMeshes)[ix][iy][iz].getVA(), *(*chunkMeshes)[ix][iy][iz].getIBO());
+                while (lock || GLOsMissing) {
+                    if (GLOsMissing)
+                        createBufferObjects();
+                }
+                fprintf(stderr, "attempting draw. lock = %d, missing = %d, c = %d, %d, %d\n", lock, GLOsMissing, (*chunks)[ix][iy][iz].getPosition().x
+                         , (*chunks)[ix][iy][iz].getPosition().y, (*chunks)[ix][iy][iz].getPosition().z);
+                PT::drawVA(*(*chunkMeshes)[ix][iy][iz].getVA(), *(*chunkMeshes)[ix][iy][iz].getIBO());
             }
 }
 
 World::~World()
 {
+    stop = true;
+    chunkLoader->join();
+    delete chunkLoader;
     delete atlas;
     delete chunks;
     for (long unsigned int ix {0}; ix < chunkMeshes->size(); ix++)
-        for (int iy {0}; iy < MAXHEIGHT; iy++)
+        for (long unsigned int iy {0}; iy < (*chunkMeshes)[ix].size(); iy++)
             for (long unsigned int iz {0}; iz < (*chunkMeshes)[ix][iy].size(); iz++)
                 (*chunkMeshes)[ix][iy][iz].freeMemory();
     delete chunkMeshes;

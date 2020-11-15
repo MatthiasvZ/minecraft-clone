@@ -7,6 +7,12 @@
 #include "game/Chunk.h"
 #include "game/ChunkMesh.h"
 #include "Petroleum.h"
+#include <thread>
+
+#define PLUS_X 1
+#define MINUS_X 2
+#define PLUS_Z 3
+#define MINUS_Z 4
 
 inline std::vector<std::vector<std::vector<Chunk>>>* chunks;
 inline std::vector<std::vector<std::vector<ChunkMesh>>>* chunkMeshes;
@@ -30,6 +36,10 @@ class World
 
         void loadNewChunks();
         bool lock;
+        bool stop;
+        std::thread* chunkLoader;
+        unsigned int GLOsMissing;
+        void createBufferObjects();
 };
 
 #endif // WORLD_H

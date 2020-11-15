@@ -26,6 +26,11 @@
 // off every 'zix'.)
 //
 
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wmaybe-uninitialized"
+#pragma GCC diagnostic ignored "-Wunused-parameter"
+#pragma GCC diagnostic ignored "-Wimplicit-fallthrough"
+
 #include "vendor/FastNoiseSIMD/FastNoiseSIMD.h"
 #include <assert.h>
 
@@ -2417,3 +2422,5 @@ void SIMD_LEVEL_CLASS::FillSampledNoiseSet(float* noiseSet, FastNoiseVectorSet* 
 
 #undef SIMD_LEVEL
 #endif
+
+#pragma GCC diagnostic pop

@@ -37,5 +37,5 @@ int main()
             PT::getGlErrors();
         #endif //DEBUG
     }
-    return 0; // Destructors handle the rest
+    return 0;
 }

@@ -19,13 +19,14 @@ ChunkMesh::ChunkMesh(const unsigned char (&blockIDs)[16][16][16], \
                      const unsigned char (&nbrIDsRight)[16][16][16], \
                      const unsigned char (&nbrIDsInFront)[16][16][16], \
                      const unsigned char (&nbrIDsBehind)[16][16][16], \
-                     const int& x, const int& y, const int& z)
+                     const int& x, const int& y, const int& z, bool skipGL)
+    : firstrun (true)
 {
     m_PosX = x;
     m_PosY = y;
     m_PosZ = z;
     updateChunkMesh(blockIDs, nbrIDsAbove, nbrIDsBelow, nbrIDsLeft, \
-                    nbrIDsRight, nbrIDsInFront, nbrIDsBehind);
+                    nbrIDsRight, nbrIDsInFront, nbrIDsBehind, skipGL);
 }
 
 
@@ -35,10 +36,13 @@ void ChunkMesh::updateChunkMesh(const unsigned char (&blockIDs)[16][16][16], \
                                 const unsigned char (&nbrIDsLeft)[16][16][16], \
                                 const unsigned char (&nbrIDsRight)[16][16][16], \
                                 const unsigned char (&nbrIDsInFront)[16][16][16], \
-                                const unsigned char (&nbrIDsBehind)[16][16][16])
+                                const unsigned char (&nbrIDsBehind)[16][16][16], \
+                                bool skipGL)
 {
-    vertices.reserve(49152);
-    indices.reserve(16384);
+    vertices = new std::vector<float>();
+    vertices->reserve(49152);
+    indices = new std::vector<unsigned short>();
+    indices->reserve(16384);
     vertexCount = 0;
 
     #ifdef DEBUG
@@ -134,24 +138,60 @@ void ChunkMesh::updateChunkMesh(const unsigned char (&blockIDs)[16][16][16], \
         totalMeshGens++;
     #endif // DEBUG
 
-    empty = vertices.empty();
+    empty = vertices->empty();
 
-    vao->~VertexArray();
+    if (!skipGL)
+    {
+        if (!firstrun)
+        {
+            vao->remove();
+            vbo->remove();
+            ibo->remove();
+            delete vao;
+            delete vbo;
+            delete ibo;
+        }
+
+        vao = new PT::VertexArray();
+        vbo = new PT::VertexBuffer(*vertices);
+        PT::VertexBufferLayout layout;
+        layout.push(GL_FLOAT, 3);
+        layout.push(GL_FLOAT, 1);
+        layout.push(GL_FLOAT, 2);
+        vao->addBuffer(*vbo, layout);
+        ibo = new PT::IndexBuffer(*indices);
+
+        delete vertices;
+        delete indices;
+        firstrun = false;
+    }
+}
+
+void ChunkMesh::createGLOs()
+{
+    if (!firstrun)
+    {
+        vao->remove();
+        vbo->remove();
+        ibo->remove();
+        delete vao;
+        delete vbo;
+        delete ibo;
+    }
+
     vao = new PT::VertexArray();
-    vbo->~VertexBuffer();
-    vbo = new PT::VertexBuffer(vertices);
+    vbo = new PT::VertexBuffer(*vertices);
     PT::VertexBufferLayout layout;
     layout.push(GL_FLOAT, 3);
     layout.push(GL_FLOAT, 1);
     layout.push(GL_FLOAT, 2);
     vao->addBuffer(*vbo, layout);
-    ibo->~IndexBuffer();
-    ibo = new PT::IndexBuffer(indices);
+    ibo = new PT::IndexBuffer(*indices);
 
-    vertices.erase(vertices.begin(), vertices.end());
-    indices.erase(indices.begin(), indices.end());
+    delete vertices;
+    delete indices;
+    firstrun = false;
 }
-
 float ChunkMesh::getTexCoord(bool leftOrRight, unsigned char side, unsigned char blockID)
 {
     switch (blockID)
@@ -172,20 +212,20 @@ float ChunkMesh::getTexCoord(bool leftOrRight, unsigned char side, unsigned char
 
 void ChunkMesh::addVertex(float x, float y, float z, float l, float u, float v)
 {
-    vertices.push_back(x);
-    vertices.push_back(y);
-    vertices.push_back(z);
-    vertices.push_back(l);
-    vertices.push_back(u);
-    vertices.push_back(v);
+    vertices->push_back(x);
+    vertices->push_back(y);
+    vertices->push_back(z);
+    vertices->push_back(l);
+    vertices->push_back(u);
+    vertices->push_back(v);
     vertexCount++;
 }
 
 void ChunkMesh::addIndex(unsigned short a, unsigned short b, unsigned short c)
 {
-    indices.push_back(a);
-    indices.push_back(b);
-    indices.push_back(c);
+    indices->push_back(a);
+    indices->push_back(b);
+    indices->push_back(c);
 }
 
 #ifdef DEBUG
@@ -199,6 +239,9 @@ void ChunkMesh::printTimeStats()
 
 void ChunkMesh::freeMemory()
 {
+    vao->remove();
+    vbo->remove();
+    ibo->remove();
     delete vao;
     delete vbo;
     delete ibo;
@@ -206,5 +249,5 @@ void ChunkMesh::freeMemory()
 
 ChunkMesh::~ChunkMesh()
 {
-    fprintf(stderr, "test\n");
+
 }

@@ -2,79 +2,92 @@
 
 void World::loadNewChunks()
 {
-    /*fprintf(stderr, "x = %f\n", camera.getPosX());
-    fprintf(stderr, "y = %f\n", camera.getPosY());
-    fprintf(stderr, "z = %f\n\n", camera.getPosZ());*/
-
-    if (camera.getPosX() / 16 > (*chunks)[0][0][0].getPosition().x + CHUNKRD)
+    while(!stop)
     {
-        constexpr unsigned int x = CHUNKRD - 1;
+        /*fprintf(stderr, "x = %f\n", camera.getPosX());
+        fprintf(stderr, "y = %f\n", camera.getPosY());
+        fprintf(stderr, "z = %f\n\n", camera.getPosZ());*/
 
-        std::vector<std::vector<std::vector<Chunk>>>* tempChunks = new std::vector<std::vector<std::vector<Chunk>>>(CHUNKRD);
-        tempChunks->assign(chunks->begin() + 1, chunks->end());
-
-        tempChunks->push_back(std::vector<std::vector<Chunk>>());
-        (*tempChunks)[x].reserve(MAXHEIGHT);
-        for (int iy {0}; iy < MAXHEIGHT; iy++)
+        if (camera.getPosX() / 16 > (*chunks)[0][0][0].getPosition().x + CHUNKRD)
         {
-            (*tempChunks)[x].push_back(std::vector<Chunk>());
-            (*tempChunks)[x][iy].reserve(CHUNKRD);
-            for (int iz {0}; iz < CHUNKRD; iz++)
-                (*tempChunks)[x][iy].push_back(Chunk((*tempChunks)[x - 1][iy][iz].getPosition().x + 1, iy, iz));
-        }
+            fprintf(stderr, "starting load\n");
+            lock = true;
+            constexpr unsigned int x = CHUNKRD - 1;
 
+            chunks->erase(chunks->begin());
+            chunks->shrink_to_fit();
 
-        std::vector<std::vector<std::vector<ChunkMesh>>>* tempChunkMeshes = new std::vector<std::vector<std::vector<ChunkMesh>>>(CHUNKRD);
-        tempChunkMeshes->assign(chunkMeshes->begin() + 1, chunkMeshes->end());
-        tempChunkMeshes->push_back(std::vector<std::vector<ChunkMesh>>());
-
-        for (int iy {0}; iy < MAXHEIGHT; iy++)
-        {
-            (*tempChunkMeshes)[x].push_back(std::vector<ChunkMesh>());
-            (*tempChunkMeshes)[x][iy].reserve(CHUNKRD);
-
-            for (int iz {0}; iz < CHUNKRD; iz++)
+            chunks->push_back(std::vector<std::vector<Chunk>>());
+            (*chunks)[x].reserve(MAXHEIGHT);
+            for (int iy {0}; iy < MAXHEIGHT; iy++)
             {
-                (*tempChunkMeshes)[x][iy].push_back(ChunkMesh((*tempChunks)[x][iy][iz].m_BlockIDs, \
-                            iy == MAXHEIGHT-1 ? voidChunkIDs : (*tempChunks)[x][iy+1][iz].m_BlockIDs, \
-                            iy == 0 ? voidChunkIDs : (*tempChunks)[x][iy-1][iz].m_BlockIDs, \
-                            x == CHUNKRD-1 ? voidChunkIDs : (*tempChunks)[x+1][iy][iz].m_BlockIDs, \
-                            x == 0 ? voidChunkIDs : (*tempChunks)[x-1][iy][iz].m_BlockIDs, \
-                            iz == CHUNKRD-1 ? voidChunkIDs : (*tempChunks)[x][iy][iz+1].m_BlockIDs, \
-                            iz == 0 ? voidChunkIDs : (*tempChunks)[x][iy][iz-1].m_BlockIDs, \
-                            (*tempChunks)[x - 1][iy][iz].getPosition().x + 1, iy, iz));
-
-                (*tempChunkMeshes)[x - 1][iy][iz].updateChunkMesh((*tempChunks)[x - 1][iy][iz].m_BlockIDs, \
-                            iy == MAXHEIGHT-1 ? voidChunkIDs : (*tempChunks)[x - 1][iy+1][iz].m_BlockIDs, \
-                            iy == 0 ? voidChunkIDs : (*tempChunks)[x - 1][iy-1][iz].m_BlockIDs, \
-                            x - 1 == CHUNKRD-1 ? voidChunkIDs : (*tempChunks)[x - 1+1][iy][iz].m_BlockIDs, \
-                            x - 1 == 0 ? voidChunkIDs : (*tempChunks)[x - 1-1][iy][iz].m_BlockIDs, \
-                            iz == CHUNKRD-1 ? voidChunkIDs : (*tempChunks)[x - 1][iy][iz+1].m_BlockIDs, \
-                            iz == 0 ? voidChunkIDs : (*tempChunks)[x - 1][iy][iz-1].m_BlockIDs);
-
-                (*tempChunkMeshes)[0][iy][iz].updateChunkMesh((*tempChunks)[0][iy][iz].m_BlockIDs, \
-                            iy == MAXHEIGHT-1 ? voidChunkIDs : (*tempChunks)[0][iy+1][iz].m_BlockIDs, \
-                            iy == 0 ? voidChunkIDs : (*tempChunks)[0][iy-1][iz].m_BlockIDs, \
-                            0 == CHUNKRD-1 ? voidChunkIDs : (*tempChunks)[0+1][iy][iz].m_BlockIDs, \
-                            0 == 0 ? voidChunkIDs : (*tempChunks)[0-1][iy][iz].m_BlockIDs, \
-                            iz == CHUNKRD-1 ? voidChunkIDs : (*tempChunks)[0][iy][iz+1].m_BlockIDs, \
-                            iz == 0 ? voidChunkIDs : (*tempChunks)[0][iy][iz-1].m_BlockIDs);
+                (*chunks)[x].push_back(std::vector<Chunk>());
+                (*chunks)[x][iy].reserve(CHUNKRD);
+                for (int iz {0}; iz < CHUNKRD; iz++)
+                    (*chunks)[x][iy].push_back(Chunk((*chunks)[x - 1][iy][iz].getPosition().x + 1, iy, iz));
             }
-        }
 
-        lock = true;
-        for (int jx {0}; jx < CHUNKRD; ++jx)
+            lock = true;
             for (int jy {0}; jy < MAXHEIGHT; ++jy)
                 for (int jz {0}; jz < CHUNKRD; ++jz)
+                    (*chunkMeshes)[0][jy][jz].freeMemory();
+
+            chunkMeshes->erase(chunkMeshes->begin());
+            chunkMeshes->shrink_to_fit();
+
+            chunkMeshes->push_back(std::vector<std::vector<ChunkMesh>>());
+            for (int iy {0}; iy < MAXHEIGHT; iy++)
+            {
+                (*chunkMeshes)[x].push_back(std::vector<ChunkMesh>());
+                (*chunkMeshes)[x][iy].reserve(CHUNKRD);
+
+                for (int iz {0}; iz < CHUNKRD; iz++)
                 {
-                    //(*chunkMeshes)[jx][jy][jz].freeMemory();
-                    fprintf(stderr, "cm %d, %d, %d successfully freed\n", jx, jy, jz);
+                    (*chunkMeshes)[x][iy].push_back(ChunkMesh((*chunks)[x][iy][iz].m_BlockIDs, \
+                                iy == MAXHEIGHT-1 ? voidChunkIDs : (*chunks)[x][iy+1][iz].m_BlockIDs, \
+                                iy == 0 ? voidChunkIDs : (*chunks)[x][iy-1][iz].m_BlockIDs, \
+                                x == CHUNKRD-1 ? voidChunkIDs : (*chunks)[x+1][iy][iz].m_BlockIDs, \
+                                x == 0 ? voidChunkIDs : (*chunks)[x-1][iy][iz].m_BlockIDs, \
+                                iz == CHUNKRD-1 ? voidChunkIDs : (*chunks)[x][iy][iz+1].m_BlockIDs, \
+                                iz == 0 ? voidChunkIDs : (*chunks)[x][iy][iz-1].m_BlockIDs, \
+                                (*chunks)[x - 1][iy][iz].getPosition().x + 1, iy, iz, true));
+
+                    (*chunkMeshes)[x - 1][iy][iz].updateChunkMesh((*chunks)[x - 1][iy][iz].m_BlockIDs, \
+                                iy == MAXHEIGHT-1 ? voidChunkIDs : (*chunks)[x - 1][iy+1][iz].m_BlockIDs, \
+                                iy == 0 ? voidChunkIDs : (*chunks)[x - 1][iy-1][iz].m_BlockIDs, \
+                                x - 1 == CHUNKRD-1 ? voidChunkIDs : (*chunks)[x - 1+1][iy][iz].m_BlockIDs, \
+                                x - 1 == 0 ? voidChunkIDs : (*chunks)[x - 1-1][iy][iz].m_BlockIDs, \
+                                iz == CHUNKRD-1 ? voidChunkIDs : (*chunks)[x - 1][iy][iz+1].m_BlockIDs, \
+                                iz == 0 ? voidChunkIDs : (*chunks)[x - 1][iy][iz-1].m_BlockIDs, true);
+
+                    (*chunkMeshes)[0][iy][iz].updateChunkMesh((*chunks)[0][iy][iz].m_BlockIDs, \
+                                iy == MAXHEIGHT-1 ? voidChunkIDs : (*chunks)[0][iy+1][iz].m_BlockIDs, \
+                                iy == 0 ? voidChunkIDs : (*chunks)[0][iy-1][iz].m_BlockIDs, \
+                                0 == CHUNKRD-1 ? voidChunkIDs : (*chunks)[0+1][iy][iz].m_BlockIDs, \
+                                0 == 0 ? voidChunkIDs : (*chunks)[0-1][iy][iz].m_BlockIDs, \
+                                iz == CHUNKRD-1 ? voidChunkIDs : (*chunks)[0][iy][iz+1].m_BlockIDs, \
+                                iz == 0 ? voidChunkIDs : (*chunks)[0][iy][iz-1].m_BlockIDs, true);
                 }
-        delete chunks;
-        chunks = tempChunks;
-        delete chunkMeshes;
-        chunkMeshes = tempChunkMeshes;
-        lock = false;
-        fprintf(stderr, "New chunk row loaded!\n");
+            }
+            GLOsMissing = PLUS_X;
+            lock = false;
+            fprintf(stderr, "finished load");
+        }
+    }
+}
+
+void World::createBufferObjects()
+{
+    if (GLOsMissing == PLUS_X)
+    {
+        for (int iy {0}; iy < MAXHEIGHT; iy++)
+            for (int iz {0}; iz < CHUNKRD; iz++)
+                {
+                    (*chunkMeshes)[CHUNKRD - 1][iy][iz].createGLOs();
+                    (*chunkMeshes)[CHUNKRD - 2][iy][iz].createGLOs();
+                    (*chunkMeshes)[0][iy][iz].createGLOs();
+                }
+        GLOsMissing = false;
+        fprintf(stderr, "tst\n");
     }
 }

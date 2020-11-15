@@ -12,11 +12,11 @@ LD = g++
 WINDRES = windres
 
 INC = 
-CFLAGS = -Wall -std=c++20 -Iinclude -fexceptions -pipe -march=native
+CFLAGS = -Wextra -Wall -std=c++20 -Iinclude -fexceptions -pipe -march=native
 RESINC = 
 LIBDIR = 
 LIB = 
-LDFLAGS = -lglfw -lGLEW -lX11 -lGLU -lGL libPetroleum.a
+LDFLAGS = -lglfw -lGLEW -lX11 -lGLU -lGL libPetroleum.a -pthread
 
 INC_DEBUG = $(INC) -Iinclude/game/ -Iinclude/optimisation
 CFLAGS_DEBUG = $(CFLAGS) -Og -g -DDEBUG
