@@ -324,6 +324,15 @@ class Camera
         inline void setSpeedH(float s) { movFacH = s; }
         inline void setSpeedV(float s) { movFacV = s; }
         inline void setMouseSpeed(float s) { turnSpeed = s; }
+    	
+	inline void setPosX(float x) { camPos[0] = x; }
+	inline void setPosY(float y) { camPos[1] = y; }	
+	inline void setPosZ(float z) { camPos[2] = z; }
+
+	inline float getPosX() { return camPos[0]; }
+	inline float getPosY() { return camPos[1]; }
+	inline float getPosZ() { return camPos[2]; }
+
     private:
         float drawDistance;
         float movFacH;

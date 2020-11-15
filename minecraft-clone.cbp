@@ -15,6 +15,8 @@
 					<Add option="-Og" />
 					<Add option="-g" />
 					<Add option="-DDEBUG" />
+					<Add directory="include/game/" />
+					<Add directory="include/optimisation" />
 				</Compiler>
 			</Target>
 			<Target title="Release">
@@ -25,6 +27,8 @@
 				<Compiler>
 					<Add option="-flto" />
 					<Add option="-Ofast" />
+					<Add directory="include/game/" />
+					<Add directory="include/optimisation" />
 				</Compiler>
 				<Linker>
 					<Add option="-flto" />
@@ -56,6 +60,7 @@
 		<Unit filename="include/vendor/FastNoiseSIMD/FastNoiseSIMD.h" />
 		<Unit filename="include/vendor/FastNoiseSIMD/FastNoiseSIMD_internal.h" />
 		<Unit filename="src/game/Chunk.cpp" />
+		<Unit filename="src/game/ChunkLoading.cpp" />
 		<Unit filename="src/game/ChunkMesh.cpp" />
 		<Unit filename="src/game/Player.cpp" />
 		<Unit filename="src/game/World.cpp" />
@@ -67,8 +72,6 @@
 		<Unit filename="src/vendor/FastNoiseSIMD/FastNoiseSIMD_sse41.cpp" />
 		<Extensions>
 			<lib_finder disable_auto="1" />
-			<code_completion />
-			<debugger />
 		</Extensions>
 	</Project>
 </CodeBlocks_project_file>

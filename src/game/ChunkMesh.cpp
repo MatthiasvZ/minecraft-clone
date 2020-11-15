@@ -26,22 +26,6 @@ ChunkMesh::ChunkMesh(const unsigned char (&blockIDs)[16][16][16], \
     m_PosZ = z;
     updateChunkMesh(blockIDs, nbrIDsAbove, nbrIDsBelow, nbrIDsLeft, \
                     nbrIDsRight, nbrIDsInFront, nbrIDsBehind);
-
-    empty = vertices.empty();
-    vertices.reserve(49152);
-    indices.reserve(16384);
-
-    vao = new PT::VertexArray();
-    vbo = new PT::VertexBuffer(vertices);
-    PT::VertexBufferLayout layout;
-    layout.push(GL_FLOAT, 3);
-    layout.push(GL_FLOAT, 1);
-    layout.push(GL_FLOAT, 2);
-    vao->addBuffer(*vbo, layout);
-    ibo = new PT::IndexBuffer(indices);
-
-    vertices.erase(vertices.begin(), vertices.end());
-    indices.erase(indices.begin(), indices.end());
 }
 
 
@@ -53,6 +37,10 @@ void ChunkMesh::updateChunkMesh(const unsigned char (&blockIDs)[16][16][16], \
                                 const unsigned char (&nbrIDsInFront)[16][16][16], \
                                 const unsigned char (&nbrIDsBehind)[16][16][16])
 {
+    vertices.reserve(49152);
+    indices.reserve(16384);
+    vertexCount = 0;
+
     #ifdef DEBUG
         auto t_start = std::chrono::high_resolution_clock::now();
     #endif // DEBUG
@@ -145,6 +133,23 @@ void ChunkMesh::updateChunkMesh(const unsigned char (&blockIDs)[16][16][16], \
         timeGeneratingMeshes += std::chrono::duration_cast<std::chrono::duration<float>>(std::chrono::high_resolution_clock::now() - t_start).count()*1000;
         totalMeshGens++;
     #endif // DEBUG
+
+    empty = vertices.empty();
+
+    vao->~VertexArray();
+    vao = new PT::VertexArray();
+    vbo->~VertexBuffer();
+    vbo = new PT::VertexBuffer(vertices);
+    PT::VertexBufferLayout layout;
+    layout.push(GL_FLOAT, 3);
+    layout.push(GL_FLOAT, 1);
+    layout.push(GL_FLOAT, 2);
+    vao->addBuffer(*vbo, layout);
+    ibo->~IndexBuffer();
+    ibo = new PT::IndexBuffer(indices);
+
+    vertices.erase(vertices.begin(), vertices.end());
+    indices.erase(indices.begin(), indices.end());
 }
 
 float ChunkMesh::getTexCoord(bool leftOrRight, unsigned char side, unsigned char blockID)
@@ -201,5 +206,5 @@ void ChunkMesh::freeMemory()
 
 ChunkMesh::~ChunkMesh()
 {
-
+    fprintf(stderr, "test\n");
 }

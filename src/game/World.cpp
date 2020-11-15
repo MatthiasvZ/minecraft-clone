@@ -9,10 +9,6 @@
 #include <filesystem>
 #include <unistd.h>
 
-std::vector<std::vector<std::vector<Chunk>>>* chunks;
-std::vector<std::vector<std::vector<ChunkMesh>>>* chunkMeshes;
-PT::Texture* atlas;
-
 std::string getDir()
 {
     char result[ PATH_MAX ];
@@ -27,10 +23,15 @@ std::string getDir()
 }
 
 World::World()
-    : shader(PT::Shader(PT_SHADER_XYZBUV_M))
+    : shader(PT::Shader(PT_SHADER_XYZBUV_M)), lock(0)
 {
     atlas = new PT::Texture(getDir() + "/assets/texAtlas.bmp", 0, GL_NEAREST, GL_NEAREST);
+
     camera.setDrawDistance(1000.0f);
+    camera.setPosX(CHUNKRD * 8);
+    camera.setPosY(80);
+    camera.setPosZ(CHUNKRD * 8);
+    camera.setSpeedH(100);
 
     struct stat buffer;
     if (stat ("saves", &buffer) != 0)
@@ -41,7 +42,6 @@ World::World()
     chunks->reserve(CHUNKRD);
     chunkMeshes->reserve(CHUNKRD);
 
-    unsigned char voidChunkIDs[16][16][16];
     for (int ix {0}; ix < 16; ix++)
         for (int iy {0}; iy < 16; iy++)
             for (int iz {0}; iz < 16; iz++)
@@ -92,14 +92,16 @@ void World::drawChunks(float deltaTime, PT::Input* inputs)
     shader.setUniformMat4f("u_MVP", camera.update(deltaTime, *inputs));
     shader.bindShader();
 
+    //loadNewChunks();
+
     // for (int stresstest {0}; stresstest < 20; stresstest++)
     for (int ix {0}; ix < CHUNKRD; ix++)
         for (int iy {0}; iy < MAXHEIGHT; iy++)
             for (int iz {0}; iz < CHUNKRD; iz++)
             {
-                if ((*chunkMeshes)[ix][iy][iz].isEmpty())
+                if ((*chunkMeshes)[ix][iy][iz].isEmpty() || lock)
                     continue;
-                PT::drawVA(*(*chunkMeshes)[ix][iy][iz].getVA(), *(*chunkMeshes)[ix][iy][iz].getIBO());
+                 PT::drawVA(*(*chunkMeshes)[ix][iy][iz].getVA(), *(*chunkMeshes)[ix][iy][iz].getIBO());
             }
 }
 
@@ -107,9 +109,9 @@ World::~World()
 {
     delete atlas;
     delete chunks;
-    for (int ix {0}; ix < CHUNKRD; ix++)
+    for (long unsigned int ix {0}; ix < chunkMeshes->size(); ix++)
         for (int iy {0}; iy < MAXHEIGHT; iy++)
-            for (int iz {0}; iz < CHUNKRD; iz++)
+            for (long unsigned int iz {0}; iz < (*chunkMeshes)[ix][iy].size(); iz++)
                 (*chunkMeshes)[ix][iy][iz].freeMemory();
     delete chunkMeshes;
     #ifdef DEBUG

@@ -18,7 +18,7 @@ LIBDIR =
 LIB = 
 LDFLAGS = -lglfw -lGLEW -lX11 -lGLU -lGL libPetroleum.a
 
-INC_DEBUG = $(INC)
+INC_DEBUG = $(INC) -Iinclude/game/ -Iinclude/optimisation
 CFLAGS_DEBUG = $(CFLAGS) -Og -g -DDEBUG
 RESINC_DEBUG = $(RESINC)
 RCFLAGS_DEBUG = $(RCFLAGS)
@@ -29,7 +29,7 @@ OBJDIR_DEBUG = obj/Debug
 DEP_DEBUG = 
 OUT_DEBUG = bin/Debug/minecraft-clone
 
-INC_RELEASE = $(INC)
+INC_RELEASE = $(INC) -Iinclude/game/ -Iinclude/optimisation
 CFLAGS_RELEASE = $(CFLAGS) -flto -Ofast
 RESINC_RELEASE = $(RESINC)
 RCFLAGS_RELEASE = $(RCFLAGS)
@@ -40,9 +40,9 @@ OBJDIR_RELEASE = obj
 DEP_RELEASE = 
 OUT_RELEASE = bin/minecraft-clone
 
-OBJ_DEBUG = $(OBJDIR_DEBUG)/src/game/Player.o $(OBJDIR_DEBUG)/src/vendor/FastNoiseSIMD/FastNoiseSIMD_sse41.o $(OBJDIR_DEBUG)/src/vendor/FastNoiseSIMD/FastNoiseSIMD_sse2.o $(OBJDIR_DEBUG)/src/vendor/FastNoiseSIMD/FastNoiseSIMD_internal.o $(OBJDIR_DEBUG)/src/vendor/FastNoiseSIMD/FastNoiseSIMD_avx512.o $(OBJDIR_DEBUG)/src/vendor/FastNoiseSIMD/FastNoiseSIMD_avx2.o $(OBJDIR_DEBUG)/src/vendor/FastNoiseSIMD/FastNoiseSIMD.o $(OBJDIR_DEBUG)/src/game/World.o $(OBJDIR_DEBUG)/Main.o $(OBJDIR_DEBUG)/src/game/ChunkMesh.o $(OBJDIR_DEBUG)/src/game/Chunk.o
+OBJ_DEBUG = $(OBJDIR_DEBUG)/src/game/ChunkMesh.o $(OBJDIR_DEBUG)/src/vendor/FastNoiseSIMD/FastNoiseSIMD_sse41.o $(OBJDIR_DEBUG)/src/vendor/FastNoiseSIMD/FastNoiseSIMD_sse2.o $(OBJDIR_DEBUG)/src/vendor/FastNoiseSIMD/FastNoiseSIMD_internal.o $(OBJDIR_DEBUG)/src/vendor/FastNoiseSIMD/FastNoiseSIMD_avx512.o $(OBJDIR_DEBUG)/src/vendor/FastNoiseSIMD/FastNoiseSIMD_avx2.o $(OBJDIR_DEBUG)/src/vendor/FastNoiseSIMD/FastNoiseSIMD.o $(OBJDIR_DEBUG)/src/game/World.o $(OBJDIR_DEBUG)/src/game/Player.o $(OBJDIR_DEBUG)/Main.o $(OBJDIR_DEBUG)/src/game/ChunkLoading.o $(OBJDIR_DEBUG)/src/game/Chunk.o
 
-OBJ_RELEASE = $(OBJDIR_RELEASE)/src/game/Player.o $(OBJDIR_RELEASE)/src/vendor/FastNoiseSIMD/FastNoiseSIMD_sse41.o $(OBJDIR_RELEASE)/src/vendor/FastNoiseSIMD/FastNoiseSIMD_sse2.o $(OBJDIR_RELEASE)/src/vendor/FastNoiseSIMD/FastNoiseSIMD_internal.o $(OBJDIR_RELEASE)/src/vendor/FastNoiseSIMD/FastNoiseSIMD_avx512.o $(OBJDIR_RELEASE)/src/vendor/FastNoiseSIMD/FastNoiseSIMD_avx2.o $(OBJDIR_RELEASE)/src/vendor/FastNoiseSIMD/FastNoiseSIMD.o $(OBJDIR_RELEASE)/src/game/World.o $(OBJDIR_RELEASE)/Main.o $(OBJDIR_RELEASE)/src/game/ChunkMesh.o $(OBJDIR_RELEASE)/src/game/Chunk.o
+OBJ_RELEASE = $(OBJDIR_RELEASE)/src/game/ChunkMesh.o $(OBJDIR_RELEASE)/src/vendor/FastNoiseSIMD/FastNoiseSIMD_sse41.o $(OBJDIR_RELEASE)/src/vendor/FastNoiseSIMD/FastNoiseSIMD_sse2.o $(OBJDIR_RELEASE)/src/vendor/FastNoiseSIMD/FastNoiseSIMD_internal.o $(OBJDIR_RELEASE)/src/vendor/FastNoiseSIMD/FastNoiseSIMD_avx512.o $(OBJDIR_RELEASE)/src/vendor/FastNoiseSIMD/FastNoiseSIMD_avx2.o $(OBJDIR_RELEASE)/src/vendor/FastNoiseSIMD/FastNoiseSIMD.o $(OBJDIR_RELEASE)/src/game/World.o $(OBJDIR_RELEASE)/src/game/Player.o $(OBJDIR_RELEASE)/Main.o $(OBJDIR_RELEASE)/src/game/ChunkLoading.o $(OBJDIR_RELEASE)/src/game/Chunk.o
 
 all: debug release
 
@@ -61,8 +61,8 @@ debug: before_debug out_debug after_debug
 out_debug: before_debug $(OBJ_DEBUG) $(DEP_DEBUG)
 	$(LD) $(LIBDIR_DEBUG) -o $(OUT_DEBUG) $(OBJ_DEBUG)  $(LDFLAGS_DEBUG) $(LIB_DEBUG)
 
-$(OBJDIR_DEBUG)/src/game/Player.o: src/game/Player.cpp
-	$(CXX) $(CFLAGS_DEBUG) $(INC_DEBUG) -c src/game/Player.cpp -o $(OBJDIR_DEBUG)/src/game/Player.o
+$(OBJDIR_DEBUG)/src/game/ChunkMesh.o: src/game/ChunkMesh.cpp
+	$(CXX) $(CFLAGS_DEBUG) $(INC_DEBUG) -c src/game/ChunkMesh.cpp -o $(OBJDIR_DEBUG)/src/game/ChunkMesh.o
 
 $(OBJDIR_DEBUG)/src/vendor/FastNoiseSIMD/FastNoiseSIMD_sse41.o: src/vendor/FastNoiseSIMD/FastNoiseSIMD_sse41.cpp
 	$(CXX) $(CFLAGS_DEBUG) $(INC_DEBUG) -c src/vendor/FastNoiseSIMD/FastNoiseSIMD_sse41.cpp -o $(OBJDIR_DEBUG)/src/vendor/FastNoiseSIMD/FastNoiseSIMD_sse41.o
@@ -85,11 +85,14 @@ $(OBJDIR_DEBUG)/src/vendor/FastNoiseSIMD/FastNoiseSIMD.o: src/vendor/FastNoiseSI
 $(OBJDIR_DEBUG)/src/game/World.o: src/game/World.cpp
 	$(CXX) $(CFLAGS_DEBUG) $(INC_DEBUG) -c src/game/World.cpp -o $(OBJDIR_DEBUG)/src/game/World.o
 
+$(OBJDIR_DEBUG)/src/game/Player.o: src/game/Player.cpp
+	$(CXX) $(CFLAGS_DEBUG) $(INC_DEBUG) -c src/game/Player.cpp -o $(OBJDIR_DEBUG)/src/game/Player.o
+
 $(OBJDIR_DEBUG)/Main.o: Main.cpp
 	$(CXX) $(CFLAGS_DEBUG) $(INC_DEBUG) -c Main.cpp -o $(OBJDIR_DEBUG)/Main.o
 
-$(OBJDIR_DEBUG)/src/game/ChunkMesh.o: src/game/ChunkMesh.cpp
-	$(CXX) $(CFLAGS_DEBUG) $(INC_DEBUG) -c src/game/ChunkMesh.cpp -o $(OBJDIR_DEBUG)/src/game/ChunkMesh.o
+$(OBJDIR_DEBUG)/src/game/ChunkLoading.o: src/game/ChunkLoading.cpp
+	$(CXX) $(CFLAGS_DEBUG) $(INC_DEBUG) -c src/game/ChunkLoading.cpp -o $(OBJDIR_DEBUG)/src/game/ChunkLoading.o
 
 $(OBJDIR_DEBUG)/src/game/Chunk.o: src/game/Chunk.cpp
 	$(CXX) $(CFLAGS_DEBUG) $(INC_DEBUG) -c src/game/Chunk.cpp -o $(OBJDIR_DEBUG)/src/game/Chunk.o
@@ -114,8 +117,8 @@ release: before_release out_release after_release
 out_release: before_release $(OBJ_RELEASE) $(DEP_RELEASE)
 	$(LD) $(LIBDIR_RELEASE) -o $(OUT_RELEASE) $(OBJ_RELEASE)  $(LDFLAGS_RELEASE) $(LIB_RELEASE)
 
-$(OBJDIR_RELEASE)/src/game/Player.o: src/game/Player.cpp
-	$(CXX) $(CFLAGS_RELEASE) $(INC_RELEASE) -c src/game/Player.cpp -o $(OBJDIR_RELEASE)/src/game/Player.o
+$(OBJDIR_RELEASE)/src/game/ChunkMesh.o: src/game/ChunkMesh.cpp
+	$(CXX) $(CFLAGS_RELEASE) $(INC_RELEASE) -c src/game/ChunkMesh.cpp -o $(OBJDIR_RELEASE)/src/game/ChunkMesh.o
 
 $(OBJDIR_RELEASE)/src/vendor/FastNoiseSIMD/FastNoiseSIMD_sse41.o: src/vendor/FastNoiseSIMD/FastNoiseSIMD_sse41.cpp
 	$(CXX) $(CFLAGS_RELEASE) $(INC_RELEASE) -c src/vendor/FastNoiseSIMD/FastNoiseSIMD_sse41.cpp -o $(OBJDIR_RELEASE)/src/vendor/FastNoiseSIMD/FastNoiseSIMD_sse41.o
@@ -138,11 +141,14 @@ $(OBJDIR_RELEASE)/src/vendor/FastNoiseSIMD/FastNoiseSIMD.o: src/vendor/FastNoise
 $(OBJDIR_RELEASE)/src/game/World.o: src/game/World.cpp
 	$(CXX) $(CFLAGS_RELEASE) $(INC_RELEASE) -c src/game/World.cpp -o $(OBJDIR_RELEASE)/src/game/World.o
 
+$(OBJDIR_RELEASE)/src/game/Player.o: src/game/Player.cpp
+	$(CXX) $(CFLAGS_RELEASE) $(INC_RELEASE) -c src/game/Player.cpp -o $(OBJDIR_RELEASE)/src/game/Player.o
+
 $(OBJDIR_RELEASE)/Main.o: Main.cpp
 	$(CXX) $(CFLAGS_RELEASE) $(INC_RELEASE) -c Main.cpp -o $(OBJDIR_RELEASE)/Main.o
 
-$(OBJDIR_RELEASE)/src/game/ChunkMesh.o: src/game/ChunkMesh.cpp
-	$(CXX) $(CFLAGS_RELEASE) $(INC_RELEASE) -c src/game/ChunkMesh.cpp -o $(OBJDIR_RELEASE)/src/game/ChunkMesh.o
+$(OBJDIR_RELEASE)/src/game/ChunkLoading.o: src/game/ChunkLoading.cpp
+	$(CXX) $(CFLAGS_RELEASE) $(INC_RELEASE) -c src/game/ChunkLoading.cpp -o $(OBJDIR_RELEASE)/src/game/ChunkLoading.o
 
 $(OBJDIR_RELEASE)/src/game/Chunk.o: src/game/Chunk.cpp
 	$(CXX) $(CFLAGS_RELEASE) $(INC_RELEASE) -c src/game/Chunk.cpp -o $(OBJDIR_RELEASE)/src/game/Chunk.o
