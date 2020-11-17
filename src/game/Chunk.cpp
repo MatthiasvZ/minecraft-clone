@@ -6,7 +6,8 @@
 #include <fstream>
 #include <GL/glew.h>
 
-#include "vendor/FastNoiseSIMD/FastNoiseSIMD.h"
+#include "../../include/vendor/FastNoiseLite.h"
+#include "Biome.h"
 
 #ifdef DEBUG
     #include <iostream>
@@ -18,7 +19,7 @@ Chunk::Chunk(int x, int y, int z)
     m_PosX = x;
     m_PosY = y;
     m_PosZ = z;
-    if (!chunkExists())
+    if (!chunkExists() || true)
         generate();
     else
         readFromFile();
@@ -67,23 +68,57 @@ Positioni Chunk::getPosition()
 
 void Chunk::generate()
 {
-    FastNoiseSIMD* noise = FastNoiseSIMD::NewFastNoiseSIMD(World::getSeed());
-    float pnoise[16][20][16];
+    FastNoiseLite noise;
+    noise.SetNoiseType(FastNoiseLite::NoiseType_Perlin);
+    noise.SetSeed(World::getSeed());
+    noise.SetFrequency(0.01f);
+    float pnoise[16][16];
     for (int ix {0}; ix < 16; ix++)
     {
-        for (int iy {0}; iy < 20; iy++)
+        for (int iz {0}; iz < 16; iz++)
         {
-            for (int iz {0}; iz < 16; iz++)
-            {
-                float* temp = noise->GetPerlinSet(m_PosX*16 + ix, m_PosY*16 + iy, m_PosZ*16 + iz, 1, 1, 1);
-                float* temp2 = noise->GetPerlinSet(m_PosX*16 + ix + 420, m_PosY*16 + iy + 420, m_PosZ*16 + iz + 420, 1, 1, 1);
-                pnoise[ix][iy][iz] = temp[0]*20 + temp2[0]*20 + 55;
-                delete temp;
-                delete temp2;
-            }
+            pnoise[ix][iz] = (noise.GetNoise(static_cast<float>(m_PosX*16 + ix), static_cast<float>(m_PosZ*16 + iz)) +
+                             noise.GetNoise(static_cast<float>(m_PosX*16 + ix + 42), static_cast<float>(m_PosZ*16 + iz)) * 2 +
+                             noise.GetNoise(static_cast<float>(m_PosX*16 + ix + 420), static_cast<float>(m_PosZ*16 + iz)) * 4) / 7;
         }
     }
 
+    noise.SetNoiseType(FastNoiseLite::NoiseType_Cellular);
+    noise.SetFrequency(0.002f);
+    noise.SetCellularDistanceFunction(FastNoiseLite::CellularDistanceFunction_Hybrid);
+    noise.SetCellularJitter(1.0f);
+    noise.SetDomainWarpType(FastNoiseLite::DomainWarpType_OpenSimplex2);
+    noise.SetDomainWarpAmp(100.0f);
+    noise.SetFractalType(FastNoiseLite::FractalType_DomainWarpIndependent);
+    noise.SetFractalOctaves(3);
+    noise.SetFractalLacunarity(2.00f);
+    noise.SetFractalGain(0.50f);
+
+    float bnoise[16][16];
+    for (int ix {0}; ix < 16; ix++)
+    {
+        for (int iz {0}; iz < 16; iz++)
+        {
+            float posX = static_cast<float>(m_PosX*16 + ix);
+            float posZ = static_cast<float>(m_PosZ*16 + iz);
+            noise.DomainWarp(posX, posZ);
+            bnoise[ix][iz] = noise.GetNoise(posX, posZ);
+        }
+    }
+
+
+    for (int ix {0}; ix < 16; ++ix)
+    {
+        for (int iz {0}; iz < 16; ++iz)
+        {
+            if (bnoise[ix][iz] > 0.0f)
+                m_BiomeIDs[ix][iz] = BIOME_GRASSLANDS;
+            else if (bnoise[ix][iz] > -0.5f)
+                m_BiomeIDs[ix][iz] = BIOME_FOREST;
+            else
+                m_BiomeIDs[ix][iz] = BIOME_DESERT;
+        }
+    }
 
     for (int ix {0}; ix < 16; ix++)
     {
@@ -91,12 +126,21 @@ void Chunk::generate()
         {
             for (int iz {0}; iz < 16; iz++)
             {
-                if (pnoise[ix][iy][iz] > m_PosY*16 + iy)
+                if (pnoise[ix][iz] > static_cast<float>(m_PosY*16 + iy) / biomeBumpiness(m_BiomeIDs[ix][iz]) - biomeHeight(m_BiomeIDs[ix][iz]))
                 {
-                    if (pnoise[ix][iy + 1][iz] < m_PosY*16 + iy+1)
-                        m_BlockIDs[ix][iy][iz] = BLOCK_GRASS;
-                    else if (pnoise[ix][iy + 4][iz] < m_PosY*16 + iy+4.5f)
-                        m_BlockIDs[ix][iy][iz] = BLOCK_DIRT;
+
+                    if (pnoise[ix][iz] < static_cast<float>(m_PosY*16 + iy + 1) / biomeBumpiness(m_BiomeIDs[ix][iz]) - biomeHeight(m_BiomeIDs[ix][iz]))
+                        m_BlockIDs[ix][iy][iz] = biomePalTop(m_BiomeIDs[ix][iz]);
+                    else if (pnoise[ix][iz] < static_cast<float>(m_PosY*16 + iy + biomeDirtHeight(m_BiomeIDs[ix][iz])) / biomeBumpiness(m_BiomeIDs[ix][iz]) - biomeHeight(m_BiomeIDs[ix][iz]))
+                        m_BlockIDs[ix][iy][iz] = biomePalDirt(m_BiomeIDs[ix][iz]);
+
+                    else if (pnoise[ix][iz] < static_cast<float>(m_PosY*16 + iy + 1 - 3) / biomeBumpiness(m_BiomeIDs[ix][iz]) - biomeHeight(m_BiomeIDs[ix][iz]))
+                    {
+                        if (biomePlaceTree(m_BiomeIDs[ix][iz], bnoise[ix][iz]))
+                            m_BlockIDs[ix][iy][iz] = BLOCK_OAK_LOG;
+                        else
+                            m_BlockIDs[ix][iy][iz] = BLOCK_OAK_LOG;
+                    }
                     else
                         m_BlockIDs[ix][iy][iz] = BLOCK_STONE;
                 }
@@ -105,7 +149,8 @@ void Chunk::generate()
             }
         }
     }
-    delete noise;
+
+
 }
 
 Chunk::~Chunk()

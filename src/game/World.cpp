@@ -1,8 +1,5 @@
 #include "game/World.h"
 
-#define CHUNKRD 16     // 256 blocks render distance
-#define MAXHEIGHT 8    // 128 block height max.
-
 #include <vector>
 #include <iostream>
 #include <sys/stat.h>
@@ -27,7 +24,7 @@ World::World()
 {
     atlas = new PT::Texture(getDir() + "/assets/texAtlas.bmp", 0, GL_NEAREST, GL_NEAREST);
 
-    camera.setDrawDistance(1000.0f);
+    camera.setClippingDistance(1000.0f);
     camera.setPosX(CHUNKRD * 8);
     camera.setPosY(80);
     camera.setPosZ(CHUNKRD * 8);
@@ -39,8 +36,8 @@ World::World()
 
     chunks = new std::vector<std::vector<std::vector<Chunk>>>();
     chunkMeshes = new std::vector<std::vector<std::vector<ChunkMesh>>>();
-    chunks->reserve(CHUNKRD);
-    chunkMeshes->reserve(CHUNKRD);
+    chunks->reserve(CHUNKRD + 1);
+    chunkMeshes->reserve(CHUNKRD + 1);
 
     for (int ix {0}; ix < 16; ix++)
         for (int iy {0}; iy < 16; iy++)
@@ -89,24 +86,31 @@ World::World()
     chunkLoader = new std::thread(&World::loadNewChunks, this);
 }
 
-void World::drawChunks(float deltaTime, PT::Input* inputs)
+void World::drawChunks(float deltaTime, PT::Input* inputs, bool mouseLocked)
 {
     shader.setUniformMat4f("u_MVP", camera.update(deltaTime, *inputs));
     shader.bindShader();
+    if (!mouseLocked)
+        camera.setMouseSpeed(0.0f);
+    else
+        camera.setMouseSpeed(0.35f);
+
 
     // for (int stresstest {0}; stresstest < 20; stresstest++)
-    for (long unsigned int ix {0}; ix < chunkMeshes->size(); ix++)
-        for (long unsigned int iy {0}; iy < (*chunkMeshes)[ix].size(); iy++)
-            for (long unsigned int iz {0}; iz < (*chunkMeshes)[ix][iy].size(); iz++)
+    for (long unsigned int ix {0}; ix < CHUNKRD; ix++)
+        for (long unsigned int iy {0}; iy < MAXHEIGHT; iy++)
+            for (long unsigned int iz {0}; iz < CHUNKRD; iz++)
             {
                 if ((*chunkMeshes)[ix][iy][iz].isEmpty())
                     continue;
-                while (lock || GLOsMissing) {
+                while (lock || GLOsMissing)
                     if (GLOsMissing)
                         createBufferObjects();
-                }
-                fprintf(stderr, "attempting draw. lock = %d, missing = %d, c = %d, %d, %d\n", lock, GLOsMissing, (*chunks)[ix][iy][iz].getPosition().x
-                         , (*chunks)[ix][iy][iz].getPosition().y, (*chunks)[ix][iy][iz].getPosition().z);
+
+                // very expensive
+                //fprintf(stderr, "attempting draw. lock = %d, missing = %d, c = %d, %d, %d\n", lock, GLOsMissing, (*chunks)[ix][iy][iz].getPosition().x
+                //         , (*chunks)[ix][iy][iz].getPosition().y, (*chunks)[ix][iy][iz].getPosition().z);
+
                 PT::drawVA(*(*chunkMeshes)[ix][iy][iz].getVA(), *(*chunkMeshes)[ix][iy][iz].getIBO());
             }
 }

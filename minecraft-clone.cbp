@@ -17,6 +17,7 @@
 					<Add option="-DDEBUG" />
 					<Add directory="include/game/" />
 					<Add directory="include/optimisation" />
+					<Add directory="include/biome" />
 				</Compiler>
 			</Target>
 			<Target title="Release">
@@ -26,11 +27,12 @@
 				<Option compiler="gcc" />
 				<Compiler>
 					<Add option="-flto" />
-					<Add option="-Ofast" />
 					<Add directory="include/game/" />
 					<Add directory="include/optimisation" />
+					<Add directory="include/biome" />
 				</Compiler>
 				<Linker>
+					<Add option="-O3" />
 					<Add option="-flto" />
 					<Add option="-s" />
 				</Linker>
@@ -55,25 +57,22 @@
 			<Add option="-pthread" />
 		</Linker>
 		<Unit filename="Main.cpp" />
+		<Unit filename="include/biome/Biome.h" />
 		<Unit filename="include/game/Chunk.h" />
 		<Unit filename="include/game/ChunkMesh.h" />
 		<Unit filename="include/game/Player.h" />
 		<Unit filename="include/game/World.h" />
-		<Unit filename="include/vendor/FastNoiseSIMD/FastNoiseSIMD.h" />
-		<Unit filename="include/vendor/FastNoiseSIMD/FastNoiseSIMD_internal.h" />
+		<Unit filename="include/vendor/FastNoiseLite.h" />
+		<Unit filename="src/biome/Biome.cpp" />
 		<Unit filename="src/game/Chunk.cpp" />
 		<Unit filename="src/game/ChunkLoading.cpp" />
 		<Unit filename="src/game/ChunkMesh.cpp" />
 		<Unit filename="src/game/Player.cpp" />
 		<Unit filename="src/game/World.cpp" />
-		<Unit filename="src/vendor/FastNoiseSIMD/FastNoiseSIMD.cpp" />
-		<Unit filename="src/vendor/FastNoiseSIMD/FastNoiseSIMD_avx2.cpp" />
-		<Unit filename="src/vendor/FastNoiseSIMD/FastNoiseSIMD_avx512.cpp" />
-		<Unit filename="src/vendor/FastNoiseSIMD/FastNoiseSIMD_internal.cpp" />
-		<Unit filename="src/vendor/FastNoiseSIMD/FastNoiseSIMD_sse2.cpp" />
-		<Unit filename="src/vendor/FastNoiseSIMD/FastNoiseSIMD_sse41.cpp" />
 		<Extensions>
 			<lib_finder disable_auto="1" />
+			<code_completion />
+			<debugger />
 		</Extensions>
 	</Project>
 </CodeBlocks_project_file>

@@ -1,7 +1,7 @@
 #ifndef WORLD_H
 #define WORLD_H
 
-#define CHUNKRD 16     // 256 blocks render distance
+#define CHUNKRD 64     // 256 blocks render distance
 #define MAXHEIGHT 8    // 128 block height max.
 
 #include "game/Chunk.h"
@@ -22,7 +22,7 @@ class World
 {
     public:
         World();
-        void drawChunks(float deltaTime, PT::Input* inputs);
+        void drawChunks(float deltaTime, PT::Input* inputs, bool mouseLocked);
         constexpr static unsigned int getSeed() {return m_Seed;}
         ~World();
     protected:

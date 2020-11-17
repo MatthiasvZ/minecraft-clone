@@ -8,6 +8,8 @@
 #define BLOCK_STONE 4
 #define BLOCK_OAK_LOG 5
 #define BLOCK_OAK_LOG_OUTSIDE 6
+#define BLOCK_LEAVES 7
+#define BLOCK_SAND BLOCK_STONE
 
 #include <string>
 
@@ -23,6 +25,7 @@ class Chunk
 {
     public:
         unsigned char m_BlockIDs[16][16][16];
+        unsigned char m_BiomeIDs[16][16];
 
         Chunk(int x, int y, int z);
         Positioni getPosition();

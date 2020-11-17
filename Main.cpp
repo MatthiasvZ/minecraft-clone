@@ -29,7 +29,7 @@ int main()
 
         PT::clearScreen();
 
-        world.drawChunks(deltaTime, window.getInputs());
+        world.drawChunks(deltaTime, window.getInputs(), window.mouseLocked());
 
         window.update();
         PT::doEvents();

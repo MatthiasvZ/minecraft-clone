@@ -138,10 +138,11 @@ void ChunkMesh::updateChunkMesh(const unsigned char (&blockIDs)[16][16][16], \
         totalMeshGens++;
     #endif // DEBUG
 
-    empty = vertices->empty();
 
     if (!skipGL)
     {
+        empty = vertices->empty();
+
         if (!firstrun)
         {
             vao->remove();
@@ -169,6 +170,8 @@ void ChunkMesh::updateChunkMesh(const unsigned char (&blockIDs)[16][16][16], \
 
 void ChunkMesh::createGLOs()
 {
+    empty = vertices->empty();
+
     if (!firstrun)
     {
         vao->remove();
