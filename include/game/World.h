@@ -1,11 +1,12 @@
 #ifndef WORLD_H
 #define WORLD_H
 
-#define CHUNKRD 64     // 256 blocks render distance
+#define CHUNKRD 16     // 256 blocks render distance
 #define MAXHEIGHT 8    // 128 block height max.
 
 #include "game/Chunk.h"
 #include "game/ChunkMesh.h"
+#include "game/Player.h"
 #include "Petroleum.h"
 #include <thread>
 
@@ -40,6 +41,12 @@ class World
         std::thread* chunkLoader;
         unsigned int GLOsMissing;
         void createBufferObjects();
+        int offsetX;
+        int offsetZ;
+
+        Player player;
+        bool mouseHold;
+        void breakBlock();
 };
 
 #endif // WORLD_H

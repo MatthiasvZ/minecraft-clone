@@ -4,10 +4,11 @@
 
 #include <sys/stat.h>
 #include <fstream>
+#include <cstdio>
 #include <GL/glew.h>
 
-#include "../../include/vendor/FastNoiseLite.h"
-#include "Biome.h"
+#include <sstream>
+#include <zstd.h>
 
 #ifdef DEBUG
     #include <iostream>
@@ -19,7 +20,7 @@ Chunk::Chunk(int x, int y, int z)
     m_PosX = x;
     m_PosY = y;
     m_PosZ = z;
-    if (!chunkExists() || true)
+    if (!chunkExists())
         generate();
     else
         readFromFile();
@@ -33,14 +34,35 @@ bool Chunk::chunkExists()
 
 void Chunk::readFromFile()
 {
-    std::ifstream file(m_FileName, std::ios::in);
+    fprintf(stderr, "CHK 1\n");
+    fprintf(stderr, "filename = %s\n", m_FileName.c_str());
+    struct stat st;
+    stat(m_FileName.c_str(), &st);
+
+    FILE* const iFile = fopen(m_FileName.c_str(), "rb");
+    assert(iFile != NULL);
+    unsigned char fBuff[st.st_size];
+    size_t const fileSize = fread(fBuff, 1, st.st_size, iFile);
+    fclose(iFile);
+    fprintf(stderr, "fileSize = %ld\n", fileSize);
+
+
+    fprintf(stderr, "CHK 2\n");
+    size_t const cBuffSize = ZSTD_compressBound(16 * 16 * 16 * sizeof(unsigned char));
+    unsigned char cBuff[cBuffSize];
+
+    fprintf(stderr, "CHK 3\n");
+    assert(ZSTD_decompress(cBuff, cBuffSize, fBuff, st.st_size)
+           == 16 * 16 * 16 * sizeof(unsigned char));
+
+    fprintf(stderr, "CHK 4\n");
     for (int ix {0}; ix < 16; ix++)
     {
         for (int iy {0}; iy < 16; iy++)
         {
             for (int iz {0}; iz < 16; iz++)
             {
-                m_BlockIDs[ix][iy][iz] = file.get();
+                m_BlockIDs[ix][iy][iz] = cBuff[256*ix + 16*iy + iz];
             }
         }
     }
@@ -48,17 +70,23 @@ void Chunk::readFromFile()
 
 void Chunk::saveToFile()
 {
-    std::fstream file(m_FileName, std::ios::out);
+    constexpr size_t fSize = 16 * 16 * 16 * sizeof(unsigned char);
+    unsigned char fBuff[16 * 16 * 16];
+
     for (int ix {0}; ix < 16; ix++)
-    {
         for (int iy {0}; iy < 16; iy++)
-        {
             for (int iz {0}; iz < 16; iz++)
-            {
-                file << static_cast<unsigned char>(m_BlockIDs[ix][iy][iz]);
-            }
-        }
-    }
+                fBuff[256*ix + 16*iy + iz] = static_cast<unsigned char>(m_BlockIDs[ix][iy][iz]);
+
+    size_t const cBuffSize = ZSTD_compressBound(16 * 16 * 16 * sizeof(unsigned char));
+    unsigned char cBuff[cBuffSize];
+
+    size_t const cSize = ZSTD_compress(cBuff, cBuffSize, fBuff, fSize, 1);
+
+
+    FILE* const oFile = fopen(m_FileName.c_str(), "wb");
+    fwrite(cBuff, 1, cSize, oFile);
+    fclose(oFile);
 }
 
 Positioni Chunk::getPosition()
@@ -66,94 +94,8 @@ Positioni Chunk::getPosition()
     return Positioni(m_PosX, m_PosY, m_PosZ);
 }
 
-void Chunk::generate()
-{
-    FastNoiseLite noise;
-    noise.SetNoiseType(FastNoiseLite::NoiseType_Perlin);
-    noise.SetSeed(World::getSeed());
-    noise.SetFrequency(0.01f);
-    float pnoise[16][16];
-    for (int ix {0}; ix < 16; ix++)
-    {
-        for (int iz {0}; iz < 16; iz++)
-        {
-            pnoise[ix][iz] = (noise.GetNoise(static_cast<float>(m_PosX*16 + ix), static_cast<float>(m_PosZ*16 + iz)) +
-                             noise.GetNoise(static_cast<float>(m_PosX*16 + ix + 42), static_cast<float>(m_PosZ*16 + iz)) * 2 +
-                             noise.GetNoise(static_cast<float>(m_PosX*16 + ix + 420), static_cast<float>(m_PosZ*16 + iz)) * 4) / 7;
-        }
-    }
-
-    noise.SetNoiseType(FastNoiseLite::NoiseType_Cellular);
-    noise.SetFrequency(0.002f);
-    noise.SetCellularDistanceFunction(FastNoiseLite::CellularDistanceFunction_Hybrid);
-    noise.SetCellularJitter(1.0f);
-    noise.SetDomainWarpType(FastNoiseLite::DomainWarpType_OpenSimplex2);
-    noise.SetDomainWarpAmp(100.0f);
-    noise.SetFractalType(FastNoiseLite::FractalType_DomainWarpIndependent);
-    noise.SetFractalOctaves(3);
-    noise.SetFractalLacunarity(2.00f);
-    noise.SetFractalGain(0.50f);
-
-    float bnoise[16][16];
-    for (int ix {0}; ix < 16; ix++)
-    {
-        for (int iz {0}; iz < 16; iz++)
-        {
-            float posX = static_cast<float>(m_PosX*16 + ix);
-            float posZ = static_cast<float>(m_PosZ*16 + iz);
-            noise.DomainWarp(posX, posZ);
-            bnoise[ix][iz] = noise.GetNoise(posX, posZ);
-        }
-    }
-
-
-    for (int ix {0}; ix < 16; ++ix)
-    {
-        for (int iz {0}; iz < 16; ++iz)
-        {
-            if (bnoise[ix][iz] > 0.0f)
-                m_BiomeIDs[ix][iz] = BIOME_GRASSLANDS;
-            else if (bnoise[ix][iz] > -0.5f)
-                m_BiomeIDs[ix][iz] = BIOME_FOREST;
-            else
-                m_BiomeIDs[ix][iz] = BIOME_DESERT;
-        }
-    }
-
-    for (int ix {0}; ix < 16; ix++)
-    {
-        for (int iy {0}; iy < 16; iy++)
-        {
-            for (int iz {0}; iz < 16; iz++)
-            {
-                if (pnoise[ix][iz] > static_cast<float>(m_PosY*16 + iy) / biomeBumpiness(m_BiomeIDs[ix][iz]) - biomeHeight(m_BiomeIDs[ix][iz]))
-                {
-
-                    if (pnoise[ix][iz] < static_cast<float>(m_PosY*16 + iy + 1) / biomeBumpiness(m_BiomeIDs[ix][iz]) - biomeHeight(m_BiomeIDs[ix][iz]))
-                        m_BlockIDs[ix][iy][iz] = biomePalTop(m_BiomeIDs[ix][iz]);
-                    else if (pnoise[ix][iz] < static_cast<float>(m_PosY*16 + iy + biomeDirtHeight(m_BiomeIDs[ix][iz])) / biomeBumpiness(m_BiomeIDs[ix][iz]) - biomeHeight(m_BiomeIDs[ix][iz]))
-                        m_BlockIDs[ix][iy][iz] = biomePalDirt(m_BiomeIDs[ix][iz]);
-
-                    else if (pnoise[ix][iz] < static_cast<float>(m_PosY*16 + iy + 1 - 3) / biomeBumpiness(m_BiomeIDs[ix][iz]) - biomeHeight(m_BiomeIDs[ix][iz]))
-                    {
-                        if (biomePlaceTree(m_BiomeIDs[ix][iz], bnoise[ix][iz]))
-                            m_BlockIDs[ix][iy][iz] = BLOCK_OAK_LOG;
-                        else
-                            m_BlockIDs[ix][iy][iz] = BLOCK_OAK_LOG;
-                    }
-                    else
-                        m_BlockIDs[ix][iy][iz] = BLOCK_STONE;
-                }
-                else
-                    m_BlockIDs[ix][iy][iz] = BLOCK_AIR;
-            }
-        }
-    }
-
-
-}
-
 Chunk::~Chunk()
 {
+    fprintf(stderr, "(%ld) Saving Chunk!!\n", time(0));
     saveToFile();
 }

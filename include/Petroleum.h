@@ -335,6 +335,9 @@ class Camera
         inline void setPosX(float x) { camPos[0] = x; }
         inline void setPosY(float y) { camPos[1] = y; }
         inline void setPosZ(float z) { camPos[2] = z; }
+        
+        inline float getPitch() { return pitch; }
+        inline float getYaw() { return yaw; }
 
     private:
         float clippingDistance;

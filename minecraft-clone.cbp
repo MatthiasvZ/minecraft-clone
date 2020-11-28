@@ -18,6 +18,7 @@
 					<Add directory="include/game/" />
 					<Add directory="include/optimisation" />
 					<Add directory="include/biome" />
+					<Add directory="include/physics" />
 				</Compiler>
 			</Target>
 			<Target title="Release">
@@ -30,6 +31,7 @@
 					<Add directory="include/game/" />
 					<Add directory="include/optimisation" />
 					<Add directory="include/biome" />
+					<Add directory="include/physics" />
 				</Compiler>
 				<Linker>
 					<Add option="-O3" />
@@ -46,15 +48,24 @@
 			<Add option="-fexceptions" />
 			<Add option="-pipe" />
 			<Add option="-march=native" />
+			<Add option="-fPIC" />
 		</Compiler>
 		<Linker>
-			<Add option="-lglfw" />
+			<Add option="-lzstd" />
+			<Add option="-lz" />
 			<Add option="-lGLEW" />
 			<Add option="-lX11" />
 			<Add option="-lGLU" />
+			<Add option="-lm" />
 			<Add option="-lGL" />
+			<Add option="-lglfw" />
+			<Add option="-lrt" />
+			<Add option="-ldl" />
+			<Add option="-lpthread" />
+			<Add option="-lxcb" />
+			<Add option="-lXau" />
+			<Add option="-lXdmcp" />
 			<Add option="libPetroleum.a" />
-			<Add option="-pthread" />
 		</Linker>
 		<Unit filename="Main.cpp" />
 		<Unit filename="include/biome/Biome.h" />
@@ -62,13 +73,19 @@
 		<Unit filename="include/game/ChunkMesh.h" />
 		<Unit filename="include/game/Player.h" />
 		<Unit filename="include/game/World.h" />
+		<Unit filename="include/physics/Ray.h" />
+		<Unit filename="include/ui/Crosshair.h" />
 		<Unit filename="include/vendor/FastNoiseLite.h" />
 		<Unit filename="src/biome/Biome.cpp" />
+		<Unit filename="src/game/BlockEditing.cpp" />
 		<Unit filename="src/game/Chunk.cpp" />
+		<Unit filename="src/game/ChunkGeneration.cpp" />
 		<Unit filename="src/game/ChunkLoading.cpp" />
 		<Unit filename="src/game/ChunkMesh.cpp" />
 		<Unit filename="src/game/Player.cpp" />
 		<Unit filename="src/game/World.cpp" />
+		<Unit filename="src/physics/Ray.cpp" />
+		<Unit filename="src/ui/Crosshair.cpp" />
 		<Extensions>
 			<lib_finder disable_auto="1" />
 			<code_completion />

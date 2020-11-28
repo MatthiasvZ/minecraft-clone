@@ -99,5 +99,6 @@ void World::createBufferObjects()
         fprintf(stderr, "updated buffers\n");
         GLOsMissing = false;
         lock = false;
+        ++offsetX;
     }
 }

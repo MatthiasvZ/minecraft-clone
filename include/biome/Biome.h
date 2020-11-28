@@ -10,6 +10,6 @@ float biomeHeight(unsigned char biome);
 float biomeBumpiness(unsigned char biome);
 unsigned char biomePalTop(unsigned char biome);
 unsigned char biomePalDirt(unsigned char biome);
-bool biomePlaceTree(unsigned char biome, float noise);
+bool biomePlaceTree(unsigned char biome, unsigned int srandSeed);
 
 #endif // BIOME_H

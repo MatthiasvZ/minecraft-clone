@@ -1,6 +1,7 @@
 #include "Petroleum.h"
 
 #include "game/World.h"
+#include "ui/Crosshair.h"
 
 #include <iostream>
 #include <cstring>
@@ -11,6 +12,7 @@ int main()
     PT::Config cfg {PT::parseConfig()};
     cfg.clear_colour = PT_SKY_BLUE;
     cfg.msaa = 0;
+    cfg.enable_blending = false;
     PT::saveConfig(cfg);
 
     PT::Window window(cfg);
@@ -18,6 +20,7 @@ int main()
     window.changeTitle("Minecraft Clone");
 
     World world;
+    Crosshair ch;
 
     float deltaTime = 0.0f;
     float lastFrame = glfwGetTime();
@@ -30,6 +33,7 @@ int main()
         PT::clearScreen();
 
         world.drawChunks(deltaTime, window.getInputs(), window.mouseLocked());
+        ch.render();
 
         window.update();
         PT::doEvents();

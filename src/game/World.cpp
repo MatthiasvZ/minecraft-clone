@@ -1,5 +1,6 @@
 #include "game/World.h"
 
+
 #include <vector>
 #include <iostream>
 #include <sys/stat.h>
@@ -20,7 +21,7 @@ std::string getDir()
 }
 
 World::World()
-    : shader(PT::Shader(PT_SHADER_XYZBUV_M)), lock(0), stop(0),GLOsMissing(0)
+    : shader(PT::Shader(PT_SHADER_XYZBUV_M)), lock(0), stop(0), GLOsMissing(0), offsetX(0), offsetZ(0), mouseHold(0)
 {
     atlas = new PT::Texture(getDir() + "/assets/texAtlas.bmp", 0, GL_NEAREST, GL_NEAREST);
 
@@ -28,7 +29,6 @@ World::World()
     camera.setPosX(CHUNKRD * 8);
     camera.setPosY(80);
     camera.setPosZ(CHUNKRD * 8);
-    camera.setSpeedH(100);
 
     struct stat buffer;
     if (stat ("saves", &buffer) != 0)
@@ -95,6 +95,13 @@ void World::drawChunks(float deltaTime, PT::Input* inputs, bool mouseLocked)
     else
         camera.setMouseSpeed(0.35f);
 
+    if (!inputs->mouse1)
+        mouseHold = false;
+    if (inputs->mouse1 && !mouseHold)
+    {
+        breakBlock();
+        mouseHold = true;
+    }
 
     // for (int stresstest {0}; stresstest < 20; stresstest++)
     for (long unsigned int ix {0}; ix < CHUNKRD; ix++)

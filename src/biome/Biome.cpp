@@ -1,6 +1,7 @@
 #include "Biome.h"
 #include "Chunk.h"
 
+
 float biomeDirtHeight(unsigned char biome)
 {
     switch (biome)
@@ -86,7 +87,20 @@ unsigned char biomePalDirt(unsigned char biome)
     return BLOCK_AIR;
 }
 
-bool biomePlaceTree(unsigned char biome, float noise)
+bool biomePlaceTree(unsigned char biome, unsigned int srandSeed)
 {
-    return true;
+    srand(srandSeed);
+    switch (biome)
+    {
+    case BIOME_GRASSLANDS:
+        return rand() % 100 < 3;
+        break;
+    case BIOME_FOREST:
+        return rand() % 100 < 12;
+        break;
+    case BIOME_DESERT:
+        return rand() % 100 < 2;
+        break;
+    }
+    return false;
 }
