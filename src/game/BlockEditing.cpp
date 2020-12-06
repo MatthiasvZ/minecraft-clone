@@ -70,7 +70,66 @@ void World::breakBlock()
                                     static_cast<int>(ray.getZ() / 16) - offsetZ == CHUNKRD-1 ? voidChunkIDs : (*chunks)[static_cast<int>(ray.getX() / 16) - offsetX][static_cast<int>(ray.getY() / 16) - 1][static_cast<int>(ray.getZ() / 16) - offsetZ+1].m_BlockIDs, \
                                     static_cast<int>(ray.getZ() / 16) - offsetZ == 0 ? voidChunkIDs : (*chunks)[static_cast<int>(ray.getX() / 16) - offsetX][static_cast<int>(ray.getY() / 16) - 1][static_cast<int>(ray.getZ() / 16) - offsetZ-1].m_BlockIDs, false);
             }
+            if (static_cast<int>(ray.getX() / 16) < CHUNKRD - 1) // to the right
+            {
+                if (static_cast<int>(ray.getX()) % 16 == 15 &&
+                    (*chunks)[static_cast<int>(ray.getX() / 16) + 1 - offsetX][static_cast<int>(ray.getY() / 16)][static_cast<int>(ray.getZ() / 16) - offsetZ].m_BlockIDs \
+                    [static_cast<int>(ray.getX()) % 16][0][static_cast<int>(ray.getZ()) % 16] != BLOCK_AIR)
+                    (*chunkMeshes)[static_cast<int>(ray.getX() / 16) + 1 - offsetX][static_cast<int>(ray.getY() / 16)][static_cast<int>(ray.getZ() / 16) - offsetZ]
+                                    .updateChunkMesh((*chunks)[static_cast<int>(ray.getX() / 16) + 1 - offsetX][static_cast<int>(ray.getY() / 16)][static_cast<int>(ray.getZ() / 16) - offsetZ].m_BlockIDs, \
+                                    static_cast<int>(ray.getY() / 16) == MAXHEIGHT-1 ? voidChunkIDs : (*chunks)[static_cast<int>(ray.getX() / 16) + 1 - offsetX][static_cast<int>(ray.getY() / 16)+1][static_cast<int>(ray.getZ() / 16) - offsetZ].m_BlockIDs, \
+                                    static_cast<int>(ray.getY() / 16) == 0 ? voidChunkIDs : (*chunks)[static_cast<int>(ray.getX() / 16) + 1 - offsetX][static_cast<int>(ray.getY() / 16)-1][static_cast<int>(ray.getZ() / 16) - offsetZ].m_BlockIDs, \
+                                    static_cast<int>(ray.getX() / 16) + 1 - offsetX == CHUNKRD-1 ? voidChunkIDs : (*chunks)[static_cast<int>(ray.getX() / 16) + 1 - offsetX+1][static_cast<int>(ray.getY() / 16)][static_cast<int>(ray.getZ() / 16) - offsetZ].m_BlockIDs, \
+                                    static_cast<int>(ray.getX() / 16) + 1 - offsetX == 0 ? voidChunkIDs : (*chunks)[static_cast<int>(ray.getX() / 16) + 1 - offsetX-1][static_cast<int>(ray.getY() / 16)][static_cast<int>(ray.getZ() / 16) - offsetZ].m_BlockIDs, \
+                                    static_cast<int>(ray.getZ() / 16) - offsetZ == CHUNKRD-1 ? voidChunkIDs : (*chunks)[static_cast<int>(ray.getX() / 16) + 1 - offsetX][static_cast<int>(ray.getY() / 16)][static_cast<int>(ray.getZ() / 16) - offsetZ+1].m_BlockIDs, \
+                                    static_cast<int>(ray.getZ() / 16) - offsetZ == 0 ? voidChunkIDs : (*chunks)[static_cast<int>(ray.getX() / 16) + 1 - offsetX][static_cast<int>(ray.getY() / 16)][static_cast<int>(ray.getZ() / 16) - offsetZ-1].m_BlockIDs, false);
 
+            }
+            if (static_cast<int>(ray.getX() / 16) > 0) // to the left
+            {
+                if (static_cast<int>(ray.getX()) % 16 == 0 &&
+                    (*chunks)[static_cast<int>(ray.getX() / 16) - 1 - offsetX][static_cast<int>(ray.getY() / 16)][static_cast<int>(ray.getZ() / 16) - offsetZ].m_BlockIDs \
+                    [static_cast<int>(ray.getX()) % 16][0][static_cast<int>(ray.getZ()) % 16] != BLOCK_AIR)
+                    (*chunkMeshes)[static_cast<int>(ray.getX() / 16) - 1 - offsetX][static_cast<int>(ray.getY() / 16)][static_cast<int>(ray.getZ() / 16) - offsetZ]
+                                    .updateChunkMesh((*chunks)[static_cast<int>(ray.getX() / 16) - 1 - offsetX][static_cast<int>(ray.getY() / 16)][static_cast<int>(ray.getZ() / 16) - offsetZ].m_BlockIDs, \
+                                    static_cast<int>(ray.getY() / 16) == MAXHEIGHT-1 ? voidChunkIDs : (*chunks)[static_cast<int>(ray.getX() / 16) - 1 - offsetX][static_cast<int>(ray.getY() / 16)+1][static_cast<int>(ray.getZ() / 16) - offsetZ].m_BlockIDs, \
+                                    static_cast<int>(ray.getY() / 16) == 0 ? voidChunkIDs : (*chunks)[static_cast<int>(ray.getX() / 16) - 1 - offsetX][static_cast<int>(ray.getY() / 16)-1][static_cast<int>(ray.getZ() / 16) - offsetZ].m_BlockIDs, \
+                                    static_cast<int>(ray.getX() / 16) - 1 - offsetX == CHUNKRD-1 ? voidChunkIDs : (*chunks)[static_cast<int>(ray.getX() / 16) - 1 - offsetX+1][static_cast<int>(ray.getY() / 16)][static_cast<int>(ray.getZ() / 16) - offsetZ].m_BlockIDs, \
+                                    static_cast<int>(ray.getX() / 16) - 1 - offsetX == 0 ? voidChunkIDs : (*chunks)[static_cast<int>(ray.getX() / 16) - 1 - offsetX-1][static_cast<int>(ray.getY() / 16)][static_cast<int>(ray.getZ() / 16) - offsetZ].m_BlockIDs, \
+                                    static_cast<int>(ray.getZ() / 16) - offsetZ == CHUNKRD-1 ? voidChunkIDs : (*chunks)[static_cast<int>(ray.getX() / 16) - 1 - offsetX][static_cast<int>(ray.getY() / 16)][static_cast<int>(ray.getZ() / 16) - offsetZ+1].m_BlockIDs, \
+                                    static_cast<int>(ray.getZ() / 16) - offsetZ == 0 ? voidChunkIDs : (*chunks)[static_cast<int>(ray.getX() / 16) - 1 - offsetX][static_cast<int>(ray.getY() / 16)][static_cast<int>(ray.getZ() / 16) - offsetZ-1].m_BlockIDs, false);
+
+            }
+            if (static_cast<int>(ray.getZ() / 16) < CHUNKRD - 1) // to the front
+            {
+                if (static_cast<int>(ray.getZ()) % 16 == 15 &&
+                    (*chunks)[static_cast<int>(ray.getX() / 16) - offsetX][static_cast<int>(ray.getY() / 16)][static_cast<int>(ray.getZ() / 16) + 1 - offsetZ].m_BlockIDs \
+                    [static_cast<int>(ray.getX()) % 16][0][static_cast<int>(ray.getZ()) % 16] != BLOCK_AIR)
+                    (*chunkMeshes)[static_cast<int>(ray.getX() / 16) - offsetX][static_cast<int>(ray.getY() / 16)][static_cast<int>(ray.getZ() / 16) + 1 - offsetZ]
+                                    .updateChunkMesh((*chunks)[static_cast<int>(ray.getX() / 16) - offsetX][static_cast<int>(ray.getY() / 16)][static_cast<int>(ray.getZ() / 16) + 1 - offsetZ].m_BlockIDs, \
+                                    static_cast<int>(ray.getY() / 16) == MAXHEIGHT-1 ? voidChunkIDs : (*chunks)[static_cast<int>(ray.getX() / 16) - offsetX][static_cast<int>(ray.getY() / 16)+1][static_cast<int>(ray.getZ() / 16) + 1 - offsetZ].m_BlockIDs, \
+                                    static_cast<int>(ray.getY() / 16) == 0 ? voidChunkIDs : (*chunks)[static_cast<int>(ray.getX() / 16) - offsetX][static_cast<int>(ray.getY() / 16)-1][static_cast<int>(ray.getZ() / 16) + 1 - offsetZ].m_BlockIDs, \
+                                    static_cast<int>(ray.getX() / 16) - offsetX == CHUNKRD-1 ? voidChunkIDs : (*chunks)[static_cast<int>(ray.getX() / 16) - offsetX+1][static_cast<int>(ray.getY() / 16)][static_cast<int>(ray.getZ() / 16) + 1 - offsetZ].m_BlockIDs, \
+                                    static_cast<int>(ray.getX() / 16) - offsetX == 0 ? voidChunkIDs : (*chunks)[static_cast<int>(ray.getX() / 16) - offsetX-1][static_cast<int>(ray.getY() / 16)][static_cast<int>(ray.getZ() / 16) + 1 - offsetZ].m_BlockIDs, \
+                                    static_cast<int>(ray.getZ() / 16) + 1 - offsetZ == CHUNKRD-1 ? voidChunkIDs : (*chunks)[static_cast<int>(ray.getX() / 16) - offsetX][static_cast<int>(ray.getY() / 16)][static_cast<int>(ray.getZ() / 16) + 1 - offsetZ+1].m_BlockIDs, \
+                                    static_cast<int>(ray.getZ() / 16) + 1 - offsetZ == 0 ? voidChunkIDs : (*chunks)[static_cast<int>(ray.getX() / 16) - offsetX][static_cast<int>(ray.getY() / 16)][static_cast<int>(ray.getZ() / 16) + 1 - offsetZ-1].m_BlockIDs, false);
+
+            }
+            if (static_cast<int>(ray.getZ() / 16) > 0) // to the back
+            {
+                if (static_cast<int>(ray.getZ()) % 16 == 0 &&
+                    (*chunks)[static_cast<int>(ray.getX() / 16) - offsetX][static_cast<int>(ray.getY() / 16)][static_cast<int>(ray.getZ() / 16) - 1 - offsetZ].m_BlockIDs \
+                    [static_cast<int>(ray.getX()) % 16][0][static_cast<int>(ray.getZ()) % 16] != BLOCK_AIR)
+                    (*chunkMeshes)[static_cast<int>(ray.getX() / 16) - offsetX][static_cast<int>(ray.getY() / 16)][static_cast<int>(ray.getZ() / 16) - 1 - offsetZ]
+                                    .updateChunkMesh((*chunks)[static_cast<int>(ray.getX() / 16) - offsetX][static_cast<int>(ray.getY() / 16)][static_cast<int>(ray.getZ() / 16) - 1 - offsetZ].m_BlockIDs, \
+                                    static_cast<int>(ray.getY() / 16) == MAXHEIGHT-1 ? voidChunkIDs : (*chunks)[static_cast<int>(ray.getX() / 16) - offsetX][static_cast<int>(ray.getY() / 16)+1][static_cast<int>(ray.getZ() / 16) - 1 - offsetZ].m_BlockIDs, \
+                                    static_cast<int>(ray.getY() / 16) == 0 ? voidChunkIDs : (*chunks)[static_cast<int>(ray.getX() / 16) - offsetX][static_cast<int>(ray.getY() / 16)-1][static_cast<int>(ray.getZ() / 16) - 1 - offsetZ].m_BlockIDs, \
+                                    static_cast<int>(ray.getX() / 16) - offsetX == CHUNKRD-1 ? voidChunkIDs : (*chunks)[static_cast<int>(ray.getX() / 16) - offsetX+1][static_cast<int>(ray.getY() / 16)][static_cast<int>(ray.getZ() / 16) - 1 - offsetZ].m_BlockIDs, \
+                                    static_cast<int>(ray.getX() / 16) - offsetX == 0 ? voidChunkIDs : (*chunks)[static_cast<int>(ray.getX() / 16) - offsetX-1][static_cast<int>(ray.getY() / 16)][static_cast<int>(ray.getZ() / 16) - 1 - offsetZ].m_BlockIDs, \
+                                    static_cast<int>(ray.getZ() / 16) - 1 - offsetZ == CHUNKRD-1 ? voidChunkIDs : (*chunks)[static_cast<int>(ray.getX() / 16) - offsetX][static_cast<int>(ray.getY() / 16)][static_cast<int>(ray.getZ() / 16) - 1 - offsetZ+1].m_BlockIDs, \
+                                    static_cast<int>(ray.getZ() / 16) - 1 - offsetZ == 0 ? voidChunkIDs : (*chunks)[static_cast<int>(ray.getX() / 16) - offsetX][static_cast<int>(ray.getY() / 16)][static_cast<int>(ray.getZ() / 16) - 1 - offsetZ-1].m_BlockIDs, false);
+
+            }
             return;
         }
         ray.step(0.01f);

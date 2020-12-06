@@ -7,7 +7,6 @@
 #include <cstdio>
 #include <GL/glew.h>
 
-#include <sstream>
 #include <zstd.h>
 
 #ifdef DEBUG
@@ -15,11 +14,8 @@
 #endif // DEBUG
 
 Chunk::Chunk(int x, int y, int z)
+    : m_FileName("saves/x" + std::to_string(x) + 'y' + std::to_string(y) + 'z' + std::to_string(z) + ".chunk"), m_PosX(x), m_PosY(y), m_PosZ(z)
 {
-    m_FileName = "saves/x" + std::to_string(x) + 'y' + std::to_string(y) + 'z' + std::to_string(z) +".chunk";
-    m_PosX = x;
-    m_PosY = y;
-    m_PosZ = z;
     if (!chunkExists())
         generate();
     else
@@ -34,28 +30,22 @@ bool Chunk::chunkExists()
 
 void Chunk::readFromFile()
 {
-    fprintf(stderr, "CHK 1\n");
-    fprintf(stderr, "filename = %s\n", m_FileName.c_str());
     struct stat st;
     stat(m_FileName.c_str(), &st);
 
     FILE* const iFile = fopen(m_FileName.c_str(), "rb");
     assert(iFile != NULL);
     unsigned char fBuff[st.st_size];
-    size_t const fileSize = fread(fBuff, 1, st.st_size, iFile);
+    assert(fread(fBuff, 1, st.st_size, iFile) != 0);
     fclose(iFile);
-    fprintf(stderr, "fileSize = %ld\n", fileSize);
 
 
-    fprintf(stderr, "CHK 2\n");
     size_t const cBuffSize = ZSTD_compressBound(16 * 16 * 16 * sizeof(unsigned char));
     unsigned char cBuff[cBuffSize];
 
-    fprintf(stderr, "CHK 3\n");
     assert(ZSTD_decompress(cBuff, cBuffSize, fBuff, st.st_size)
            == 16 * 16 * 16 * sizeof(unsigned char));
 
-    fprintf(stderr, "CHK 4\n");
     for (int ix {0}; ix < 16; ix++)
     {
         for (int iy {0}; iy < 16; iy++)
@@ -96,6 +86,5 @@ Positioni Chunk::getPosition()
 
 Chunk::~Chunk()
 {
-    fprintf(stderr, "(%ld) Saving Chunk!!\n", time(0));
     saveToFile();
 }
