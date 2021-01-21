@@ -12,7 +12,8 @@ int main()
     PT::Config cfg {PT::parseConfig()};
     cfg.clear_colour = PT_SKY_BLUE;
     cfg.msaa = 0;
-    cfg.enable_blending = false;
+    cfg.enable_blending = true;
+    cfg.capture_mouse = true;
     PT::saveConfig(cfg);
 
     PT::Window window(cfg);
@@ -22,8 +23,10 @@ int main()
     World world;
     Crosshair ch;
 
+
     float deltaTime = 0.0f;
     float lastFrame = glfwGetTime();
+
     while (window.shouldRun())
     {
         float currentFrame = glfwGetTime();
@@ -32,7 +35,12 @@ int main()
 
         PT::clearScreen();
 
+        // 3D
+        glEnable(GL_DEPTH_TEST);
         world.drawChunks(deltaTime, window.getInputs(), window.mouseLocked());
+
+        // 2D
+        glDisable(GL_DEPTH_TEST);
         ch.render();
 
         window.update();

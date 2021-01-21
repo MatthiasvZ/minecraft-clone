@@ -17,8 +17,10 @@ void World::breakBlock()
         if ((*chunks)[static_cast<int>(ray.getX() / 16) - offsetX][static_cast<int>(ray.getY() / 16)][static_cast<int>(ray.getZ() / 16) - offsetZ] \
             .m_BlockIDs[static_cast<int>(ray.getX()) % 16][static_cast<int>(ray.getY()) % 16][static_cast<int>(ray.getZ()) % 16] != BLOCK_AIR)
         {
+            #ifdef DEBUG
             fprintf(stderr, "Hit block of type %d!\n", (*chunks)[static_cast<int>(ray.getX() / 16) - offsetX][static_cast<int>(ray.getY() / 16)][static_cast<int>(ray.getZ() / 16) - offsetZ] \
                     .m_BlockIDs[static_cast<int>(ray.getX()) % 16][static_cast<int>(ray.getY()) % 16][static_cast<int>(ray.getZ()) % 16]);
+            #endif // DEBUG
 
             // Replace the block with air
             (*chunks)[static_cast<int>(ray.getX() / 16) - offsetX][static_cast<int>(ray.getY() / 16)][static_cast<int>(ray.getZ() / 16) - offsetZ] \

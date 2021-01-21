@@ -6,7 +6,7 @@ class Ray
 {
     public:
         Ray(float pitch, float yaw, float initX = 0.0f, float initY = 0.0f, float initZ = 0.0f)
-        : pitch(pitch), yaw(yaw), x(initX), y(initY), z(initZ) {}
+        : pitch(pitch + 0.5f), yaw(yaw + 0.5f), x(initX + 0.5f), y(initY + 0.5f), z(initZ + 0.5f) {}
 
         void step(float amount);
 

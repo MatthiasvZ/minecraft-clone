@@ -48,13 +48,14 @@ void createDataFolder(const char* directory);
 void createFolder(const char* directory);
 struct Config
 {
-    unsigned int opengl_major;
-    unsigned int opengl_minor;
-    bool vsync;
-    unsigned int msaa;
-    bool fullscreen;
-    unsigned int clear_colour;
-    bool enable_blending;
+    unsigned int opengl_major {4};
+    unsigned int opengl_minor {0};
+    bool vsync {false};
+    unsigned int msaa {4};
+    bool fullscreen {false};
+    unsigned int clear_colour {PT_BLACK};
+    bool enable_blending {true};
+    bool capture_mouse {false};
 };
 Config parseConfig();
 void saveConfig(Config cfg);
@@ -335,7 +336,7 @@ class Camera
         inline void setPosX(float x) { camPos[0] = x; }
         inline void setPosY(float y) { camPos[1] = y; }
         inline void setPosZ(float z) { camPos[2] = z; }
-        
+
         inline float getPitch() { return pitch; }
         inline float getYaw() { return yaw; }
 

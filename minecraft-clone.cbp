@@ -20,6 +20,9 @@
 					<Add directory="include/biome" />
 					<Add directory="include/physics" />
 				</Compiler>
+				<Linker>
+					<Add option="libPetroleum.a.debug" />
+				</Linker>
 			</Target>
 			<Target title="Release">
 				<Option output="bin/minecraft-clone" prefix_auto="1" extension_auto="1" />
@@ -37,18 +40,19 @@
 					<Add option="-O3" />
 					<Add option="-flto" />
 					<Add option="-s" />
+					<Add option="libPetroleum.a" />
 				</Linker>
 			</Target>
 		</Build>
 		<Compiler>
 			<Add option="-Wextra" />
 			<Add option="-Wall" />
+			<Add option="-fPIC" />
 			<Add option="-std=c++20" />
 			<Add option="-Iinclude" />
 			<Add option="-fexceptions" />
 			<Add option="-pipe" />
 			<Add option="-march=native" />
-			<Add option="-fPIC" />
 		</Compiler>
 		<Linker>
 			<Add option="-lzstd" />
@@ -65,7 +69,6 @@
 			<Add option="-lxcb" />
 			<Add option="-lXau" />
 			<Add option="-lXdmcp" />
-			<Add option="libPetroleum.a" />
 		</Linker>
 		<Unit filename="Main.cpp" />
 		<Unit filename="include/biome/Biome.h" />
