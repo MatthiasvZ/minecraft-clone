@@ -209,8 +209,8 @@ float ChunkMesh::getTexCoord(bool leftOrRight, unsigned char side, unsigned char
         break;
     }
     if (leftOrRight == 0)
-        return (blockID-1.0f)/6.0f;
-    return blockID/6.0f;
+        return (blockID-1.0f) / BLOCKS_TOTAL;
+    return blockID / BLOCKS_TOTAL;
 }
 
 void ChunkMesh::addVertex(float x, float y, float z, float l, float u, float v)
