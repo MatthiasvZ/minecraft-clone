@@ -12,11 +12,11 @@ LD = g++
 WINDRES = windres
 
 INC = 
-CFLAGS = -Wextra -Wall -std=c++20 -Iinclude -fexceptions -pipe -march=native -fPIC
+CFLAGS = -Wextra -Wall -fPIC -std=c++20 -Iinclude -fexceptions -pipe -march=native
 RESINC = 
 LIBDIR = 
 LIB = 
-LDFLAGS = -lzstd -lz -lGLEW -lX11 -lGLU -lm -lGL -lglfw -lrt -ldl -lpthread -lxcb -lXau -lXdmcp libPetroleum.a
+LDFLAGS = -lzstd -lz -lGLEW -lX11 -lGLU -lm -lGL -lglfw -lrt -ldl -lpthread -lxcb -lXau -lXdmcp
 
 INC_DEBUG = $(INC) -Iinclude/game/ -Iinclude/optimisation -Iinclude/biome -Iinclude/physics
 CFLAGS_DEBUG = $(CFLAGS) -Og -g -DDEBUG
@@ -24,7 +24,7 @@ RESINC_DEBUG = $(RESINC)
 RCFLAGS_DEBUG = $(RCFLAGS)
 LIBDIR_DEBUG = $(LIBDIR)
 LIB_DEBUG = $(LIB)
-LDFLAGS_DEBUG = $(LDFLAGS)
+LDFLAGS_DEBUG = $(LDFLAGS) libPetroleum.a.debug
 OBJDIR_DEBUG = obj/Debug
 DEP_DEBUG = 
 OUT_DEBUG = bin/Debug/minecraft-clone
@@ -35,7 +35,7 @@ RESINC_RELEASE = $(RESINC)
 RCFLAGS_RELEASE = $(RCFLAGS)
 LIBDIR_RELEASE = $(LIBDIR)
 LIB_RELEASE = $(LIB)
-LDFLAGS_RELEASE = $(LDFLAGS) -O3 -flto -s
+LDFLAGS_RELEASE = $(LDFLAGS) -O3 -flto -s libPetroleum.a
 OBJDIR_RELEASE = obj
 DEP_RELEASE = 
 OUT_RELEASE = bin/minecraft-clone
