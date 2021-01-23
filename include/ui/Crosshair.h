@@ -13,10 +13,14 @@ class Crosshair
     protected:
 
     private:
+        void updateVertices();
+
         PT::Shader shader;
         PT::VertexBuffer* vbo;
         PT::IndexBuffer ibo;
-        PT::VertexArray vao;
+        PT::VertexArray* vao;
+
+        float aspectRatio;
 };
 
 #endif // CROSSHAIR_H

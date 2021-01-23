@@ -25,20 +25,54 @@ namespace PT
 Crosshair::Crosshair()
     : shader(PT_SHADER_XYRGBA), ibo(std::vector<unsigned char>({0, 1, 2,  0, 2, 3}))
 {
-    std::vector<float> vertices(PT::coloriseXY(PT::tVertsSquareXY(0.0f, 0.0f, 0.02f, true), 0.0f, 1.0f, 0.0f, 0.5f));
+    float vp[4];
+    glGetFloatv(GL_VIEWPORT, vp);
+    aspectRatio = vp[2] / vp[3];
 
-    vbo = new PT::VertexBuffer(vertices);
-    vao.addBuffer(*vbo, shader.getLayout());
-
+    updateVertices();
 }
 
 void Crosshair::render()
 {
-    shader.bindShader();
-    PT::drawVA(vao, ibo, shader);
+    float vp[4];
+    glGetFloatv(GL_VIEWPORT, vp);
+    if(vp[2] / vp[3] != aspectRatio)
+    {
+        vao->remove();
+        vbo->remove();
+        delete vao;
+        delete vbo;
+
+        aspectRatio = vp[2] / vp[3];
+        updateVertices();
+    }
+
+    PT::drawVA(*vao, ibo, shader);
+}
+
+void Crosshair::updateVertices()
+{
+    constexpr float centre = 0.0f;
+    constexpr float size = 0.01f;
+    std::vector<float> vertices
+    {// X                          Y
+        centre - size/aspectRatio, centre - size,
+        centre - size/aspectRatio, centre + size,
+        centre + size/aspectRatio, centre + size,
+        centre + size/aspectRatio, centre - size
+    };
+
+    vertices = PT::coloriseXY(vertices, 0.0f, 1.0f, 0.0f, 0.5f);
+
+    vbo = new PT::VertexBuffer(vertices);
+    vao = new PT::VertexArray();
+    vao->addBuffer(*vbo, shader.getLayout());
 }
 
 Crosshair::~Crosshair()
 {
+    vao->remove();
+    vbo->remove();
+    delete vao;
     delete vbo;
 }

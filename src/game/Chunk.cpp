@@ -53,6 +53,7 @@ void Chunk::readFromFile()
             for (int iz {0}; iz < 16; iz++)
             {
                 m_BlockIDs[ix][iy][iz] = cBuff[256*ix + 16*iy + iz];
+                // m_BlockIDs[ix][iy][iz] = fBuff[256*ix + 16*iy + iz]; // for fun
             }
         }
     }

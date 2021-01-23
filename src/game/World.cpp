@@ -1,5 +1,18 @@
 #include "game/World.h"
 
+#define INIT_X_OFFSET 0
+//#define INIT_X_OFFSET 10'000
+//#define INIT_X_OFFSET 100'000
+//#define INIT_X_OFFSET 500'000
+//#define INIT_X_OFFSET 1'000'000
+//#define INIT_X_OFFSET 5'000'000
+//#define INIT_X_OFFSET 10'000'000
+//#define INIT_X_OFFSET 50'000'000
+//#define INIT_X_OFFSET 100'000'000
+//#define INIT_X_OFFSET 250'000'000
+//#define INIT_X_OFFSET 500'000'000
+//#define INIT_X_OFFSET 1'000'000'000
+
 
 #include <vector>
 #include <iostream>
@@ -21,12 +34,12 @@ std::string getDir()
 }
 
 World::World()
-    : shader(PT::Shader(PT_SHADER_XYZBUV_M)), lock(0), stop(0), GLOsMissing(0), offsetX(0), offsetZ(0), mouseHold(0)
+    : shader(PT::Shader(PT_SHADER_XYZBUV_M)), lock(0), stop(0), GLOsMissing(0), offsetX(INIT_X_OFFSET / 16), offsetZ(0), mouseHold(0)
 {
     atlas = new PT::Texture(getDir() + "/assets/texAtlas.bmp", 0, GL_NEAREST, GL_NEAREST);
 
     camera.setClippingDistance(1000.0f);
-    camera.setPosX(CHUNKRD * 8);
+    camera.setPosX(CHUNKRD * 8 + INIT_X_OFFSET);
     camera.setPosY(80);
     camera.setPosZ(CHUNKRD * 8);
 
@@ -54,7 +67,7 @@ World::World()
             (*chunks)[ix].push_back(std::vector<Chunk>());
             (*chunks)[ix][iy].reserve(CHUNKRD);
             for (int iz {0}; iz < CHUNKRD; iz++)
-                (*chunks)[ix][iy].push_back(Chunk(ix, iy, iz));
+                (*chunks)[ix][iy].push_back(Chunk(ix + INIT_X_OFFSET / 16, iy, iz));
         }
     }
 
@@ -78,7 +91,7 @@ World::World()
                             ix == 0 ? voidChunkIDs : (*chunks)[ix-1][iy][iz].m_BlockIDs, \
                             iz == CHUNKRD-1 ? voidChunkIDs : (*chunks)[ix][iy][iz+1].m_BlockIDs, \
                             iz == 0 ? voidChunkIDs : (*chunks)[ix][iy][iz-1].m_BlockIDs, \
-                            ix, iy, iz));
+                            ix + INIT_X_OFFSET / 16, iy, iz));
             }
         }
     }
