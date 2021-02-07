@@ -12,11 +12,11 @@ LD = g++
 WINDRES = windres
 
 INC = 
-CFLAGS = -Wextra -Wall -fPIC -std=c++20 -Iinclude -fexceptions -pipe -march=native
+CFLAGS = -Wextra -Wall -std=c++20 -Iinclude -fexceptions -pipe -march=native
 RESINC = 
 LIBDIR = 
 LIB = 
-LDFLAGS = -lzstd -lz -lGLEW -lX11 -lGLU -lm -lGL -lglfw -lrt -ldl -lpthread -lxcb -lXau -lXdmcp
+LDFLAGS = -lpthread
 
 INC_DEBUG = $(INC) -Iinclude/game/ -Iinclude/optimisation -Iinclude/biome -Iinclude/physics
 CFLAGS_DEBUG = $(CFLAGS) -Og -g -DDEBUG
@@ -24,7 +24,7 @@ RESINC_DEBUG = $(RESINC)
 RCFLAGS_DEBUG = $(RCFLAGS)
 LIBDIR_DEBUG = $(LIBDIR)
 LIB_DEBUG = $(LIB)
-LDFLAGS_DEBUG = $(LDFLAGS) libPetroleum.a.debug
+LDFLAGS_DEBUG = $(LDFLAGS) -lzstd -lGLEW -lX11 -lGLU -lGL -lglfw external/libPetroleum.a.debug
 OBJDIR_DEBUG = obj/Debug
 DEP_DEBUG = 
 OUT_DEBUG = bin/Debug/minecraft-clone
@@ -35,18 +35,31 @@ RESINC_RELEASE = $(RESINC)
 RCFLAGS_RELEASE = $(RCFLAGS)
 LIBDIR_RELEASE = $(LIBDIR)
 LIB_RELEASE = $(LIB)
-LDFLAGS_RELEASE = $(LDFLAGS) -O3 -flto -s libPetroleum.a
-OBJDIR_RELEASE = obj
+LDFLAGS_RELEASE = $(LDFLAGS) -O3 -flto -s -lzstd -lGLEW -lX11 -lGLU -lGL -lglfw external/libPetroleum.a
+OBJDIR_RELEASE = obj/Release
 DEP_RELEASE = 
-OUT_RELEASE = bin/minecraft-clone
+OUT_RELEASE = bin/Release/minecraft-clone
+
+INC_STATIC = $(INC) -Iinclude/game/ -Iinclude/optimisation -Iinclude/biome -Iinclude/physics
+CFLAGS_STATIC = $(CFLAGS) -flto
+RESINC_STATIC = $(RESINC)
+RCFLAGS_STATIC = $(RCFLAGS)
+LIBDIR_STATIC = $(LIBDIR)
+LIB_STATIC = $(LIB)
+LDFLAGS_STATIC = $(LDFLAGS) -O3 -flto -s -lzstd -lGLU -lGL -lrt -lm -ldl -lX11 -lxcb -lXau -lXdmcp external/libGLEW.a external/libglfw3.a external/libPetroleum.a
+OBJDIR_STATIC = obj/Static
+DEP_STATIC = 
+OUT_STATIC = bin/Static/minecraft-clone
 
 OBJ_DEBUG = $(OBJDIR_DEBUG)/src/biome/Biome.o $(OBJDIR_DEBUG)/src/ui/Crosshair.o $(OBJDIR_DEBUG)/src/physics/Ray.o $(OBJDIR_DEBUG)/src/game/World.o $(OBJDIR_DEBUG)/src/game/Player.o $(OBJDIR_DEBUG)/src/game/ChunkMesh.o $(OBJDIR_DEBUG)/src/game/ChunkLoading.o $(OBJDIR_DEBUG)/src/game/ChunkGeneration.o $(OBJDIR_DEBUG)/src/game/Chunk.o $(OBJDIR_DEBUG)/src/game/BlockEditing.o $(OBJDIR_DEBUG)/Main.o
 
 OBJ_RELEASE = $(OBJDIR_RELEASE)/src/biome/Biome.o $(OBJDIR_RELEASE)/src/ui/Crosshair.o $(OBJDIR_RELEASE)/src/physics/Ray.o $(OBJDIR_RELEASE)/src/game/World.o $(OBJDIR_RELEASE)/src/game/Player.o $(OBJDIR_RELEASE)/src/game/ChunkMesh.o $(OBJDIR_RELEASE)/src/game/ChunkLoading.o $(OBJDIR_RELEASE)/src/game/ChunkGeneration.o $(OBJDIR_RELEASE)/src/game/Chunk.o $(OBJDIR_RELEASE)/src/game/BlockEditing.o $(OBJDIR_RELEASE)/Main.o
 
-all: debug release
+OBJ_STATIC = $(OBJDIR_STATIC)/src/biome/Biome.o $(OBJDIR_STATIC)/src/ui/Crosshair.o $(OBJDIR_STATIC)/src/physics/Ray.o $(OBJDIR_STATIC)/src/game/World.o $(OBJDIR_STATIC)/src/game/Player.o $(OBJDIR_STATIC)/src/game/ChunkMesh.o $(OBJDIR_STATIC)/src/game/ChunkLoading.o $(OBJDIR_STATIC)/src/game/ChunkGeneration.o $(OBJDIR_STATIC)/src/game/Chunk.o $(OBJDIR_STATIC)/src/game/BlockEditing.o $(OBJDIR_STATIC)/Main.o
 
-clean: clean_debug clean_release
+all: debug release static
+
+clean: clean_debug clean_release clean_static
 
 before_debug: 
 	test -d bin/Debug || mkdir -p bin/Debug
@@ -106,7 +119,7 @@ clean_debug:
 	rm -rf $(OBJDIR_DEBUG)
 
 before_release: 
-	test -d bin || mkdir -p bin
+	test -d bin/Release || mkdir -p bin/Release
 	test -d $(OBJDIR_RELEASE)/src/biome || mkdir -p $(OBJDIR_RELEASE)/src/biome
 	test -d $(OBJDIR_RELEASE)/src/ui || mkdir -p $(OBJDIR_RELEASE)/src/ui
 	test -d $(OBJDIR_RELEASE)/src/physics || mkdir -p $(OBJDIR_RELEASE)/src/physics
@@ -155,12 +168,69 @@ $(OBJDIR_RELEASE)/Main.o: Main.cpp
 
 clean_release: 
 	rm -f $(OBJ_RELEASE) $(OUT_RELEASE)
-	rm -rf bin
+	rm -rf bin/Release
 	rm -rf $(OBJDIR_RELEASE)/src/biome
 	rm -rf $(OBJDIR_RELEASE)/src/ui
 	rm -rf $(OBJDIR_RELEASE)/src/physics
 	rm -rf $(OBJDIR_RELEASE)/src/game
 	rm -rf $(OBJDIR_RELEASE)
 
-.PHONY: before_debug after_debug clean_debug before_release after_release clean_release
+before_static: 
+	test -d bin/Static || mkdir -p bin/Static
+	test -d $(OBJDIR_STATIC)/src/biome || mkdir -p $(OBJDIR_STATIC)/src/biome
+	test -d $(OBJDIR_STATIC)/src/ui || mkdir -p $(OBJDIR_STATIC)/src/ui
+	test -d $(OBJDIR_STATIC)/src/physics || mkdir -p $(OBJDIR_STATIC)/src/physics
+	test -d $(OBJDIR_STATIC)/src/game || mkdir -p $(OBJDIR_STATIC)/src/game
+	test -d $(OBJDIR_STATIC) || mkdir -p $(OBJDIR_STATIC)
+
+after_static: 
+
+static: before_static out_static after_static
+
+out_static: before_static $(OBJ_STATIC) $(DEP_STATIC)
+	$(LD) $(LIBDIR_STATIC) -o $(OUT_STATIC) $(OBJ_STATIC)  $(LDFLAGS_STATIC) $(LIB_STATIC)
+
+$(OBJDIR_STATIC)/src/biome/Biome.o: src/biome/Biome.cpp
+	$(CXX) $(CFLAGS_STATIC) $(INC_STATIC) -c src/biome/Biome.cpp -o $(OBJDIR_STATIC)/src/biome/Biome.o
+
+$(OBJDIR_STATIC)/src/ui/Crosshair.o: src/ui/Crosshair.cpp
+	$(CXX) $(CFLAGS_STATIC) $(INC_STATIC) -c src/ui/Crosshair.cpp -o $(OBJDIR_STATIC)/src/ui/Crosshair.o
+
+$(OBJDIR_STATIC)/src/physics/Ray.o: src/physics/Ray.cpp
+	$(CXX) $(CFLAGS_STATIC) $(INC_STATIC) -c src/physics/Ray.cpp -o $(OBJDIR_STATIC)/src/physics/Ray.o
+
+$(OBJDIR_STATIC)/src/game/World.o: src/game/World.cpp
+	$(CXX) $(CFLAGS_STATIC) $(INC_STATIC) -c src/game/World.cpp -o $(OBJDIR_STATIC)/src/game/World.o
+
+$(OBJDIR_STATIC)/src/game/Player.o: src/game/Player.cpp
+	$(CXX) $(CFLAGS_STATIC) $(INC_STATIC) -c src/game/Player.cpp -o $(OBJDIR_STATIC)/src/game/Player.o
+
+$(OBJDIR_STATIC)/src/game/ChunkMesh.o: src/game/ChunkMesh.cpp
+	$(CXX) $(CFLAGS_STATIC) $(INC_STATIC) -c src/game/ChunkMesh.cpp -o $(OBJDIR_STATIC)/src/game/ChunkMesh.o
+
+$(OBJDIR_STATIC)/src/game/ChunkLoading.o: src/game/ChunkLoading.cpp
+	$(CXX) $(CFLAGS_STATIC) $(INC_STATIC) -c src/game/ChunkLoading.cpp -o $(OBJDIR_STATIC)/src/game/ChunkLoading.o
+
+$(OBJDIR_STATIC)/src/game/ChunkGeneration.o: src/game/ChunkGeneration.cpp
+	$(CXX) $(CFLAGS_STATIC) $(INC_STATIC) -c src/game/ChunkGeneration.cpp -o $(OBJDIR_STATIC)/src/game/ChunkGeneration.o
+
+$(OBJDIR_STATIC)/src/game/Chunk.o: src/game/Chunk.cpp
+	$(CXX) $(CFLAGS_STATIC) $(INC_STATIC) -c src/game/Chunk.cpp -o $(OBJDIR_STATIC)/src/game/Chunk.o
+
+$(OBJDIR_STATIC)/src/game/BlockEditing.o: src/game/BlockEditing.cpp
+	$(CXX) $(CFLAGS_STATIC) $(INC_STATIC) -c src/game/BlockEditing.cpp -o $(OBJDIR_STATIC)/src/game/BlockEditing.o
+
+$(OBJDIR_STATIC)/Main.o: Main.cpp
+	$(CXX) $(CFLAGS_STATIC) $(INC_STATIC) -c Main.cpp -o $(OBJDIR_STATIC)/Main.o
+
+clean_static: 
+	rm -f $(OBJ_STATIC) $(OUT_STATIC)
+	rm -rf bin/Static
+	rm -rf $(OBJDIR_STATIC)/src/biome
+	rm -rf $(OBJDIR_STATIC)/src/ui
+	rm -rf $(OBJDIR_STATIC)/src/physics
+	rm -rf $(OBJDIR_STATIC)/src/game
+	rm -rf $(OBJDIR_STATIC)
+
+.PHONY: before_debug after_debug clean_debug before_release after_release clean_release before_static after_static clean_static
 

@@ -25,11 +25,7 @@ std::string getDir()
     char result[ PATH_MAX ];
     ssize_t count = readlink( "/proc/self/exe", result, PATH_MAX );
     std::string sresult( result, (count > 0) ? count : 0 );
-    #ifdef DEBUG
-        sresult = (std::string)std::filesystem::path(sresult).parent_path().parent_path().parent_path();
-    #else
-        sresult = (std::string)std::filesystem::path(sresult).parent_path().parent_path();
-    #endif //DEBUG
+    sresult = (std::string)std::filesystem::path(sresult).parent_path().parent_path().parent_path();
     return sresult;
 }
 

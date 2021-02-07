@@ -31,8 +31,8 @@
 				</Linker>
 			</Target>
 			<Target title="Release">
-				<Option output="bin/minecraft-clone" prefix_auto="1" extension_auto="1" />
-				<Option object_output="obj/" />
+				<Option output="bin/Release/minecraft-clone" prefix_auto="1" extension_auto="1" />
+				<Option object_output="obj/Release/" />
 				<Option type="1" />
 				<Option compiler="gcc" />
 				<Compiler>
@@ -55,9 +55,9 @@
 					<Add option="external/libPetroleum.a" />
 				</Linker>
 			</Target>
-			<Target title="Static (Release)">
-				<Option output="bin/minecraft-clone" prefix_auto="1" extension_auto="1" />
-				<Option object_output="obj/" />
+			<Target title="Static">
+				<Option output="bin/Static/minecraft-clone" prefix_auto="1" extension_auto="1" />
+				<Option object_output="obj/Static/" />
 				<Option type="1" />
 				<Option compiler="gcc" />
 				<Compiler>
@@ -120,8 +120,6 @@
 		<Unit filename="src/ui/Crosshair.cpp" />
 		<Extensions>
 			<lib_finder disable_auto="1" />
-			<code_completion />
-			<debugger />
 		</Extensions>
 	</Project>
 </CodeBlocks_project_file>
