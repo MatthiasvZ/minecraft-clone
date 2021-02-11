@@ -5,10 +5,18 @@
 
 #include <iostream>
 #include <cstring>
+#include <filesystem>
 
 int main()
 {
-    PT::setDataDir(strcat(std::getenv("HOME"), "/.local/share/minecraft-clone"));
+    #if __unix__
+        PT::setDataDir(strcat(std::getenv("HOME"), "/.local/share/minecraft-clone"));
+    #elif _WIN32
+        PT::setDataDir(strcat(std::getenv("HOME"), "/AppData/minecraft-clone"));
+    #else
+    #error Unsupported OS
+    #endif // __unix__
+
     PT::Config cfg {PT::parseConfig()};
     if (cfg.fresh)
     {

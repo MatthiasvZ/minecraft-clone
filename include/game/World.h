@@ -8,7 +8,14 @@
 #include "game/ChunkMesh.h"
 #include "game/Player.h"
 #include "Petroleum.h"
+
+#if __unix__
 #include <thread>
+#elif _WIN32
+#include "vendor/mingw.thread.h"
+#else
+#error Unsupported OS
+#endif // __unix__
 
 #define PLUS_X 1
 #define MINUS_X 2

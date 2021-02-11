@@ -19,13 +19,23 @@
 #include <sys/stat.h>
 #include <filesystem>
 #include <unistd.h>
+#if _WIN32
+    #include <libloaderapi.h>
+#endif // _WIN32
 
 std::string getDir()
 {
     char result[ PATH_MAX ];
-    ssize_t count = readlink( "/proc/self/exe", result, PATH_MAX );
-    std::string sresult( result, (count > 0) ? count : 0 );
-    sresult = (std::string)std::filesystem::path(sresult).parent_path().parent_path().parent_path();
+    #if __unix__
+        ssize_t count = readlink("/proc/self/exe", result, PATH_MAX);
+    #elif _WIN32
+        ssize_t count = GetModuleFileName(NULL, result, PATH_MAX);
+    #else
+    #error Unsupported OS
+    #endif // __unix__
+
+    std::string sresult(result, (count > 0) ? count : 0);
+    sresult = std::filesystem::path(sresult).parent_path().parent_path().parent_path().string();
     return sresult;
 }
 
@@ -41,7 +51,7 @@ World::World()
 
     struct stat buffer;
     if (stat ("saves", &buffer) != 0)
-        mkdir("saves", 0755);
+        std::filesystem::create_directory("saves");
 
     chunks = new std::vector<std::vector<std::vector<Chunk>>>();
     chunkMeshes = new std::vector<std::vector<std::vector<ChunkMesh>>>();
