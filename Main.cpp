@@ -10,13 +10,21 @@ int main()
 {
     PT::setDataDir(strcat(std::getenv("HOME"), "/.local/share/minecraft-clone"));
     PT::Config cfg {PT::parseConfig()};
+    if (cfg.fresh)
+    {
+        cfg.opengl_major = 3;
+        cfg.opengl_minor = 2;
+        cfg.msaa = 0;
+        cfg.window_resizable = true;
+    }
     cfg.clear_colour = PT_SKY_BLUE;
-    cfg.msaa = 0;
     cfg.enable_blending = true;
     cfg.capture_mouse = true;
+
     PT::saveConfig(cfg);
 
     PT::Window window(cfg);
+    glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE);
     PT::initGL(cfg);
     window.changeTitle("Minecraft Clone");
 

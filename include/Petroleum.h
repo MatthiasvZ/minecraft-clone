@@ -48,6 +48,8 @@ void createDataFolder(const char* directory);
 void createFolder(const char* directory);
 struct Config
 {
+    bool fresh {true};
+
     unsigned int opengl_major {4};
     unsigned int opengl_minor {0};
     bool vsync {false};
@@ -56,6 +58,7 @@ struct Config
     unsigned int clear_colour {PT_BLACK};
     bool enable_blending {true};
     bool capture_mouse {false};
+    bool window_resizable {false};
 };
 Config parseConfig();
 void saveConfig(Config cfg);
