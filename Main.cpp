@@ -53,7 +53,7 @@ int main()
 
         // 3D
         glEnable(GL_DEPTH_TEST);
-        world.drawChunks(deltaTime, window.getInputs(), window.mouseLocked());
+        world.drawChunks(deltaTime, window, window.mouseLocked());
 
         // 2D
         glDisable(GL_DEPTH_TEST);

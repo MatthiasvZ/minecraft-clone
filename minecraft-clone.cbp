@@ -27,7 +27,7 @@
 					<Add option="-lGLU" />
 					<Add option="-lGL" />
 					<Add option="-lglfw" />
-					<Add option="external/libPetroleum.a.debug" />
+					<Add option="lib/libPetroleum.a.debug" />
 				</Linker>
 			</Target>
 			<Target title="Release">
@@ -52,7 +52,7 @@
 					<Add option="-lGLU" />
 					<Add option="-lGL" />
 					<Add option="-lglfw" />
-					<Add option="external/libPetroleum.a" />
+					<Add option="lib/libPetroleum.a" />
 				</Linker>
 			</Target>
 			<Target title="Static">
@@ -81,9 +81,9 @@
 					<Add option="-lxcb" />
 					<Add option="-lXau" />
 					<Add option="-lXdmcp" />
-					<Add option="external/libGLEW.a" />
-					<Add option="external/libglfw3.a" />
-					<Add option="external/libPetroleum.a" />
+					<Add option="lib/libGLEW.a" />
+					<Add option="lib/libglfw3.a" />
+					<Add option="lib/libPetroleum.a" />
 				</Linker>
 			</Target>
 		</Build>
@@ -98,6 +98,7 @@
 		</Compiler>
 		<Linker>
 			<Add option="-lpthread" />
+			<Add option="-lopenal" />
 		</Linker>
 		<Unit filename="Main.cpp" />
 		<Unit filename="include/biome/Biome.h" />

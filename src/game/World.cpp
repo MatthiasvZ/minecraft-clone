@@ -44,6 +44,8 @@ World::World()
 {
     atlas = new PT::Texture(getDir() + "/assets/texAtlas.bmp", 0, GL_NEAREST, GL_NEAREST);
 
+    fprintf(stderr, "%s\n", getDir().c_str());
+
     camera.setClippingDistance(1000.0f);
     camera.setPosX(CHUNKRD * 8 + INIT_X_OFFSET);
     camera.setPosY(80);
@@ -105,18 +107,19 @@ World::World()
     chunkLoader = new std::thread(&World::loadNewChunks, this);
 }
 
-void World::drawChunks(float deltaTime, PT::Input* inputs, bool mouseLocked)
+void World::drawChunks(float deltaTime, const PT::Window& window, bool mouseLocked)
 {
-    shader.setUniformMat4f("u_MVP", camera.update(deltaTime, *inputs));
+    shader.setUniformMat4f("u_Mat", camera.update(deltaTime, window));
+    shader.setUniform1i("u_TexSlot", 0);
     shader.bindShader();
     if (!mouseLocked)
         camera.setMouseSpeed(0.0f);
     else
         camera.setMouseSpeed(0.35f);
 
-    if (!inputs->mouse1)
+    if (!window.getMouseButton(GLFW_MOUSE_BUTTON_1))
         mouseHold = false;
-    if (inputs->mouse1 && !mouseHold)
+    if (window.getMouseButton(GLFW_MOUSE_BUTTON_1) && !mouseHold)
     {
         breakBlock();
         mouseHold = true;

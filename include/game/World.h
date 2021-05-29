@@ -30,7 +30,7 @@ class World
 {
     public:
         World();
-        void drawChunks(float deltaTime, PT::Input* inputs, bool mouseLocked);
+        void drawChunks(float deltaTime, const PT::Window& window, bool mouseLocked);
         constexpr static unsigned int getSeed() {return m_Seed;}
         ~World();
     protected:
