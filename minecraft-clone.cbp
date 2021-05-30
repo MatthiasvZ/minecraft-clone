@@ -19,6 +19,7 @@
 					<Add directory="include/optimisation" />
 					<Add directory="include/biome" />
 					<Add directory="include/physics" />
+					<Add directory="include/game" />
 				</Compiler>
 				<Linker>
 					<Add option="-lzstd" />
@@ -41,6 +42,7 @@
 					<Add directory="include/optimisation" />
 					<Add directory="include/biome" />
 					<Add directory="include/physics" />
+					<Add directory="include/game" />
 				</Compiler>
 				<Linker>
 					<Add option="-O3" />
@@ -66,6 +68,7 @@
 					<Add directory="include/optimisation" />
 					<Add directory="include/biome" />
 					<Add directory="include/physics" />
+					<Add directory="include/game" />
 				</Compiler>
 				<Linker>
 					<Add option="-O3" />
@@ -103,6 +106,7 @@
 		<Unit filename="Main.cpp" />
 		<Unit filename="include/biome/Biome.h" />
 		<Unit filename="include/game/Chunk.h" />
+		<Unit filename="include/game/ChunkList.h" />
 		<Unit filename="include/game/ChunkMesh.h" />
 		<Unit filename="include/game/Player.h" />
 		<Unit filename="include/game/World.h" />

@@ -15,9 +15,9 @@ void Chunk::generate()
     {
         for (int iz {0}; iz < 16; iz++)
         {
-            pnoise[ix][iz] = (noise.GetNoise(static_cast<float>(m_PosX*16 + ix), static_cast<float>(m_PosZ*16 + iz)) +
-                             noise.GetNoise(static_cast<float>(m_PosX*16 + ix + 42), static_cast<float>(m_PosZ*16 + iz)) * 2 +
-                             noise.GetNoise(static_cast<float>(m_PosX*16 + ix + 420), static_cast<float>(m_PosZ*16 + iz)) * 4) / 7;
+            pnoise[ix][iz] = (noise.GetNoise(static_cast<float>(pos.x*16 + ix), static_cast<float>(pos.z*16 + iz)) +
+                             noise.GetNoise(static_cast<float>(pos.x*16 + ix + 42), static_cast<float>(pos.z*16 + iz)) * 2 +
+                             noise.GetNoise(static_cast<float>(pos.x*16 + ix + 420), static_cast<float>(pos.z*16 + iz)) * 4) / 7;
         }
     }
 
@@ -37,10 +37,10 @@ void Chunk::generate()
     {
         for (int iz {0}; iz < 16; iz++)
         {
-            float posX = static_cast<float>(m_PosX*16 + ix);
-            float posZ = static_cast<float>(m_PosZ*16 + iz);
-            noise.DomainWarp(posX, posZ);
-            bnoise[ix][iz] = noise.GetNoise(posX, posZ);
+            float wPosX = static_cast<float>(pos.x*16 + ix);
+            float wPosZ = static_cast<float>(pos.z*16 + iz);
+            noise.DomainWarp(wPosX, wPosZ);
+            bnoise[ix][iz] = noise.GetNoise(wPosX, wPosZ);
         }
     }
 
@@ -50,11 +50,11 @@ void Chunk::generate()
         for (int iz {0}; iz < 16; ++iz)
         {
             if (bnoise[ix][iz] > 0.0f)
-                m_BiomeIDs[ix][iz] = BIOME_GRASSLANDS;
+                biomeIDs[ix][iz] = BIOME_GRASSLANDS;
             else if (bnoise[ix][iz] > -0.5f)
-                m_BiomeIDs[ix][iz] = BIOME_FOREST;
+                biomeIDs[ix][iz] = BIOME_FOREST;
             else
-                m_BiomeIDs[ix][iz] = BIOME_DESERT;
+                biomeIDs[ix][iz] = BIOME_DESERT;
         }
     }
 
@@ -64,22 +64,22 @@ void Chunk::generate()
         {
             for (int iz {0}; iz < 16; iz++)
             {
-                if (pnoise[ix][iz] > static_cast<float>(m_PosY*16 + iy) / biomeBumpiness(m_BiomeIDs[ix][iz]) - biomeHeight(m_BiomeIDs[ix][iz]))
+                if (pnoise[ix][iz] > static_cast<float>(pos.y*16 + iy) / biomeBumpiness(biomeIDs[ix][iz]) - biomeHeight(biomeIDs[ix][iz]))
                 {
 
-                    if (pnoise[ix][iz] < static_cast<float>(m_PosY*16 + iy + 1) / biomeBumpiness(m_BiomeIDs[ix][iz]) - biomeHeight(m_BiomeIDs[ix][iz]))
+                    if (pnoise[ix][iz] < static_cast<float>(pos.y*16 + iy + 1) / biomeBumpiness(biomeIDs[ix][iz]) - biomeHeight(biomeIDs[ix][iz]))
                     {
-                        m_BlockIDs[ix][iy][iz] = biomePalTop(m_BiomeIDs[ix][iz]);
-                        if (biomePlaceTree(m_BiomeIDs[ix][iz], static_cast<unsigned int>(pnoise[ix][iz] * 100'000'000)) && iy != 15)
-                            m_BlockIDs[ix][iy + 1][iz] = BLOCK_OAK_LOG;
+                        blockIDs[ix][iy][iz] = biomePalTop(biomeIDs[ix][iz]);
+                        if (biomePlaceTree(biomeIDs[ix][iz], static_cast<unsigned int>(pnoise[ix][iz] * 100'000'000)) && iy != 15)
+                            blockIDs[ix][iy + 1][iz] = BLOCK_OAK_LOG;
                     }
-                    else if (pnoise[ix][iz] < static_cast<float>(m_PosY*16 + iy + biomeDirtHeight(m_BiomeIDs[ix][iz])) / biomeBumpiness(m_BiomeIDs[ix][iz]) - biomeHeight(m_BiomeIDs[ix][iz]))
-                        m_BlockIDs[ix][iy][iz] = biomePalDirt(m_BiomeIDs[ix][iz]);
+                    else if (pnoise[ix][iz] < static_cast<float>(pos.y*16 + iy + biomeDirtHeight(biomeIDs[ix][iz])) / biomeBumpiness(biomeIDs[ix][iz]) - biomeHeight(biomeIDs[ix][iz]))
+                        blockIDs[ix][iy][iz] = biomePalDirt(biomeIDs[ix][iz]);
                     else
-                        m_BlockIDs[ix][iy][iz] = BLOCK_STONE;
+                        blockIDs[ix][iy][iz] = BLOCK_STONE;
                 }
                 else
-                    m_BlockIDs[ix][iy][iz] = BLOCK_AIR;
+                    blockIDs[ix][iy][iz] = BLOCK_AIR;
             }
         }
     }

@@ -6,6 +6,7 @@
 
 #include "game/Chunk.h"
 #include "game/ChunkMesh.h"
+#include "ChunkList.h"
 #include "game/Player.h"
 #include "Petroleum.h"
 
@@ -22,21 +23,20 @@
 #define PLUS_Z 3
 #define MINUS_Z 4
 
-inline std::vector<std::vector<std::vector<Chunk>>>* chunks;
-inline std::vector<std::vector<std::vector<ChunkMesh>>>* chunkMeshes;
-inline PT::Texture* atlas;
-
 class World
 {
     public:
         World();
         void drawChunks(float deltaTime, const PT::Window& window, bool mouseLocked);
-        constexpr static unsigned int getSeed() {return m_Seed;}
+        constexpr static unsigned int getSeed() {return seed;}
         ~World();
     protected:
 
     private:
-        static const unsigned int m_Seed {1337};
+        ChunkList<CHUNKRD * CHUNKRD * MAXHEIGHT> chunks;
+        std::vector<std::vector<std::vector<ChunkMesh>>>* chunkMeshes;
+
+        static const unsigned int seed {1337};
         PT::SourcePackage srcpkg;
         PT::Shader shader;
         PT::Camera camera;
@@ -54,6 +54,8 @@ class World
         Player player;
         bool mouseHold;
         void breakBlock();
+
+        PT::Texture* atlas;
 };
 
 #endif // WORLD_H

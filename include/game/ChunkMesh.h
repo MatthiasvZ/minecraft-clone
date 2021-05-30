@@ -52,9 +52,9 @@ class ChunkMesh
         PT::IndexBuffer* ibo;
 
 
-        int m_PosX;
-        int m_PosY;
-        int m_PosZ;
+        int posX;
+        int posY;
+        int posZ;
         bool empty;
         bool firstrun;
         float getTexCoord(bool leftOrRight, unsigned char side, unsigned char blockID);

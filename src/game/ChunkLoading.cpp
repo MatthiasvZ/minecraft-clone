@@ -3,16 +3,17 @@
 
 void World::loadNewChunks()
 {
+/*
     while(!stop)
     {
-        /*fprintf(stderr, "x = %f\n", camera.getPosX());
+        fprintf(stderr, "x = %f\n", camera.getPosX());
         fprintf(stderr, "y = %f\n", camera.getPosY());
-        fprintf(stderr, "z = %f\n\n", camera.getPosZ());*/
+        fprintf(stderr, "z = %f\n\n", camera.getPosZ());
 
         if (GLOsMissing)
             continue;
 
-        if (camera.getPosX() / 16 > (*chunks)[0][0][0].getPosition().x + CHUNKRD)
+        if (camera.getPosX() / 16 > (*chunks)[0][0][0].getPos().x + CHUNKRD)
         {
             fprintf(stderr, "starting load, ");
             constexpr unsigned int x = CHUNKRD;
@@ -25,7 +26,7 @@ void World::loadNewChunks()
                 (*chunks)[x].push_back(std::vector<Chunk>());
                 (*chunks)[x][iy].reserve(CHUNKRD);
                 for (int iz {0}; iz < CHUNKRD; iz++)
-                    (*chunks)[x][iy].push_back(Chunk((*chunks)[x - 1][iy][iz].getPosition().x + 1, iy, iz));
+                    (*chunks)[x][iy].push_back(Chunk((*chunks)[x - 1][iy][iz].getPos().x + 1, iy, iz));
             }
 
             lock = true;
@@ -39,30 +40,30 @@ void World::loadNewChunks()
 
                 for (int iz {0}; iz < CHUNKRD; iz++)
                 {
-                    (*chunkMeshes)[x][iy].push_back(ChunkMesh((*chunks)[x][iy][iz].m_BlockIDs, \
-                                iy == MAXHEIGHT-1 ? voidChunkIDs : (*chunks)[x][iy+1][iz].m_BlockIDs, \
-                                iy == 0 ? voidChunkIDs : (*chunks)[x][iy-1][iz].m_BlockIDs, \
+                    (*chunkMeshes)[x][iy].push_back(ChunkMesh((*chunks)[x][iy][iz].blockIDs, \
+                                iy == MAXHEIGHT-1 ? voidChunkIDs : (*chunks)[x][iy+1][iz].blockIDs, \
+                                iy == 0 ? voidChunkIDs : (*chunks)[x][iy-1][iz].blockIDs, \
                                 voidChunkIDs, \
-                                x == 0 ? voidChunkIDs : (*chunks)[x-1][iy][iz].m_BlockIDs, \
-                                iz == CHUNKRD-1 ? voidChunkIDs : (*chunks)[x][iy][iz+1].m_BlockIDs, \
-                                iz == 0 ? voidChunkIDs : (*chunks)[x][iy][iz-1].m_BlockIDs, \
-                                (*chunks)[x - 1][iy][iz].getPosition().x + 1, iy, iz, true));
+                                x == 0 ? voidChunkIDs : (*chunks)[x-1][iy][iz].blockIDs, \
+                                iz == CHUNKRD-1 ? voidChunkIDs : (*chunks)[x][iy][iz+1].blockIDs, \
+                                iz == 0 ? voidChunkIDs : (*chunks)[x][iy][iz-1].blockIDs, \
+                                (*chunks)[x - 1][iy][iz].getPos().x + 1, iy, iz, true));
 
-                    (*chunkMeshes)[x - 1][iy][iz].updateChunkMesh((*chunks)[x - 1][iy][iz].m_BlockIDs, \
-                                iy == MAXHEIGHT-1 ? voidChunkIDs : (*chunks)[x - 1][iy+1][iz].m_BlockIDs, \
-                                iy == 0 ? voidChunkIDs : (*chunks)[x - 1][iy-1][iz].m_BlockIDs, \
-                                (*chunks)[x - 1+1][iy][iz].m_BlockIDs, \
-                                x - 1 == 0 ? voidChunkIDs : (*chunks)[x - 1-1][iy][iz].m_BlockIDs, \
-                                iz == CHUNKRD-1 ? voidChunkIDs : (*chunks)[x - 1][iy][iz+1].m_BlockIDs, \
-                                iz == 0 ? voidChunkIDs : (*chunks)[x - 1][iy][iz-1].m_BlockIDs, true);
+                    (*chunkMeshes)[x - 1][iy][iz].updateChunkMesh((*chunks)[x - 1][iy][iz].blockIDs, \
+                                iy == MAXHEIGHT-1 ? voidChunkIDs : (*chunks)[x - 1][iy+1][iz].blockIDs, \
+                                iy == 0 ? voidChunkIDs : (*chunks)[x - 1][iy-1][iz].blockIDs, \
+                                (*chunks)[x - 1+1][iy][iz].blockIDs, \
+                                x - 1 == 0 ? voidChunkIDs : (*chunks)[x - 1-1][iy][iz].blockIDs, \
+                                iz == CHUNKRD-1 ? voidChunkIDs : (*chunks)[x - 1][iy][iz+1].blockIDs, \
+                                iz == 0 ? voidChunkIDs : (*chunks)[x - 1][iy][iz-1].blockIDs, true);
 
-                    (*chunkMeshes)[1][iy][iz].updateChunkMesh((*chunks)[1][iy][iz].m_BlockIDs, \
-                                iy == MAXHEIGHT-1 ? voidChunkIDs : (*chunks)[1][iy+1][iz].m_BlockIDs, \
-                                iy == 0 ? voidChunkIDs : (*chunks)[1][iy-1][iz].m_BlockIDs, \
-                                1 == CHUNKRD-1 ? voidChunkIDs : (*chunks)[1+1][iy][iz].m_BlockIDs, \
+                    (*chunkMeshes)[1][iy][iz].updateChunkMesh((*chunks)[1][iy][iz].blockIDs, \
+                                iy == MAXHEIGHT-1 ? voidChunkIDs : (*chunks)[1][iy+1][iz].blockIDs, \
+                                iy == 0 ? voidChunkIDs : (*chunks)[1][iy-1][iz].blockIDs, \
+                                1 == CHUNKRD-1 ? voidChunkIDs : (*chunks)[1+1][iy][iz].blockIDs, \
                                 voidChunkIDs, \
-                                iz == CHUNKRD-1 ? voidChunkIDs : (*chunks)[1][iy][iz+1].m_BlockIDs, \
-                                iz == 0 ? voidChunkIDs : (*chunks)[1][iy][iz-1].m_BlockIDs, true);
+                                iz == CHUNKRD-1 ? voidChunkIDs : (*chunks)[1][iy][iz+1].blockIDs, \
+                                iz == 0 ? voidChunkIDs : (*chunks)[1][iy][iz-1].blockIDs, true);
                 }
             }
             fprintf(stderr, "finished c2, ");
@@ -72,10 +73,12 @@ void World::loadNewChunks()
             fprintf(stderr, "finished load, ");
         }
     }
+    */
 }
 
 void World::createBufferObjects()
 {
+/*
     if (GLOsMissing == PLUS_X)
     {
         for (int jy {0}; jy < MAXHEIGHT; ++jy)
@@ -101,4 +104,5 @@ void World::createBufferObjects()
         lock = false;
         ++offsetX;
     }
+    */
 }

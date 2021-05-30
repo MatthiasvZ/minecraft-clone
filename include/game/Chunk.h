@@ -15,32 +15,39 @@
 #include <string>
 
 
-struct Positioni
+class Positioni
 {
-    int x;
-    int y;
-    int z;
+    public:
+        Positioni(int x, int y, int z)
+            : x(x), y(y), z(z) {}
+        int x;
+        int y;
+        int z;
+
+        bool operator==(Positioni* b)
+        {
+            if (this->x == b->x && this->y == b->y && this->z == b->z)
+                return true;
+            return false;
+        }
 };
 
 class Chunk
 {
     public:
-        unsigned char m_BlockIDs[16][16][16];
-        unsigned char m_BiomeIDs[16][16];
+        unsigned char blockIDs[16][16][16];
+        unsigned char biomeIDs[16][16];
 
         Chunk(int x, int y, int z);
-        Positioni getPosition();
+        Positioni* getPos();
         ~Chunk();
 
     protected:
 
 
     private:
-        std::string m_FileName;
-        int m_PosX;
-        int m_PosY;
-        int m_PosZ;
-
+        std::string fileName;
+        Positioni pos;
 
         bool chunkExists();
         void readFromFile();

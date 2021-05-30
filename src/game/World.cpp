@@ -44,8 +44,6 @@ World::World()
 {
     atlas = new PT::Texture(getDir() + "/assets/texAtlas.bmp", 0, GL_NEAREST, GL_NEAREST);
 
-    fprintf(stderr, "%s\n", getDir().c_str());
-
     camera.setClippingDistance(1000.0f);
     camera.setPosX(CHUNKRD * 8 + INIT_X_OFFSET);
     camera.setPosY(80);
@@ -55,9 +53,7 @@ World::World()
     if (stat ("saves", &buffer) != 0)
         std::filesystem::create_directory("saves");
 
-    chunks = new std::vector<std::vector<std::vector<Chunk>>>();
     chunkMeshes = new std::vector<std::vector<std::vector<ChunkMesh>>>();
-    chunks->reserve(CHUNKRD + 1);
     chunkMeshes->reserve(CHUNKRD + 1);
 
     for (int ix {0}; ix < 16; ix++)
@@ -66,18 +62,10 @@ World::World()
                 voidChunkIDs[ix][iy][iz] = 0;
 
     // Generate/load the chunks.
-    for (int ix {0}; ix < CHUNKRD; ix++)
-    {
-        chunks->push_back(std::vector<std::vector<Chunk>>());
-        (*chunks)[ix].reserve(MAXHEIGHT);
-        for (int iy {0}; iy < MAXHEIGHT; iy++)
-        {
-            (*chunks)[ix].push_back(std::vector<Chunk>());
-            (*chunks)[ix][iy].reserve(CHUNKRD);
-            for (int iz {0}; iz < CHUNKRD; iz++)
-                (*chunks)[ix][iy].push_back(Chunk(ix + INIT_X_OFFSET / 16, iy, iz));
-        }
-    }
+    for (int ix {0}; ix < CHUNKRD; ++ix)
+        for (int iy {0}; iy < MAXHEIGHT; ++iy)
+            for (int iz {0}; iz < CHUNKRD; ++iz)
+                chunks.add(new Chunk(ix + INIT_X_OFFSET / 16, iy, iz));
 
     // Now that that's done, generate the chunk meshes.
     for (int ix {0}; ix < CHUNKRD; ix++)
@@ -92,13 +80,13 @@ World::World()
 
             for (int iz {0}; iz < CHUNKRD; iz++)
             {
-                (*chunkMeshes)[ix][iy].push_back(ChunkMesh((*chunks)[ix][iy][iz].m_BlockIDs, \
-                            iy == MAXHEIGHT-1 ? voidChunkIDs : (*chunks)[ix][iy+1][iz].m_BlockIDs, \
-                            iy == 0 ? voidChunkIDs : (*chunks)[ix][iy-1][iz].m_BlockIDs, \
-                            ix == CHUNKRD-1 ? voidChunkIDs : (*chunks)[ix+1][iy][iz].m_BlockIDs, \
-                            ix == 0 ? voidChunkIDs : (*chunks)[ix-1][iy][iz].m_BlockIDs, \
-                            iz == CHUNKRD-1 ? voidChunkIDs : (*chunks)[ix][iy][iz+1].m_BlockIDs, \
-                            iz == 0 ? voidChunkIDs : (*chunks)[ix][iy][iz-1].m_BlockIDs, \
+                (*chunkMeshes)[ix][iy].push_back(ChunkMesh(chunks.at(Positioni(ix, iy, iz))->blockIDs,
+                            iy == MAXHEIGHT-1 ? voidChunkIDs : chunks.at(Positioni(ix, iy + 1, iz))->blockIDs,
+                            iy == 0 ? voidChunkIDs : chunks.at(Positioni(ix, iy - 1, iz))->blockIDs,
+                            ix == CHUNKRD-1 ? voidChunkIDs : chunks.at(Positioni(ix + 1, iy, iz))->blockIDs,
+                            ix == 0 ? voidChunkIDs : chunks.at(Positioni(ix - 1, iy, iz))->blockIDs,
+                            iz == CHUNKRD-1 ? voidChunkIDs : chunks.at(Positioni(ix, iy, iz+1))->blockIDs,
+                            iz == 0 ? voidChunkIDs : chunks.at(Positioni(ix, iy, iz - 1))->blockIDs,
                             ix + INIT_X_OFFSET / 16, iy, iz));
             }
         }
@@ -109,8 +97,8 @@ World::World()
 
 void World::drawChunks(float deltaTime, const PT::Window& window, bool mouseLocked)
 {
-    shader.setUniformMat4f("u_Mat", camera.update(deltaTime, window));
-    shader.setUniform1i("u_TexSlot", 0);
+    shader.setMat(camera.update(deltaTime, window));
+    shader.setTexSlot(0);
     shader.bindShader();
     if (!mouseLocked)
         camera.setMouseSpeed(0.0f);
@@ -136,10 +124,6 @@ void World::drawChunks(float deltaTime, const PT::Window& window, bool mouseLock
                     if (GLOsMissing)
                         createBufferObjects();
 
-                // very expensive
-                //fprintf(stderr, "attempting draw. lock = %d, missing = %d, c = %d, %d, %d\n", lock, GLOsMissing, (*chunks)[ix][iy][iz].getPosition().x
-                //         , (*chunks)[ix][iy][iz].getPosition().y, (*chunks)[ix][iy][iz].getPosition().z);
-
                 PT::drawVA(*(*chunkMeshes)[ix][iy][iz].getVA(), *(*chunkMeshes)[ix][iy][iz].getIBO());
             }
 }
@@ -150,7 +134,6 @@ World::~World()
     chunkLoader->join();
     delete chunkLoader;
     delete atlas;
-    delete chunks;
     for (long unsigned int ix {0}; ix < chunkMeshes->size(); ix++)
         for (long unsigned int iy {0}; iy < (*chunkMeshes)[ix].size(); iy++)
             for (long unsigned int iz {0}; iz < (*chunkMeshes)[ix][iy].size(); iz++)

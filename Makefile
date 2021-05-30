@@ -18,7 +18,7 @@ LIBDIR =
 LIB = 
 LDFLAGS = -lpthread -lopenal
 
-INC_DEBUG = $(INC) -Iinclude/game/ -Iinclude/optimisation -Iinclude/biome -Iinclude/physics
+INC_DEBUG = $(INC) -Iinclude/game/ -Iinclude/optimisation -Iinclude/biome -Iinclude/physics -Iinclude/game
 CFLAGS_DEBUG = $(CFLAGS) -Og -g -DDEBUG
 RESINC_DEBUG = $(RESINC)
 RCFLAGS_DEBUG = $(RCFLAGS)
@@ -29,7 +29,7 @@ OBJDIR_DEBUG = obj/Debug
 DEP_DEBUG = 
 OUT_DEBUG = bin/Debug/minecraft-clone
 
-INC_RELEASE = $(INC) -Iinclude/game/ -Iinclude/optimisation -Iinclude/biome -Iinclude/physics
+INC_RELEASE = $(INC) -Iinclude/game/ -Iinclude/optimisation -Iinclude/biome -Iinclude/physics -Iinclude/game
 CFLAGS_RELEASE = $(CFLAGS) -flto
 RESINC_RELEASE = $(RESINC)
 RCFLAGS_RELEASE = $(RCFLAGS)
@@ -40,7 +40,7 @@ OBJDIR_RELEASE = obj/Release
 DEP_RELEASE = 
 OUT_RELEASE = bin/Release/minecraft-clone
 
-INC_STATIC = $(INC) -Iinclude/game/ -Iinclude/optimisation -Iinclude/biome -Iinclude/physics
+INC_STATIC = $(INC) -Iinclude/game/ -Iinclude/optimisation -Iinclude/biome -Iinclude/physics -Iinclude/game
 CFLAGS_STATIC = $(CFLAGS) -flto
 RESINC_STATIC = $(RESINC)
 RCFLAGS_STATIC = $(RCFLAGS)
