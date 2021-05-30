@@ -35,13 +35,13 @@ void Chunk::readFromFile()
 
     FILE* const iFile = fopen(fileName.c_str(), "rb");
     assert(iFile != NULL);
-    unsigned char fBuff[st.st_size];
+    unsigned char* fBuff = new unsigned char[st.st_size];
     assert(fread(fBuff, 1, st.st_size, iFile) != 0);
     fclose(iFile);
 
 
     size_t const cBuffSize = ZSTD_compressBound(16 * 16 * 16 * sizeof(unsigned char));
-    unsigned char cBuff[cBuffSize];
+    unsigned char* cBuff = new unsigned char[cBuffSize];
 
     assert(ZSTD_decompress(cBuff, cBuffSize, fBuff, st.st_size)
            == 16 * 16 * 16 * sizeof(unsigned char));
@@ -57,6 +57,8 @@ void Chunk::readFromFile()
             }
         }
     }
+    delete[] fBuff;
+    delete[] cBuff;
 }
 
 void Chunk::saveToFile()
@@ -70,7 +72,7 @@ void Chunk::saveToFile()
                 fBuff[256*ix + 16*iy + iz] = static_cast<unsigned char>(blockIDs[ix][iy][iz]);
 
     size_t const cBuffSize = ZSTD_compressBound(16 * 16 * 16 * sizeof(unsigned char));
-    unsigned char cBuff[cBuffSize];
+    unsigned char* cBuff = new unsigned char[cBuffSize];
 
     size_t const cSize = ZSTD_compress(cBuff, cBuffSize, fBuff, fSize, 1);
 
@@ -78,11 +80,12 @@ void Chunk::saveToFile()
     FILE* const oFile = fopen(fileName.c_str(), "wb");
     fwrite(cBuff, 1, cSize, oFile);
     fclose(oFile);
+    delete[] cBuff;
 }
 
-Positioni* Chunk::getPos()
+Positioni& Chunk::getPos()
 {
-    return &pos;
+    return pos;
 }
 
 Chunk::~Chunk()

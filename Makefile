@@ -12,7 +12,7 @@ LD = g++
 WINDRES = windres
 
 INC = 
-CFLAGS = -Wextra -Wall -std=c++20 -Iinclude -fexceptions -pipe -march=native
+CFLAGS = -Wnon-virtual-dtor -Winit-self -Wredundant-decls -Wcast-align -Wundef -Winline -Wunreachable-code -Wmain -pedantic -Wextra -Wall -std=c++20 -Iinclude -fexceptions -pipe -march=native
 RESINC = 
 LIBDIR = 
 LIB = 

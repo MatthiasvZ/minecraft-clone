@@ -24,9 +24,9 @@ class Positioni
         int y;
         int z;
 
-        bool operator==(Positioni* b)
+        bool operator==(Positioni& b)
         {
-            if (this->x == b->x && this->y == b->y && this->z == b->z)
+            if (this->x == b.x && this->y == b.y && this->z == b.z)
                 return true;
             return false;
         }
@@ -39,7 +39,7 @@ class Chunk
         unsigned char biomeIDs[16][16];
 
         Chunk(int x, int y, int z);
-        Positioni* getPos();
+        Positioni& getPos();
         ~Chunk();
 
     protected:

@@ -19,7 +19,7 @@
 #include <sys/stat.h>
 #include <filesystem>
 #include <unistd.h>
-#if _WIN32
+#ifdef _WIN32
     #include <libloaderapi.h>
 #endif // _WIN32
 

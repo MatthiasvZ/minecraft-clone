@@ -15,8 +15,9 @@ float biomeDirtHeight(unsigned char biome)
     case BIOME_DESERT:
         return 4.0f;
         break;
+    default:
+        return 4.0f;
     }
-    return 4.0f;
 }
 
 float biomeHeight(unsigned char biome)
@@ -32,8 +33,9 @@ float biomeHeight(unsigned char biome)
     case BIOME_DESERT:
         return 3.0f;
         break;
+    default:
+        return 4.0f;
     }
-    return 4.0f;
 }
 
 float biomeBumpiness(unsigned char biome)
@@ -49,8 +51,9 @@ float biomeBumpiness(unsigned char biome)
     case BIOME_DESERT:
         return 20.0f;
         break;
+    default:
+        return 20.0f;
     }
-    return 20.0f;
 }
 
 unsigned char biomePalTop(unsigned char biome)
@@ -66,8 +69,9 @@ unsigned char biomePalTop(unsigned char biome)
     case BIOME_DESERT:
         return BLOCK_SAND;
         break;
+    default:
+        return BLOCK_AIR;
     }
-    return BLOCK_AIR;
 }
 
 unsigned char biomePalDirt(unsigned char biome)
@@ -83,8 +87,9 @@ unsigned char biomePalDirt(unsigned char biome)
     case BIOME_DESERT:
         return BLOCK_SAND;
         break;
+    default:
+        return BLOCK_AIR;
     }
-    return BLOCK_AIR;
 }
 
 bool biomePlaceTree(unsigned char biome, unsigned int srandSeed)
@@ -101,6 +106,7 @@ bool biomePlaceTree(unsigned char biome, unsigned int srandSeed)
     case BIOME_DESERT:
         return rand() % 100 < 2;
         break;
+    default:
+        return false;
     }
-    return false;
 }
