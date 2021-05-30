@@ -5,7 +5,7 @@
 
 void World::breakBlock()
 {
-
+/*
     Ray ray(camera.getPitch(), camera.getYaw(), camera.getPosX(), camera.getPosY(), camera.getPosZ());
     for (int i {0}; i < 600; ++i)
     {
@@ -147,4 +147,5 @@ void World::breakBlock()
         }
         ray.step(0.01f);
     }
+    */
 }

@@ -51,11 +51,11 @@ OBJDIR_STATIC = obj/Static
 DEP_STATIC = 
 OUT_STATIC = bin/Static/minecraft-clone
 
-OBJ_DEBUG = $(OBJDIR_DEBUG)/src/biome/Biome.o $(OBJDIR_DEBUG)/src/ui/Crosshair.o $(OBJDIR_DEBUG)/src/physics/Ray.o $(OBJDIR_DEBUG)/src/game/World.o $(OBJDIR_DEBUG)/src/game/Player.o $(OBJDIR_DEBUG)/src/game/ChunkMesh.o $(OBJDIR_DEBUG)/src/game/ChunkLoading.o $(OBJDIR_DEBUG)/src/game/ChunkGeneration.o $(OBJDIR_DEBUG)/src/game/Chunk.o $(OBJDIR_DEBUG)/src/game/BlockEditing.o $(OBJDIR_DEBUG)/Main.o
+OBJ_DEBUG = $(OBJDIR_DEBUG)/src/ui/Crosshair.o $(OBJDIR_DEBUG)/src/physics/Ray.o $(OBJDIR_DEBUG)/src/game/World.o $(OBJDIR_DEBUG)/src/game/Player.o $(OBJDIR_DEBUG)/src/game/ChunkMesh.o $(OBJDIR_DEBUG)/src/game/ChunkLoading.o $(OBJDIR_DEBUG)/src/game/ChunkGeneration.o $(OBJDIR_DEBUG)/src/game/Chunk.o $(OBJDIR_DEBUG)/src/game/BlockEditing.o $(OBJDIR_DEBUG)/src/biome/Biome.o $(OBJDIR_DEBUG)/Main.o
 
-OBJ_RELEASE = $(OBJDIR_RELEASE)/src/biome/Biome.o $(OBJDIR_RELEASE)/src/ui/Crosshair.o $(OBJDIR_RELEASE)/src/physics/Ray.o $(OBJDIR_RELEASE)/src/game/World.o $(OBJDIR_RELEASE)/src/game/Player.o $(OBJDIR_RELEASE)/src/game/ChunkMesh.o $(OBJDIR_RELEASE)/src/game/ChunkLoading.o $(OBJDIR_RELEASE)/src/game/ChunkGeneration.o $(OBJDIR_RELEASE)/src/game/Chunk.o $(OBJDIR_RELEASE)/src/game/BlockEditing.o $(OBJDIR_RELEASE)/Main.o
+OBJ_RELEASE = $(OBJDIR_RELEASE)/src/ui/Crosshair.o $(OBJDIR_RELEASE)/src/physics/Ray.o $(OBJDIR_RELEASE)/src/game/World.o $(OBJDIR_RELEASE)/src/game/Player.o $(OBJDIR_RELEASE)/src/game/ChunkMesh.o $(OBJDIR_RELEASE)/src/game/ChunkLoading.o $(OBJDIR_RELEASE)/src/game/ChunkGeneration.o $(OBJDIR_RELEASE)/src/game/Chunk.o $(OBJDIR_RELEASE)/src/game/BlockEditing.o $(OBJDIR_RELEASE)/src/biome/Biome.o $(OBJDIR_RELEASE)/Main.o
 
-OBJ_STATIC = $(OBJDIR_STATIC)/src/biome/Biome.o $(OBJDIR_STATIC)/src/ui/Crosshair.o $(OBJDIR_STATIC)/src/physics/Ray.o $(OBJDIR_STATIC)/src/game/World.o $(OBJDIR_STATIC)/src/game/Player.o $(OBJDIR_STATIC)/src/game/ChunkMesh.o $(OBJDIR_STATIC)/src/game/ChunkLoading.o $(OBJDIR_STATIC)/src/game/ChunkGeneration.o $(OBJDIR_STATIC)/src/game/Chunk.o $(OBJDIR_STATIC)/src/game/BlockEditing.o $(OBJDIR_STATIC)/Main.o
+OBJ_STATIC = $(OBJDIR_STATIC)/src/ui/Crosshair.o $(OBJDIR_STATIC)/src/physics/Ray.o $(OBJDIR_STATIC)/src/game/World.o $(OBJDIR_STATIC)/src/game/Player.o $(OBJDIR_STATIC)/src/game/ChunkMesh.o $(OBJDIR_STATIC)/src/game/ChunkLoading.o $(OBJDIR_STATIC)/src/game/ChunkGeneration.o $(OBJDIR_STATIC)/src/game/Chunk.o $(OBJDIR_STATIC)/src/game/BlockEditing.o $(OBJDIR_STATIC)/src/biome/Biome.o $(OBJDIR_STATIC)/Main.o
 
 all: debug release static
 
@@ -63,10 +63,10 @@ clean: clean_debug clean_release clean_static
 
 before_debug: 
 	test -d bin/Debug || mkdir -p bin/Debug
-	test -d $(OBJDIR_DEBUG)/src/biome || mkdir -p $(OBJDIR_DEBUG)/src/biome
 	test -d $(OBJDIR_DEBUG)/src/ui || mkdir -p $(OBJDIR_DEBUG)/src/ui
 	test -d $(OBJDIR_DEBUG)/src/physics || mkdir -p $(OBJDIR_DEBUG)/src/physics
 	test -d $(OBJDIR_DEBUG)/src/game || mkdir -p $(OBJDIR_DEBUG)/src/game
+	test -d $(OBJDIR_DEBUG)/src/biome || mkdir -p $(OBJDIR_DEBUG)/src/biome
 	test -d $(OBJDIR_DEBUG) || mkdir -p $(OBJDIR_DEBUG)
 
 after_debug: 
@@ -75,9 +75,6 @@ debug: before_debug out_debug after_debug
 
 out_debug: before_debug $(OBJ_DEBUG) $(DEP_DEBUG)
 	$(LD) $(LIBDIR_DEBUG) -o $(OUT_DEBUG) $(OBJ_DEBUG)  $(LDFLAGS_DEBUG) $(LIB_DEBUG)
-
-$(OBJDIR_DEBUG)/src/biome/Biome.o: src/biome/Biome.cpp
-	$(CXX) $(CFLAGS_DEBUG) $(INC_DEBUG) -c src/biome/Biome.cpp -o $(OBJDIR_DEBUG)/src/biome/Biome.o
 
 $(OBJDIR_DEBUG)/src/ui/Crosshair.o: src/ui/Crosshair.cpp
 	$(CXX) $(CFLAGS_DEBUG) $(INC_DEBUG) -c src/ui/Crosshair.cpp -o $(OBJDIR_DEBUG)/src/ui/Crosshair.o
@@ -106,24 +103,27 @@ $(OBJDIR_DEBUG)/src/game/Chunk.o: src/game/Chunk.cpp
 $(OBJDIR_DEBUG)/src/game/BlockEditing.o: src/game/BlockEditing.cpp
 	$(CXX) $(CFLAGS_DEBUG) $(INC_DEBUG) -c src/game/BlockEditing.cpp -o $(OBJDIR_DEBUG)/src/game/BlockEditing.o
 
+$(OBJDIR_DEBUG)/src/biome/Biome.o: src/biome/Biome.cpp
+	$(CXX) $(CFLAGS_DEBUG) $(INC_DEBUG) -c src/biome/Biome.cpp -o $(OBJDIR_DEBUG)/src/biome/Biome.o
+
 $(OBJDIR_DEBUG)/Main.o: Main.cpp
 	$(CXX) $(CFLAGS_DEBUG) $(INC_DEBUG) -c Main.cpp -o $(OBJDIR_DEBUG)/Main.o
 
 clean_debug: 
 	rm -f $(OBJ_DEBUG) $(OUT_DEBUG)
 	rm -rf bin/Debug
-	rm -rf $(OBJDIR_DEBUG)/src/biome
 	rm -rf $(OBJDIR_DEBUG)/src/ui
 	rm -rf $(OBJDIR_DEBUG)/src/physics
 	rm -rf $(OBJDIR_DEBUG)/src/game
+	rm -rf $(OBJDIR_DEBUG)/src/biome
 	rm -rf $(OBJDIR_DEBUG)
 
 before_release: 
 	test -d bin/Release || mkdir -p bin/Release
-	test -d $(OBJDIR_RELEASE)/src/biome || mkdir -p $(OBJDIR_RELEASE)/src/biome
 	test -d $(OBJDIR_RELEASE)/src/ui || mkdir -p $(OBJDIR_RELEASE)/src/ui
 	test -d $(OBJDIR_RELEASE)/src/physics || mkdir -p $(OBJDIR_RELEASE)/src/physics
 	test -d $(OBJDIR_RELEASE)/src/game || mkdir -p $(OBJDIR_RELEASE)/src/game
+	test -d $(OBJDIR_RELEASE)/src/biome || mkdir -p $(OBJDIR_RELEASE)/src/biome
 	test -d $(OBJDIR_RELEASE) || mkdir -p $(OBJDIR_RELEASE)
 
 after_release: 
@@ -132,9 +132,6 @@ release: before_release out_release after_release
 
 out_release: before_release $(OBJ_RELEASE) $(DEP_RELEASE)
 	$(LD) $(LIBDIR_RELEASE) -o $(OUT_RELEASE) $(OBJ_RELEASE)  $(LDFLAGS_RELEASE) $(LIB_RELEASE)
-
-$(OBJDIR_RELEASE)/src/biome/Biome.o: src/biome/Biome.cpp
-	$(CXX) $(CFLAGS_RELEASE) $(INC_RELEASE) -c src/biome/Biome.cpp -o $(OBJDIR_RELEASE)/src/biome/Biome.o
 
 $(OBJDIR_RELEASE)/src/ui/Crosshair.o: src/ui/Crosshair.cpp
 	$(CXX) $(CFLAGS_RELEASE) $(INC_RELEASE) -c src/ui/Crosshair.cpp -o $(OBJDIR_RELEASE)/src/ui/Crosshair.o
@@ -163,24 +160,27 @@ $(OBJDIR_RELEASE)/src/game/Chunk.o: src/game/Chunk.cpp
 $(OBJDIR_RELEASE)/src/game/BlockEditing.o: src/game/BlockEditing.cpp
 	$(CXX) $(CFLAGS_RELEASE) $(INC_RELEASE) -c src/game/BlockEditing.cpp -o $(OBJDIR_RELEASE)/src/game/BlockEditing.o
 
+$(OBJDIR_RELEASE)/src/biome/Biome.o: src/biome/Biome.cpp
+	$(CXX) $(CFLAGS_RELEASE) $(INC_RELEASE) -c src/biome/Biome.cpp -o $(OBJDIR_RELEASE)/src/biome/Biome.o
+
 $(OBJDIR_RELEASE)/Main.o: Main.cpp
 	$(CXX) $(CFLAGS_RELEASE) $(INC_RELEASE) -c Main.cpp -o $(OBJDIR_RELEASE)/Main.o
 
 clean_release: 
 	rm -f $(OBJ_RELEASE) $(OUT_RELEASE)
 	rm -rf bin/Release
-	rm -rf $(OBJDIR_RELEASE)/src/biome
 	rm -rf $(OBJDIR_RELEASE)/src/ui
 	rm -rf $(OBJDIR_RELEASE)/src/physics
 	rm -rf $(OBJDIR_RELEASE)/src/game
+	rm -rf $(OBJDIR_RELEASE)/src/biome
 	rm -rf $(OBJDIR_RELEASE)
 
 before_static: 
 	test -d bin/Static || mkdir -p bin/Static
-	test -d $(OBJDIR_STATIC)/src/biome || mkdir -p $(OBJDIR_STATIC)/src/biome
 	test -d $(OBJDIR_STATIC)/src/ui || mkdir -p $(OBJDIR_STATIC)/src/ui
 	test -d $(OBJDIR_STATIC)/src/physics || mkdir -p $(OBJDIR_STATIC)/src/physics
 	test -d $(OBJDIR_STATIC)/src/game || mkdir -p $(OBJDIR_STATIC)/src/game
+	test -d $(OBJDIR_STATIC)/src/biome || mkdir -p $(OBJDIR_STATIC)/src/biome
 	test -d $(OBJDIR_STATIC) || mkdir -p $(OBJDIR_STATIC)
 
 after_static: 
@@ -189,9 +189,6 @@ static: before_static out_static after_static
 
 out_static: before_static $(OBJ_STATIC) $(DEP_STATIC)
 	$(LD) $(LIBDIR_STATIC) -o $(OUT_STATIC) $(OBJ_STATIC)  $(LDFLAGS_STATIC) $(LIB_STATIC)
-
-$(OBJDIR_STATIC)/src/biome/Biome.o: src/biome/Biome.cpp
-	$(CXX) $(CFLAGS_STATIC) $(INC_STATIC) -c src/biome/Biome.cpp -o $(OBJDIR_STATIC)/src/biome/Biome.o
 
 $(OBJDIR_STATIC)/src/ui/Crosshair.o: src/ui/Crosshair.cpp
 	$(CXX) $(CFLAGS_STATIC) $(INC_STATIC) -c src/ui/Crosshair.cpp -o $(OBJDIR_STATIC)/src/ui/Crosshair.o
@@ -220,16 +217,19 @@ $(OBJDIR_STATIC)/src/game/Chunk.o: src/game/Chunk.cpp
 $(OBJDIR_STATIC)/src/game/BlockEditing.o: src/game/BlockEditing.cpp
 	$(CXX) $(CFLAGS_STATIC) $(INC_STATIC) -c src/game/BlockEditing.cpp -o $(OBJDIR_STATIC)/src/game/BlockEditing.o
 
+$(OBJDIR_STATIC)/src/biome/Biome.o: src/biome/Biome.cpp
+	$(CXX) $(CFLAGS_STATIC) $(INC_STATIC) -c src/biome/Biome.cpp -o $(OBJDIR_STATIC)/src/biome/Biome.o
+
 $(OBJDIR_STATIC)/Main.o: Main.cpp
 	$(CXX) $(CFLAGS_STATIC) $(INC_STATIC) -c Main.cpp -o $(OBJDIR_STATIC)/Main.o
 
 clean_static: 
 	rm -f $(OBJ_STATIC) $(OUT_STATIC)
 	rm -rf bin/Static
-	rm -rf $(OBJDIR_STATIC)/src/biome
 	rm -rf $(OBJDIR_STATIC)/src/ui
 	rm -rf $(OBJDIR_STATIC)/src/physics
 	rm -rf $(OBJDIR_STATIC)/src/game
+	rm -rf $(OBJDIR_STATIC)/src/biome
 	rm -rf $(OBJDIR_STATIC)
 
 .PHONY: before_debug after_debug clean_debug before_release after_release clean_release before_static after_static clean_static

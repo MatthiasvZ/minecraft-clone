@@ -14,7 +14,7 @@
 #endif // DEBUG
 
 Chunk::Chunk(int x, int y, int z)
-    : fileName("saves/x" + std::to_string(x) + 'y' + std::to_string(y) + 'z' + std::to_string(z) + ".chunk"), pos(x, y, z)
+    : meshGenerated(false), fileName("saves/x" + std::to_string(x) + 'y' + std::to_string(y) + 'z' + std::to_string(z) + ".chunk"), pos(x, y, z)
 {
     if (!chunkExists())
         generate();

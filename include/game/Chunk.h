@@ -12,25 +12,10 @@
 #define BLOCK_SAND 8
 #define BLOCKS_TOTAL 8.0f
 
+#include "Positioni.h"
 #include <string>
 
-
-class Positioni
-{
-    public:
-        Positioni(int x, int y, int z)
-            : x(x), y(y), z(z) {}
-        int x;
-        int y;
-        int z;
-
-        bool operator==(Positioni& b)
-        {
-            if (this->x == b.x && this->y == b.y && this->z == b.z)
-                return true;
-            return false;
-        }
-};
+inline unsigned char voidChunkIDs[16][16][16];
 
 class Chunk
 {
@@ -41,6 +26,8 @@ class Chunk
         Chunk(int x, int y, int z);
         Positioni& getPos();
         ~Chunk();
+
+        bool meshGenerated;
 
     protected:
 

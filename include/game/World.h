@@ -7,21 +7,18 @@
 #include "game/Chunk.h"
 #include "game/ChunkMesh.h"
 #include "ChunkList.h"
+#include "ChunkMeshList.h"
 #include "game/Player.h"
 #include "Petroleum.h"
 
-#if __unix__
+#ifdef __unix__
 #include <thread>
-#elif _WIN32
+#elif defined _WIN32
 #include "vendor/mingw.thread.h"
 #else
 #error Unsupported OS
 #endif // __unix__
 
-#define PLUS_X 1
-#define MINUS_X 2
-#define PLUS_Z 3
-#define MINUS_Z 4
 
 class World
 {
@@ -34,22 +31,19 @@ class World
 
     private:
         ChunkList<CHUNKRD * CHUNKRD * MAXHEIGHT> chunks;
-        std::vector<std::vector<std::vector<ChunkMesh>>>* chunkMeshes;
+        ChunkMeshList<CHUNKRD * CHUNKRD * MAXHEIGHT> chunkMeshes;
 
         static const unsigned int seed {1337};
         PT::SourcePackage srcpkg;
         PT::Shader shader;
         PT::Camera camera;
-        unsigned char voidChunkIDs[16][16][16];
 
         void loadNewChunks();
-        bool lock;
+        bool lockRenderer;
         bool stop;
         std::thread* chunkLoader;
         unsigned int GLOsMissing;
         void createBufferObjects();
-        int offsetX;
-        int offsetZ;
 
         Player player;
         bool mouseHold;

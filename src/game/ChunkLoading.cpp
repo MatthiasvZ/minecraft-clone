@@ -3,106 +3,64 @@
 
 void World::loadNewChunks()
 {
-/*
     while(!stop)
     {
+        /*
         fprintf(stderr, "x = %f\n", camera.getPosX());
         fprintf(stderr, "y = %f\n", camera.getPosY());
         fprintf(stderr, "z = %f\n\n", camera.getPosZ());
+        */
 
         if (GLOsMissing)
             continue;
 
-        if (camera.getPosX() / 16 > (*chunks)[0][0][0].getPos().x + CHUNKRD)
+        for (size_t i {0}; i < chunks.size(); ++i)
         {
-            fprintf(stderr, "starting load, ");
-            constexpr unsigned int x = CHUNKRD;
-            //constexpr unsigned int nX = CHUNKRD - 1;
+            if (chunks[i] == nullptr)
+            continue;
 
-            chunks->push_back(std::vector<std::vector<Chunk>>());
-            (*chunks)[x].reserve(MAXHEIGHT);
-            for (int iy {0}; iy < MAXHEIGHT; iy++)
+            if (chunks[i]->meshGenerated == false)
             {
-                (*chunks)[x].push_back(std::vector<Chunk>());
-                (*chunks)[x][iy].reserve(CHUNKRD);
-                for (int iz {0}; iz < CHUNKRD; iz++)
-                    (*chunks)[x][iy].push_back(Chunk((*chunks)[x - 1][iy][iz].getPos().x + 1, iy, iz));
+                lockRenderer = true;
+
+                ChunkBall cBall;
+                cBall.blockIDs = &chunks[i]->blockIDs;
+                Positioni cPos = chunks[i]->getPos();
+
+                Chunk* cAbove = chunks.at(Positioni(cPos.x, cPos.y + 1, cPos.z));
+                cBall.blockIDsAbove   = cAbove   == nullptr ? &voidChunkIDs : &cAbove->blockIDs;
+                Chunk* cBelow = chunks.at(Positioni(cPos.x, cPos.y - 1, cPos.z));
+                cBall.blockIDsBelow   = cBelow   == nullptr ? &voidChunkIDs : &cBelow->blockIDs;
+                Chunk* cLeft = chunks.at(Positioni(cPos.x + 1, cPos.y, cPos.z));
+                cBall.blockIDsLeft    = cLeft    == nullptr ? &voidChunkIDs : &cLeft->blockIDs;
+                Chunk* cRight = chunks.at(Positioni(cPos.x - 1, cPos.y, cPos.z));
+                cBall.blockIDsRight   = cRight   == nullptr ? &voidChunkIDs : &cRight->blockIDs;
+                Chunk* cInFront = chunks.at(Positioni(cPos.x, cPos.y, cPos.z+1));
+                cBall.blockIDsInFront = cInFront == nullptr ? &voidChunkIDs : &cInFront->blockIDs;
+                Chunk* cBehind = chunks.at(Positioni(cPos.x, cPos.y, cPos.z - 1));
+                cBall.blockIDsBehind  = cBehind  == nullptr ? &voidChunkIDs : &cBehind->blockIDs;
+
+                chunkMeshes.add(new ChunkMesh(cBall, cPos.x, cPos.y, cPos.z, true));
+
+                chunks[i]->meshGenerated = true;
+                GLOsMissing  = true;
+                lockRenderer = false;
             }
-
-            lock = true;
-
-            fprintf(stderr, "finished c1, ");
-            chunkMeshes->push_back(std::vector<std::vector<ChunkMesh>>());
-            for (int iy {0}; iy < MAXHEIGHT; iy++)
-            {
-                (*chunkMeshes)[x].push_back(std::vector<ChunkMesh>());
-                (*chunkMeshes)[x][iy].reserve(CHUNKRD);
-
-                for (int iz {0}; iz < CHUNKRD; iz++)
-                {
-                    (*chunkMeshes)[x][iy].push_back(ChunkMesh((*chunks)[x][iy][iz].blockIDs, \
-                                iy == MAXHEIGHT-1 ? voidChunkIDs : (*chunks)[x][iy+1][iz].blockIDs, \
-                                iy == 0 ? voidChunkIDs : (*chunks)[x][iy-1][iz].blockIDs, \
-                                voidChunkIDs, \
-                                x == 0 ? voidChunkIDs : (*chunks)[x-1][iy][iz].blockIDs, \
-                                iz == CHUNKRD-1 ? voidChunkIDs : (*chunks)[x][iy][iz+1].blockIDs, \
-                                iz == 0 ? voidChunkIDs : (*chunks)[x][iy][iz-1].blockIDs, \
-                                (*chunks)[x - 1][iy][iz].getPos().x + 1, iy, iz, true));
-
-                    (*chunkMeshes)[x - 1][iy][iz].updateChunkMesh((*chunks)[x - 1][iy][iz].blockIDs, \
-                                iy == MAXHEIGHT-1 ? voidChunkIDs : (*chunks)[x - 1][iy+1][iz].blockIDs, \
-                                iy == 0 ? voidChunkIDs : (*chunks)[x - 1][iy-1][iz].blockIDs, \
-                                (*chunks)[x - 1+1][iy][iz].blockIDs, \
-                                x - 1 == 0 ? voidChunkIDs : (*chunks)[x - 1-1][iy][iz].blockIDs, \
-                                iz == CHUNKRD-1 ? voidChunkIDs : (*chunks)[x - 1][iy][iz+1].blockIDs, \
-                                iz == 0 ? voidChunkIDs : (*chunks)[x - 1][iy][iz-1].blockIDs, true);
-
-                    (*chunkMeshes)[1][iy][iz].updateChunkMesh((*chunks)[1][iy][iz].blockIDs, \
-                                iy == MAXHEIGHT-1 ? voidChunkIDs : (*chunks)[1][iy+1][iz].blockIDs, \
-                                iy == 0 ? voidChunkIDs : (*chunks)[1][iy-1][iz].blockIDs, \
-                                1 == CHUNKRD-1 ? voidChunkIDs : (*chunks)[1+1][iy][iz].blockIDs, \
-                                voidChunkIDs, \
-                                iz == CHUNKRD-1 ? voidChunkIDs : (*chunks)[1][iy][iz+1].blockIDs, \
-                                iz == 0 ? voidChunkIDs : (*chunks)[1][iy][iz-1].blockIDs, true);
-                }
-            }
-            fprintf(stderr, "finished c2, ");
-
-
-            GLOsMissing = PLUS_X;
-            fprintf(stderr, "finished load, ");
         }
     }
-    */
 }
+
 
 void World::createBufferObjects()
 {
-/*
-    if (GLOsMissing == PLUS_X)
+    for (size_t i {0}; i < chunkMeshes.size(); ++i)
     {
-        for (int jy {0}; jy < MAXHEIGHT; ++jy)
-            for (int jz {0}; jz < CHUNKRD; ++jz)
-                (*chunkMeshes)[0][jy][jz].freeMemory();
+        if (chunkMeshes[i] == nullptr)
+            continue;
 
-        chunks->erase(chunks->begin());
-        chunks->shrink_to_fit();
-
-        chunkMeshes->erase(chunkMeshes->begin());
-        chunkMeshes->shrink_to_fit();
-
-        for (int iy {0}; iy < MAXHEIGHT; iy++)
-            for (int iz {0}; iz < CHUNKRD; iz++)
-                {
-                    (*chunkMeshes)[CHUNKRD - 1][iy][iz].createGLOs();
-                    (*chunkMeshes)[CHUNKRD - 2][iy][iz].createGLOs();
-                    (*chunkMeshes)[0][iy][iz].createGLOs();
-                }
-
-        fprintf(stderr, "updated buffers\n");
-        GLOsMissing = false;
-        lock = false;
-        ++offsetX;
+        if (chunkMeshes[i]->getGLOsMissing())
+            chunkMeshes[i]->createGLOs();
     }
-    */
+
+    GLOsMissing = false;
 }

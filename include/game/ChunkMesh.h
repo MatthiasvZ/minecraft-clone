@@ -5,40 +5,41 @@
 #define BLOCK_TOPSIDE 1
 #define BLOCK_BOTTOMSIDE 2
 
+#include "Positioni.h"
 #include <vector>
 #include "Petroleum.h"
+
+class ChunkBall
+{
+    public:
+        ChunkBall()
+        : blockIDs(nullptr) {}
+        unsigned char (*blockIDs)[16][16][16];
+
+        unsigned char (*blockIDsAbove)[16][16][16];
+        unsigned char (*blockIDsBelow)[16][16][16];
+        unsigned char (*blockIDsLeft)[16][16][16];
+        unsigned char (*blockIDsRight)[16][16][16];
+        unsigned char (*blockIDsInFront)[16][16][16];
+        unsigned char (*blockIDsBehind)[16][16][16];
+};
 
 class ChunkMesh
 {
     public:
-        ChunkMesh(const unsigned char (&blockIDs)[16][16][16], \
-                  const unsigned char (&nbrIDsAbove)[16][16][16], \
-                  const unsigned char (&nbrIDsBelow)[16][16][16], \
-                  const unsigned char (&nbrIDsLeft)[16][16][16], \
-                  const unsigned char (&nbrIDsRight)[16][16][16], \
-                  const unsigned char (&nbrIDsInFront)[16][16][16], \
-                  const unsigned char (&nbrIDsBehind)[16][16][16], \
-                  const int& x, const int& y, const int& z, bool skipGL = false);
-
-        void updateChunkMesh(const unsigned char (&blockIDs)[16][16][16], \
-                     const unsigned char (&nbrIDsAbove)[16][16][16], \
-                     const unsigned char (&nbrIDsBelow)[16][16][16], \
-                     const unsigned char (&nbrIDsLeft)[16][16][16], \
-                     const unsigned char (&nbrIDsRight)[16][16][16], \
-                     const unsigned char (&nbrIDsInFront)[16][16][16], \
-                     const unsigned char (&nbrIDsBehind)[16][16][16],
-                     bool skipGL = false);
+        ChunkMesh(const ChunkBall& cBall, int x, int y, int z, bool skipGL = false);
 
         void createGLOs();
         inline PT::VertexArray* getVA() { return vao; }
         inline PT::IndexBuffer* getIBO() { return ibo; }
         inline bool isEmpty() { return empty; }
+        inline Positioni getPos() { return pos; }
+        inline bool getGLOsMissing() { return glosMissing; }
 
         #ifdef DEBUG
             static void printTimeStats();
         #endif // DEBUG
 
-        void freeMemory();
         ~ChunkMesh();
 
     protected:
@@ -52,11 +53,9 @@ class ChunkMesh
         PT::IndexBuffer* ibo;
 
 
-        int posX;
-        int posY;
-        int posZ;
+        Positioni pos;
         bool empty;
-        bool firstrun;
+        bool glosMissing;
         float getTexCoord(bool leftOrRight, unsigned char side, unsigned char blockID);
         void addVertex(float x, float y, float z, float l, float u, float v);
         void addIndex(unsigned short a, unsigned short b, unsigned short c);
