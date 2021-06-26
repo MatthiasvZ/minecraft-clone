@@ -27,6 +27,12 @@ class ChunkList
             assert(0);
         }
 
+        void remove(size_t n)
+        {
+            delete chunkPointers[n];
+            chunkPointers[n] = nullptr;
+        }
+
         void remove(Positioni pos)
         {
             for (size_t i {0}; i < S; ++i)
@@ -63,7 +69,9 @@ class ChunkList
 
         virtual ~ChunkList()
         {
-
+            for (size_t i {0}; i < S; ++i)
+                if (chunkPointers[i] != nullptr)
+                    delete chunkPointers[i];
         }
 
     protected:

@@ -27,14 +27,17 @@ class ChunkBall
 class ChunkMesh
 {
     public:
-        ChunkMesh(const ChunkBall& cBall, int x, int y, int z, bool skipGL = false);
+        ChunkMesh(const ChunkBall& cBall, int x, int y, int z);
 
         void createGLOs();
-        inline PT::VertexArray* getVA() { return vao; }
-        inline PT::IndexBuffer* getIBO() { return ibo; }
-        inline bool isEmpty() { return empty; }
-        inline Positioni getPos() { return pos; }
-        inline bool getGLOsMissing() { return glosMissing; }
+
+        inline PT::VertexArray* getVA()          { return vao; }
+        inline PT::IndexBuffer* getIBO()         { return ibo; }
+        inline bool             isEmpty()        { return empty; }
+        inline Positioni        getPos()         { return pos; }
+        inline bool             getGLOsMissing() { return glosMissing; }
+
+        bool flaggedForDeletion;
 
         #ifdef DEBUG
             static void printTimeStats();

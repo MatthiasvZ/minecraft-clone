@@ -38,6 +38,7 @@
 				<Option compiler="gcc" />
 				<Compiler>
 					<Add option="-flto" />
+					<Add option="-Ofast" />
 					<Add directory="include/game/" />
 					<Add directory="include/optimisation" />
 					<Add directory="include/biome" />
@@ -45,7 +46,6 @@
 					<Add directory="include/game" />
 				</Compiler>
 				<Linker>
-					<Add option="-O3" />
 					<Add option="-flto" />
 					<Add option="-s" />
 					<Add option="-lzstd" />

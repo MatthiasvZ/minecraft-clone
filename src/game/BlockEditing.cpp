@@ -5,147 +5,50 @@
 
 void World::breakBlock()
 {
-/*
     Ray ray(camera.getPitch(), camera.getYaw(), camera.getPosX(), camera.getPosY(), camera.getPosZ());
     for (int i {0}; i < 600; ++i)
     {
-        if (INT(ray.getX()) > 16 * chunks.at(Positioni(CHUNKRD - 1, MAXHEIGHT - 1, CHUNKRD - 1))->getPos().x + 15 ||
-            INT(ray.getX()) < 16 * chunks.at(Positioni(0, 0, 0))->getPos().x ||
-            INT(ray.getY()) > 16 * chunks.at(Positioni(CHUNKRD - 1, MAXHEIGHT - 1, CHUNKRD - 1))->getPos().y + 15 ||
-            INT(ray.getY()) < 16 * chunks.at(Positioni(0, 0, 0))->getPos().y ||
-            INT(ray.getZ()) > 16 * chunks.at(Positioni(CHUNKRD - 1, MAXHEIGHT - 1, CHUNKRD - 1))->getPos().z + 15 ||
-            INT(ray.getZ()) < 16 * chunks.at(Positioni(0, 0, 0))->getPos().z)
-            break;
+        Chunk* chunk = chunks.at(Positioni(INT(ray.getX() / 16), INT(ray.getY() / 16), INT(ray.getZ() / 16)));
+        if (chunk == nullptr)
+            continue;
 
-        if (chunks.at(Positioni(INT(ray.getX() / 16) - offsetX, INT(ray.getY() / 16), INT(ray.getZ() / 16) - offsetZ))
-            ->blockIDs[INT(ray.getX()) % 16][INT(ray.getY()) % 16][INT(ray.getZ()) % 16] != BLOCK_AIR)
+        if (chunk->blockIDs[INT(ray.getX()) % 16][INT(ray.getY()) % 16][INT(ray.getZ()) % 16] != BLOCK_AIR)
         {
             #ifdef DEBUG
-            fprintf(stderr, "Hit block of type %d!\n", chunks.at(Positioni(INT(ray.getX() / 16) - offsetX, INT(ray.getY() / 16), INT(ray.getZ() / 16) - offsetZ))
-                    ->blockIDs[INT(ray.getX()) % 16][INT(ray.getY()) % 16][INT(ray.getZ()) % 16]);
+            fprintf(stderr, "Hit block of type %d!\n", chunk->blockIDs[INT(ray.getX()) % 16][INT(ray.getY()) % 16][INT(ray.getZ()) % 16]);
             #endif // DEBUG
 
             // Replace the block with air
-            chunks.at(Positioni(INT(ray.getX() / 16) - offsetX, INT(ray.getY() / 16), INT(ray.getZ() / 16) - offsetZ))
-                     ->blockIDs[INT(ray.getX()) % 16][INT(ray.getY()) % 16][INT(ray.getZ()) % 16] = BLOCK_AIR;
+            chunk->blockIDs[INT(ray.getX()) % 16][INT(ray.getY()) % 16][INT(ray.getZ()) % 16] = BLOCK_AIR;
 
-            for (int ix {0}; ix < 16; ix++)
-                for (int iy {0}; iy < 16; iy++)
-                    for (int iz {0}; iz < 16; iz++)
-                        voidChunkIDs[ix][iy][iz] = 0;
+            Positioni cPos = chunk->getPos();
 
+            // Flag all affected meshes for recreation
+            ChunkMesh* cmCentre = chunkMeshes.at(cPos);
+            if (cmCentre != nullptr)
+                cmCentre->flaggedForDeletion = true;
+            ChunkMesh* cmAbove = chunkMeshes.at(Positioni(cPos.x, cPos.y + 1, cPos.z));
+            if (cmAbove != nullptr)
+                cmAbove->flaggedForDeletion = true;
+            ChunkMesh* cmBelow = chunkMeshes.at(Positioni(cPos.x, cPos.y - 1, cPos.z));
+            if (cmBelow != nullptr)
+                cmBelow->flaggedForDeletion = true;
+            ChunkMesh* cmLeft = chunkMeshes.at(Positioni(cPos.x + 1, cPos.y, cPos.z));
+            if (cmLeft != nullptr)
+                cmLeft->flaggedForDeletion = true;
+            ChunkMesh* cmRight = chunkMeshes.at(Positioni(cPos.x - 1, cPos.y, cPos.z));
+            if (cmRight != nullptr)
+                cmRight->flaggedForDeletion = true;
+            ChunkMesh* cmInFront = chunkMeshes.at(Positioni(cPos.x, cPos.y, cPos.z + 1));
+            if (cmInFront != nullptr)
+                cmInFront->flaggedForDeletion = true;
+            ChunkMesh* cmBehind = chunkMeshes.at(Positioni(cPos.x, cPos.y, cPos.z - 1));
+            if (cmBehind != nullptr)
+                cmBehind->flaggedForDeletion = true;
+            lockMeshGen = true;
 
-            // Update the chunk
-            (*chunkMeshes)[INT(ray.getX() / 16) - offsetX][INT(ray.getY() / 16)][INT(ray.getZ() / 16) - offsetZ]
-                            .updateChunkMesh(chunks.at(Positioni(INT(ray.getX() / 16) - offsetX, INT(ray.getY() / 16), INT(ray.getZ() / 16) - offsetZ))->blockIDs,
-                            INT(ray.getY() / 16) == MAXHEIGHT-1 ? voidChunkIDs : chunks.at(Positioni(INT(ray.getX() / 16) - offsetX, INT(ray.getY() / 16)+1, INT(ray.getZ() / 16) - offsetZ))->blockIDs,
-                            INT(ray.getY() / 16) == 0 ? voidChunkIDs : chunks.at(Positioni(INT(ray.getX() / 16) - offsetX, INT(ray.getY() / 16)-1, INT(ray.getZ() / 16) - offsetZ))->blockIDs,
-                            INT(ray.getX() / 16) - offsetX == CHUNKRD-1 ? voidChunkIDs : chunks.at(Positioni(INT(ray.getX() / 16) - offsetX+1, INT(ray.getY() / 16), INT(ray.getZ() / 16) - offsetZ))->blockIDs,
-                            INT(ray.getX() / 16) - offsetX == 0 ? voidChunkIDs : chunks.at(Positioni(INT(ray.getX() / 16) - offsetX-1, INT(ray.getY() / 16), INT(ray.getZ() / 16) - offsetZ))->blockIDs,
-                            INT(ray.getZ() / 16) - offsetZ == CHUNKRD-1 ? voidChunkIDs : chunks.at(Positioni(INT(ray.getX() / 16) - offsetX, INT(ray.getY() / 16), INT(ray.getZ() / 16) - offsetZ+1))->blockIDs,
-                            INT(ray.getZ() / 16) - offsetZ == 0 ? voidChunkIDs : chunks.at(Positioni(INT(ray.getX() / 16) - offsetX, INT(ray.getY() / 16), INT(ray.getZ() / 16) - offsetZ-1))->blockIDs, false);
-
-
-            // Update neighbouring chunks if necessairy
-            if (INT(ray.getY() / 16) < MAXHEIGHT - 1) // above
-            {
-                if (INT(ray.getY()) % 16 == 15 &&
-                    chunks.at(Positioni(INT(ray.getX() / 16) - offsetX, INT(ray.getY() / 16) + 1, INT(ray.getZ() / 16) - offsetZ))->blockIDs
-                    [INT(ray.getX()) % 16][0][INT(ray.getZ()) % 16] != BLOCK_AIR)
-                {
-                    (*chunkMeshes)[INT(ray.getX() / 16) - offsetX][INT(ray.getY() / 16) + 1][INT(ray.getZ() / 16) - offsetZ]
-                                    .updateChunkMesh(chunks.at(Positioni(INT(ray.getX() / 16) - offsetX, INT(ray.getY() / 16) + 1, INT(ray.getZ() / 16) - offsetZ))->blockIDs,
-                                    INT(ray.getY() / 16) + 1 == MAXHEIGHT-1 ? voidChunkIDs : chunks.at(Positioni(INT(ray.getX() / 16) - offsetX, INT(ray.getY() / 16) + 1+1, INT(ray.getZ() / 16) - offsetZ))->blockIDs,
-                                    INT(ray.getY() / 16) + 1 == 0 ? voidChunkIDs : chunks.at(Positioni(INT(ray.getX() / 16) - offsetX, INT(ray.getY() / 16) + 1-1, INT(ray.getZ() / 16) - offsetZ))->blockIDs,
-                                    INT(ray.getX() / 16) - offsetX == CHUNKRD-1 ? voidChunkIDs : chunks.at(Positioni(INT(ray.getX() / 16) - offsetX+1, INT(ray.getY() / 16) + 1, INT(ray.getZ() / 16) - offsetZ))->blockIDs,
-                                    INT(ray.getX() / 16) - offsetX == 0 ? voidChunkIDs : chunks.at(Positioni(INT(ray.getX() / 16) - offsetX-1, INT(ray.getY() / 16) + 1, INT(ray.getZ() / 16) - offsetZ))->blockIDs,
-                                    INT(ray.getZ() / 16) - offsetZ == CHUNKRD-1 ? voidChunkIDs : chunks.at(Positioni(INT(ray.getX() / 16) - offsetX, INT(ray.getY() / 16) + 1, INT(ray.getZ() / 16) - offsetZ+1))->blockIDs,
-                                    INT(ray.getZ() / 16) - offsetZ == 0 ? voidChunkIDs : chunks.at(Positioni(INT(ray.getX() / 16) - offsetX, INT(ray.getY() / 16) + 1, INT(ray.getZ() / 16) - offsetZ-1))->blockIDs, false);
-                }
-            }
-            if (INT(ray.getY() / 16) > 0) // below
-            {
-                if (INT(ray.getY()) % 16 == 0 &&
-                    chunks.at(Positioni(INT(ray.getX() / 16) - offsetX, INT(ray.getY() / 16) - 1, INT(ray.getZ() / 16) - offsetZ))->blockIDs
-                    [INT(ray.getX()) % 16][15][INT(ray.getZ()) % 16] != BLOCK_AIR)
-                {
-                    (*chunkMeshes)[INT(ray.getX() / 16) - offsetX][INT(ray.getY() / 16) - 1][INT(ray.getZ() / 16) - offsetZ]
-                                    .updateChunkMesh(chunks.at(Positioni(INT(ray.getX() / 16) - offsetX, INT(ray.getY() / 16) - 1, INT(ray.getZ() / 16) - offsetZ))->blockIDs,
-                                    INT(ray.getY() / 16) - 1 == MAXHEIGHT-1 ? voidChunkIDs : chunks.at(Positioni(INT(ray.getX() / 16) - offsetX, INT(ray.getY() / 16) - 1+1, INT(ray.getZ() / 16) - offsetZ))->blockIDs,
-                                    INT(ray.getY() / 16) - 1 == 0 ? voidChunkIDs : chunks.at(Positioni(INT(ray.getX() / 16) - offsetX, INT(ray.getY() / 16) - 1-1, INT(ray.getZ() / 16) - offsetZ))->blockIDs,
-                                    INT(ray.getX() / 16) - offsetX == CHUNKRD-1 ? voidChunkIDs : chunks.at(Positioni(INT(ray.getX() / 16) - offsetX+1, INT(ray.getY() / 16) - 1, INT(ray.getZ() / 16) - offsetZ))->blockIDs,
-                                    INT(ray.getX() / 16) - offsetX == 0 ? voidChunkIDs : chunks.at(Positioni(INT(ray.getX() / 16) - offsetX-1, INT(ray.getY() / 16) - 1, INT(ray.getZ() / 16) - offsetZ))->blockIDs,
-                                    INT(ray.getZ() / 16) - offsetZ == CHUNKRD-1 ? voidChunkIDs : chunks.at(Positioni(INT(ray.getX() / 16) - offsetX, INT(ray.getY() / 16) - 1, INT(ray.getZ() / 16) - offsetZ+1))->blockIDs,
-                                    INT(ray.getZ() / 16) - offsetZ == 0 ? voidChunkIDs : chunks.at(Positioni(INT(ray.getX() / 16) - offsetX, INT(ray.getY() / 16) - 1, INT(ray.getZ() / 16) - offsetZ-1))->blockIDs, false);
-                }
-            }
-            if (INT(ray.getX() / 16) < CHUNKRD - 1) // to the right
-            {
-                if (INT(ray.getX()) % 16 == 15 &&
-                    chunks.at(Positioni(INT(ray.getX() / 16) + 1 - offsetX, INT(ray.getY() / 16), INT(ray.getZ() / 16) - offsetZ))->blockIDs
-                    [0][INT(ray.getY()) % 16][INT(ray.getZ()) % 16] != BLOCK_AIR)
-                {
-                    (*chunkMeshes)[INT(ray.getX() / 16) + 1 - offsetX][INT(ray.getY() / 16)][INT(ray.getZ() / 16) - offsetZ]
-                                    .updateChunkMesh(chunks.at(Positioni(INT(ray.getX() / 16) + 1 - offsetX, INT(ray.getY() / 16), INT(ray.getZ() / 16) - offsetZ))->blockIDs,
-                                    INT(ray.getY() / 16) == MAXHEIGHT-1 ? voidChunkIDs : chunks.at(Positioni(INT(ray.getX() / 16) + 1 - offsetX, INT(ray.getY() / 16)+1, INT(ray.getZ() / 16) - offsetZ))->blockIDs,
-                                    INT(ray.getY() / 16) == 0 ? voidChunkIDs : chunks.at(Positioni(INT(ray.getX() / 16) + 1 - offsetX, INT(ray.getY() / 16)-1, INT(ray.getZ() / 16) - offsetZ))->blockIDs,
-                                    INT(ray.getX() / 16) + 1 - offsetX == CHUNKRD-1 ? voidChunkIDs : chunks.at(Positioni(INT(ray.getX() / 16) + 1 - offsetX+1, INT(ray.getY() / 16), INT(ray.getZ() / 16) - offsetZ))->blockIDs,
-                                    INT(ray.getX() / 16) + 1 - offsetX == 0 ? voidChunkIDs : chunks.at(Positioni(INT(ray.getX() / 16) + 1 - offsetX-1, INT(ray.getY() / 16), INT(ray.getZ() / 16) - offsetZ))->blockIDs,
-                                    INT(ray.getZ() / 16) - offsetZ == CHUNKRD-1 ? voidChunkIDs : chunks.at(Positioni(INT(ray.getX() / 16) + 1 - offsetX, INT(ray.getY() / 16), INT(ray.getZ() / 16) - offsetZ+1))->blockIDs,
-                                    INT(ray.getZ() / 16) - offsetZ == 0 ? voidChunkIDs : chunks.at(Positioni(INT(ray.getX() / 16) + 1 - offsetX, INT(ray.getY() / 16), INT(ray.getZ() / 16) - offsetZ-1))->blockIDs, false);
-                }
-            }
-            if (INT(ray.getX() / 16) > 0) // to the left
-            {
-                if (INT(ray.getX()) % 16 == 0 &&
-                    chunks.at(Positioni(INT(ray.getX() / 16) - 1 - offsetX, INT(ray.getY() / 16), INT(ray.getZ() / 16) - offsetZ))->blockIDs
-                    [15][INT(ray.getY()) % 16][INT(ray.getZ()) % 16] != BLOCK_AIR)
-                {
-                    (*chunkMeshes)[INT(ray.getX() / 16) - 1 - offsetX][INT(ray.getY() / 16)][INT(ray.getZ() / 16) - offsetZ]
-                                    .updateChunkMesh(chunks.at(Positioni(INT(ray.getX() / 16) - 1 - offsetX, INT(ray.getY() / 16), INT(ray.getZ() / 16) - offsetZ))->blockIDs,
-                                    INT(ray.getY() / 16) == MAXHEIGHT-1 ? voidChunkIDs : chunks.at(Positioni(INT(ray.getX() / 16) - 1 - offsetX, INT(ray.getY() / 16)+1, INT(ray.getZ() / 16) - offsetZ))->blockIDs,
-                                    INT(ray.getY() / 16) == 0 ? voidChunkIDs : chunks.at(Positioni(INT(ray.getX() / 16) - 1 - offsetX, INT(ray.getY() / 16)-1, INT(ray.getZ() / 16) - offsetZ))->blockIDs,
-                                    INT(ray.getX() / 16) - 1 - offsetX == CHUNKRD-1 ? voidChunkIDs : chunks.at(Positioni(INT(ray.getX() / 16) - 1 - offsetX+1, INT(ray.getY() / 16), INT(ray.getZ() / 16) - offsetZ))->blockIDs,
-                                    INT(ray.getX() / 16) - 1 - offsetX == 0 ? voidChunkIDs : chunks.at(Positioni(INT(ray.getX() / 16) - 1 - offsetX-1, INT(ray.getY() / 16), INT(ray.getZ() / 16) - offsetZ))->blockIDs,
-                                    INT(ray.getZ() / 16) - offsetZ == CHUNKRD-1 ? voidChunkIDs : chunks.at(Positioni(INT(ray.getX() / 16) - 1 - offsetX, INT(ray.getY() / 16), INT(ray.getZ() / 16) - offsetZ+1))->blockIDs,
-                                    INT(ray.getZ() / 16) - offsetZ == 0 ? voidChunkIDs : chunks.at(Positioni(INT(ray.getX() / 16) - 1 - offsetX, INT(ray.getY() / 16), INT(ray.getZ() / 16) - offsetZ-1))->blockIDs, false);
-                }
-            }
-            if (INT(ray.getZ() / 16) < CHUNKRD - 1) // to the front
-            {
-                if (INT(ray.getZ()) % 16 == 15 &&
-                    chunks.at(Positioni(INT(ray.getX() / 16) - offsetX, INT(ray.getY() / 16), INT(ray.getZ() / 16) + 1 - offsetZ))->blockIDs
-                    [INT(ray.getX()) % 16][INT(ray.getY()) % 16][0] != BLOCK_AIR)
-                {
-                    (*chunkMeshes)[INT(ray.getX() / 16) - offsetX][INT(ray.getY() / 16)][INT(ray.getZ() / 16) + 1 - offsetZ]
-                                    .updateChunkMesh(chunks.at(Positioni(INT(ray.getX() / 16) - offsetX, INT(ray.getY() / 16), INT(ray.getZ() / 16) + 1 - offsetZ))->blockIDs,
-                                    INT(ray.getY() / 16) == MAXHEIGHT-1 ? voidChunkIDs : chunks.at(Positioni(INT(ray.getX() / 16) - offsetX, INT(ray.getY() / 16)+1, INT(ray.getZ() / 16) + 1 - offsetZ))->blockIDs,
-                                    INT(ray.getY() / 16) == 0 ? voidChunkIDs : chunks.at(Positioni(INT(ray.getX() / 16) - offsetX, INT(ray.getY() / 16)-1, INT(ray.getZ() / 16) + 1 - offsetZ))->blockIDs,
-                                    INT(ray.getX() / 16) - offsetX == CHUNKRD-1 ? voidChunkIDs : chunks.at(Positioni(INT(ray.getX() / 16) - offsetX+1, INT(ray.getY() / 16), INT(ray.getZ() / 16) + 1 - offsetZ))->blockIDs,
-                                    INT(ray.getX() / 16) - offsetX == 0 ? voidChunkIDs : chunks.at(Positioni(INT(ray.getX() / 16) - offsetX-1, INT(ray.getY() / 16), INT(ray.getZ() / 16) + 1 - offsetZ))->blockIDs,
-                                    INT(ray.getZ() / 16) + 1 - offsetZ == CHUNKRD-1 ? voidChunkIDs : chunks.at(Positioni(INT(ray.getX() / 16) - offsetX, INT(ray.getY() / 16), INT(ray.getZ() / 16) + 1 - offsetZ+1))->blockIDs,
-                                    INT(ray.getZ() / 16) + 1 - offsetZ == 0 ? voidChunkIDs : chunks.at(Positioni(INT(ray.getX() / 16) - offsetX, INT(ray.getY() / 16), INT(ray.getZ() / 16) + 1 - offsetZ-1))->blockIDs, false);
-                }
-            }
-            if (INT(ray.getZ() / 16) > 0) // to the back
-            {
-                if (INT(ray.getZ()) % 16 == 0 &&
-                    chunks.at(Positioni(INT(ray.getX() / 16) - offsetX, INT(ray.getY() / 16), INT(ray.getZ() / 16) - 1 - offsetZ))->blockIDs
-                    [INT(ray.getX()) % 16][INT(ray.getY()) % 16][15] != BLOCK_AIR)
-                {
-                    (*chunkMeshes)[INT(ray.getX() / 16) - offsetX][INT(ray.getY() / 16)][INT(ray.getZ() / 16) - 1 - offsetZ]
-                                    .updateChunkMesh(chunks.at(Positioni(INT(ray.getX() / 16) - offsetX, INT(ray.getY() / 16), INT(ray.getZ() / 16) - 1 - offsetZ))->blockIDs,
-                                    INT(ray.getY() / 16) == MAXHEIGHT-1 ? voidChunkIDs : chunks.at(Positioni(INT(ray.getX() / 16) - offsetX, INT(ray.getY() / 16)+1, INT(ray.getZ() / 16) - 1 - offsetZ))->blockIDs,
-                                    INT(ray.getY() / 16) == 0 ? voidChunkIDs : chunks.at(Positioni(INT(ray.getX() / 16) - offsetX, INT(ray.getY() / 16)-1, INT(ray.getZ() / 16) - 1 - offsetZ))->blockIDs,
-                                    INT(ray.getX() / 16) - offsetX == CHUNKRD-1 ? voidChunkIDs : chunks.at(Positioni(INT(ray.getX() / 16) - offsetX+1, INT(ray.getY() / 16), INT(ray.getZ() / 16) - 1 - offsetZ))->blockIDs,
-                                    INT(ray.getX() / 16) - offsetX == 0 ? voidChunkIDs : chunks.at(Positioni(INT(ray.getX() / 16) - offsetX-1, INT(ray.getY() / 16), INT(ray.getZ() / 16) - 1 - offsetZ))->blockIDs,
-                                    INT(ray.getZ() / 16) - 1 - offsetZ == CHUNKRD-1 ? voidChunkIDs : chunks.at(Positioni(INT(ray.getX() / 16) - offsetX, INT(ray.getY() / 16), INT(ray.getZ() / 16) - 1 - offsetZ+1))->blockIDs,
-                                    INT(ray.getZ() / 16) - 1 - offsetZ == 0 ? voidChunkIDs : chunks.at(Positioni(INT(ray.getX() / 16) - offsetX, INT(ray.getY() / 16), INT(ray.getZ() / 16) - 1 - offsetZ-1))->blockIDs, false);
-                }
-            }
             return;
         }
         ray.step(0.01f);
     }
-    */
 }

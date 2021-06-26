@@ -3,6 +3,7 @@
 
 #define CHUNKRD 16     // 256 blocks render distance
 #define MAXHEIGHT 8    // 128 block height max.
+#define RENDERDISTANCE (11.31 * 16.0f)
 
 #include "game/Chunk.h"
 #include "game/ChunkMesh.h"
@@ -10,6 +11,8 @@
 #include "ChunkMeshList.h"
 #include "game/Player.h"
 #include "Petroleum.h"
+
+#include <mutex>
 
 #ifdef __unix__
 #include <thread>
@@ -39,7 +42,9 @@ class World
         PT::Camera camera;
 
         void loadNewChunks();
-        bool lockRenderer;
+        std::mutex me_ChunkAccess;
+        std::mutex me_GLDataAccess;
+        bool lockMeshGen;
         bool stop;
         std::thread* chunkLoader;
         unsigned int GLOsMissing;

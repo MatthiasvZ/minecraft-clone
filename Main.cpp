@@ -27,7 +27,7 @@ int main()
     }
     cfg.clear_colour = PT_SKY_BLUE;
     cfg.enable_blending = true;
-    cfg.capture_mouse = false;
+    cfg.capture_mouse = true;
 
     PT::saveConfig(cfg);
 

@@ -27,6 +27,12 @@ class ChunkMeshList
             assert(0);
         }
 
+        void remove(size_t n)
+        {
+            delete chunkMeshPointers[n];
+            chunkMeshPointers[n] = nullptr;
+        }
+
         void remove(Positioni pos)
         {
             for (size_t i {0}; i < S; ++i)
@@ -54,7 +60,6 @@ class ChunkMeshList
                     return chunkMeshPointers[i];
                 }
             }
-            assert(0);
             return nullptr;
         }
 
@@ -64,7 +69,9 @@ class ChunkMeshList
 
         virtual ~ChunkMeshList()
         {
-
+            for (size_t i {0}; i < S; ++i)
+                if (chunkMeshPointers[i] != nullptr)
+                    delete chunkMeshPointers[i];
         }
 
     protected:

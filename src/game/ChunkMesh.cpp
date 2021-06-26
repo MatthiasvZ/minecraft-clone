@@ -12,8 +12,8 @@ static float timeGeneratingMeshes {0};
 static unsigned int totalMeshGens {0};
 #endif // DEBUG
 
-ChunkMesh::ChunkMesh(const ChunkBall& cBall, int x, int y, int z, bool skipGL)
-    : pos(x, y, z), glosMissing(true)
+ChunkMesh::ChunkMesh(const ChunkBall& cBall, int x, int y, int z)
+    : flaggedForDeletion(false), vao(nullptr), vbo(nullptr), ibo(nullptr), pos(x, y, z), glosMissing(true)
 {
     vertices = new std::vector<float>();
     vertices->reserve(49152);
@@ -113,10 +113,6 @@ ChunkMesh::ChunkMesh(const ChunkBall& cBall, int x, int y, int z, bool skipGL)
         timeGeneratingMeshes += std::chrono::duration_cast<std::chrono::duration<float>>(std::chrono::high_resolution_clock::now() - t_start).count()*1000;
         totalMeshGens++;
     #endif // DEBUG
-
-
-    if (!skipGL)
-        createGLOs();
 }
 
 void ChunkMesh::createGLOs()
@@ -183,10 +179,21 @@ void ChunkMesh::printTimeStats()
 
 ChunkMesh::~ChunkMesh()
 {
-    vao->remove();
-    vbo->remove();
-    ibo->remove();
-    delete vao;
-    delete vbo;
-    delete ibo;
+    if (vao != nullptr)
+    {
+        vao->remove();
+        delete vao;
+    }
+
+    if (vbo != nullptr)
+    {
+        vbo->remove();
+        delete vbo;
+    }
+
+    if (ibo != nullptr)
+    {
+        ibo->remove();
+        delete ibo;
+    }
 }
