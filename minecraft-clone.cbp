@@ -107,10 +107,12 @@
 			<Add option="-fexceptions" />
 			<Add option="-pipe" />
 			<Add option="-march=native" />
+			<Add option="-fopenmp" />
 		</Compiler>
 		<Linker>
 			<Add option="-lpthread" />
 			<Add option="-lopenal" />
+			<Add option="-fopenmp" />
 		</Linker>
 		<Unit filename="Main.cpp" />
 		<Unit filename="include/biome/Biome.h" />

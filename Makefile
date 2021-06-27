@@ -12,11 +12,11 @@ LD = g++
 WINDRES = windres
 
 INC = 
-CFLAGS = -Wnon-virtual-dtor -Winit-self -Wredundant-decls -Wcast-align -Wundef -Winline -Wunreachable-code -Wmain -pedantic -Wextra -Wall -std=c++20 -Iinclude -fexceptions -pipe -march=native
+CFLAGS = -Wnon-virtual-dtor -Winit-self -Wredundant-decls -Wcast-align -Wundef -Winline -Wunreachable-code -Wmain -pedantic -Wextra -Wall -std=c++20 -Iinclude -fexceptions -pipe -march=native -fopenmp
 RESINC = 
 LIBDIR = 
 LIB = 
-LDFLAGS = -lpthread -lopenal
+LDFLAGS = -lpthread -lopenal -fopenmp
 
 INC_DEBUG = $(INC) -Iinclude/game/ -Iinclude/optimisation -Iinclude/biome -Iinclude/physics -Iinclude/game
 CFLAGS_DEBUG = $(CFLAGS) -Og -g -DDEBUG

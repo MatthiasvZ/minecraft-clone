@@ -4,7 +4,7 @@
 #define CHUNKRD 16     // 256 blocks render distance
 #define MAXHEIGHT 8    // 128 block height max.
 #define RENDERDISTANCE (11.31 * 16.0f * 1.0f)
-#define CHUNK_LOADING_INTERVAL 128 // load new chunks after n slots are free
+#define CHUNK_LOADING_INTERVAL 256 // load new chunks after n slots are free
 
 #include "game/Chunk.h"
 #include "game/ChunkMesh.h"

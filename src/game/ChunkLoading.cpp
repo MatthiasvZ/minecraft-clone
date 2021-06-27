@@ -52,6 +52,7 @@ void World::loadChunks()
 
     if (freeChunkSlots < CHUNK_LOADING_INTERVAL)
         return;
+    // std::cerr << "free slots = " << freeChunkSlots << std::endl;
 
     const int pCX = camera.getPosX() / 16.0f;
     const int pCY = camera.getPosY() / 16.0f;
@@ -69,6 +70,7 @@ void World::loadChunks()
 
     if (chunkPositions.size() == 0)
         return;
+    // std::cerr << "loadable chunks = " << chunkPositions.size() << std::endl;
 
     // Sort
     float* distances = new float[chunkPositions.size()];
@@ -95,13 +97,19 @@ void World::loadChunks()
     }
     delete distances;
 
-    for (size_t i {0}; i < freeChunkSlots; ++i)
+    #pragma omp parallel for num_threads(2)
+    for (size_t i = 0; i < freeChunkSlots; ++i)
         chunks.add(new Chunk(chunkPositions[i]));
 }
 
 void World::generateMeshes()
 {
+    int totalMeshesToGenerate {0};
     for (size_t i {0}; i < chunks.size(); ++i)
+        if (chunks[i] != nullptr)
+            totalMeshesToGenerate += chunks[i]->meshGenerated == false;
+    #pragma omp parallel for if (totalMeshesToGenerate > 128)
+    for (size_t i = 0; i < chunks.size(); ++i)
     {
         if (chunks[i] == nullptr)
             continue;
@@ -124,10 +132,14 @@ void World::generateMeshes()
             Chunk* cBehind = chunks.at(Positioni(cPos.x, cPos.y, cPos.z - 1));
             cBall.blockIDsBehind  = cBehind  == nullptr ? &voidChunkIDs : &cBehind->blockIDs;
 
+            me_GLDataAccess.lock();
             chunkMeshes.add(new ChunkMesh(cBall, cPos.x, cPos.y, cPos.z));
-
-            chunks[i]->meshGenerated = true;
             GLOsMissing  = true;
+            me_GLDataAccess.unlock();
+
+            me_ChunkAccess.lock();
+            chunks[i]->meshGenerated = true;
+            me_ChunkAccess.unlock();
         }
     }
 }
@@ -142,13 +154,8 @@ void World::updateChunks()
         me_ChunkAccess.unlock();
 
         // Generate chunk meshes
-        if (GLOsMissing || glCleanUpRequired)
-            continue;
-        me_GLDataAccess.lock();
-        me_ChunkAccess.lock();
+        // Expects chunks to be read-only, might become a problem
         generateMeshes();
-        me_ChunkAccess.unlock();
-        me_GLDataAccess.unlock();
 
         // Load new chunks, if there's space
         me_ChunkAccess.lock();

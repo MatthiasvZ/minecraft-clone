@@ -68,7 +68,13 @@ void World::drawChunks(float deltaTime, const PT::Window& window, bool mouseLock
         mouseHeld = true;
     }
 
+    using namespace std::chrono;
+    auto t1 = high_resolution_clock::now();
     me_GLDataAccess.lock();
+    auto t2 = high_resolution_clock::now();
+    duration<double, std::milli> dur1 = t2 - t1;
+    if (dur1.count() > 1.0f)
+        std::cerr << "time lost waiting for gl lock = " << dur1.count() << std::endl << std::endl;
     if (GLOsMissing)
         createBufferObjects();
 
@@ -83,18 +89,22 @@ void World::drawChunks(float deltaTime, const PT::Window& window, bool mouseLock
         PT::drawVA(*chunkMeshes[i]->getVA(), *chunkMeshes[i]->getIBO());
     }
 
-
-
     if (glCleanUpRequired == true)
     {
+        auto t1 = high_resolution_clock::now();
         me_ChunkAccess.lock();
+        auto t2 = high_resolution_clock::now();
+        duration<double, std::milli> dur1 = t2 - t1;
+        std::cerr << "time lost waiting for chunk lock = " << dur1.count() << std::endl << std::endl;
         glCleanUpRequired = false;
         for (size_t i {0}; i < chunkMeshes.size(); ++i)
         {
             if (chunkMeshes[i] != nullptr)
                 if (chunkMeshes[i]->flaggedForDeletion)
                 {
+
                     Chunk* chunk = chunks.at(chunkMeshes[i]->getPos());
+
                     if (chunk != nullptr)
                         chunk->meshGenerated = false;
                     chunkMeshes.remove(i);
