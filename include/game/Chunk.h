@@ -23,7 +23,7 @@ class Chunk
         unsigned char blockIDs[16][16][16];
         unsigned char biomeIDs[16][16];
 
-        Chunk(int x, int y, int z);
+        Chunk(Positioni pos);
         Positioni& getPos();
         ~Chunk();
 

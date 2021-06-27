@@ -30,12 +30,12 @@ DEP_DEBUG =
 OUT_DEBUG = bin/Debug/minecraft-clone
 
 INC_RELEASE = $(INC) -Iinclude/game/ -Iinclude/optimisation -Iinclude/biome -Iinclude/physics -Iinclude/game
-CFLAGS_RELEASE = $(CFLAGS) -flto
+CFLAGS_RELEASE = $(CFLAGS) -flto -Ofast
 RESINC_RELEASE = $(RESINC)
 RCFLAGS_RELEASE = $(RCFLAGS)
 LIBDIR_RELEASE = $(LIBDIR)
 LIB_RELEASE = $(LIB)
-LDFLAGS_RELEASE = $(LDFLAGS) -O3 -flto -s -lzstd -lGLEW -lX11 -lGLU -lGL -lglfw lib/libPetroleum.a
+LDFLAGS_RELEASE = $(LDFLAGS) -flto -s -lzstd -lGLEW -lX11 -lGLU -lGL -lglfw lib/libPetroleum.a
 OBJDIR_RELEASE = obj/Release
 DEP_RELEASE = 
 OUT_RELEASE = bin/Release/minecraft-clone

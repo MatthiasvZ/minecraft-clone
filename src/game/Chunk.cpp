@@ -13,8 +13,8 @@
     #include <iostream>
 #endif // DEBUG
 
-Chunk::Chunk(int x, int y, int z)
-    : meshGenerated(false), fileName("saves/x" + std::to_string(x) + 'y' + std::to_string(y) + 'z' + std::to_string(z) + ".chunk"), pos(x, y, z)
+Chunk::Chunk(Positioni pos)
+    : meshGenerated(false), fileName("saves/x" + std::to_string(pos.x) + 'y' + std::to_string(pos.y) + 'z' + std::to_string(pos.z) + ".chunk"), pos(pos)
 {
     if (!chunkExists())
         generate();

@@ -45,7 +45,7 @@ void World::breakBlock()
             ChunkMesh* cmBehind = chunkMeshes.at(Positioni(cPos.x, cPos.y, cPos.z - 1));
             if (cmBehind != nullptr)
                 cmBehind->flaggedForDeletion = true;
-            lockMeshGen = true;
+            glCleanUpRequired = true;
 
             return;
         }

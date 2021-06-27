@@ -3,7 +3,8 @@
 
 #define CHUNKRD 16     // 256 blocks render distance
 #define MAXHEIGHT 8    // 128 block height max.
-#define RENDERDISTANCE (11.31 * 16.0f)
+#define RENDERDISTANCE (11.31 * 16.0f * 1.0f)
+#define CHUNK_LOADING_INTERVAL 128 // load new chunks after n slots are free
 
 #include "game/Chunk.h"
 #include "game/ChunkMesh.h"
@@ -41,17 +42,20 @@ class World
         PT::Shader shader;
         PT::Camera camera;
 
-        void loadNewChunks();
+        void unloadChunks();
+        void loadChunks();
+        void generateMeshes();
+        void updateChunks();
         std::mutex me_ChunkAccess;
         std::mutex me_GLDataAccess;
-        bool lockMeshGen;
+        bool glCleanUpRequired;
         bool stop;
         std::thread* chunkLoader;
         unsigned int GLOsMissing;
         void createBufferObjects();
 
         Player player;
-        bool mouseHold;
+        bool mouseHeld;
         void breakBlock();
 
         PT::Texture* atlas;

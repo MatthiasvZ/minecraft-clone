@@ -1,6 +1,8 @@
 #ifndef POSITIONI_H
 #define POSITIONI_H
 
+#include <cmath>
+
 class Positioni
 {
     public:
@@ -10,11 +12,14 @@ class Positioni
         int y;
         int z;
 
-        bool operator==(Positioni& b)
+        bool operator==(const Positioni& b) const
         {
-            if (this->x == b.x && this->y == b.y && this->z == b.z)
-                return true;
-            return false;
+            return this->x == b.x && this->y == b.y && this->z == b.z;
+        }
+
+        float distanceTo(const Positioni& b) const
+        {
+            return sqrt(pow(this->x - b.x, 2) + pow(this->y - b.y, 2) + pow(this->y - b.y, 2));
         }
 };
 

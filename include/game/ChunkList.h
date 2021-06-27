@@ -63,7 +63,7 @@ class ChunkList
             return nullptr;
         }
 
-        Chunk* operator[](size_t n) { return chunkPointers[n]; }
+        Chunk*& operator[](size_t n) { return chunkPointers[n]; }
 
         constexpr size_t size() { return S; }
 

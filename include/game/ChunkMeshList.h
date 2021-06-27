@@ -63,7 +63,7 @@ class ChunkMeshList
             return nullptr;
         }
 
-        ChunkMesh* operator[](size_t n) { return chunkMeshPointers[n]; }
+        ChunkMesh*& operator[](size_t n) { return chunkMeshPointers[n]; }
 
         constexpr size_t size() { return S; }
 
