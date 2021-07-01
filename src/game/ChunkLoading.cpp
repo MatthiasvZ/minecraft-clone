@@ -7,12 +7,15 @@ void World::unloadChunks()
     {
         if (chunks[i] == nullptr)
             continue;
-        const Positioni& cPos = chunks[i]->getPos();
-        const float x = static_cast<float>(cPos.x) * 16.0f;
-        const float z = static_cast<float>(cPos.z) * 16.0f;
-        const float d = sqrt((x - camera.getPosX()) * (x - camera.getPosX()) + (z - camera.getPosZ()) * (z - camera.getPosZ()));
 
-        if (d > RENDERDISTANCE)
+        const Positioni& cPos = chunks[i]->getPos();
+        const int pCX = camera.getPosX() / 16.0f;
+        const int pCY = camera.getPosY() / 16.0f;
+        const int pCZ = camera.getPosZ() / 16.0f;
+        const Positioni playerPos {Positioni(pCX, pCY, pCZ)};
+//        std::cerr << cPos.distanceTo(playerPos) << ", ";
+
+        if (cPos.distanceTo(playerPos) > UNLOAD_DISTANCE)
         {
             // Flag affected meshes
             ChunkMesh* cmCentre = chunkMeshes.at(cPos);
@@ -52,7 +55,7 @@ void World::loadChunks()
 
     if (freeChunkSlots < CHUNK_LOADING_INTERVAL)
         return;
-    // std::cerr << "free slots = " << freeChunkSlots << std::endl;
+    //std::cerr << "free slots = " << freeChunkSlots << std::endl;
 
     const int pCX = camera.getPosX() / 16.0f;
     const int pCY = camera.getPosY() / 16.0f;
@@ -62,15 +65,16 @@ void World::loadChunks()
     std::vector<Positioni> chunkPositions;
     chunkPositions.reserve(chunks.size());
 
-    for (int x {-CHUNKRD / 2}; x < CHUNKRD / 2; ++x)
-        for (int y {0}; y < MAXHEIGHT; ++y)
-            for (int z {-CHUNKRD / 2}; z < CHUNKRD / 2; ++z)
-                if (chunks.at(Positioni(pCX + x, y, pCZ + z)) == nullptr)
-                    chunkPositions.push_back(Positioni(pCX + x, y, pCZ + z));
+    for (int x {-RENDERDISTANCE / 2}; x < RENDERDISTANCE / 2; ++x)
+        for (int y {0}; y < MAX_CHUNKS_V; ++y)
+            for (int z {-RENDERDISTANCE / 2}; z < RENDERDISTANCE / 2; ++z)
+                if (Positioni(pCX + x, y, pCZ + z).distanceTo(playerPos) < RENDERDISTANCE)
+                    if (chunks.at(Positioni(pCX + x, y, pCZ + z)) == nullptr)
+                        chunkPositions.push_back(Positioni(pCX + x, y, pCZ + z));
 
     if (chunkPositions.size() == 0)
         return;
-    // std::cerr << "loadable chunks = " << chunkPositions.size() << std::endl;
+    //std::cerr << "loadable chunks = " << chunkPositions.size() << std::endl << std::endl;
 
     // Sort
     float* distances = new float[chunkPositions.size()];
@@ -97,8 +101,8 @@ void World::loadChunks()
     }
     delete distances;
 
-    #pragma omp parallel for num_threads(2)
-    for (size_t i = 0; i < freeChunkSlots; ++i)
+    // #pragma omp parallel for num_threads(2) // causes problems, perhaps due to fread
+    for (size_t i = 0; i < std::min(freeChunkSlots, chunkPositions.size()); ++i)
         chunks.add(new Chunk(chunkPositions[i]));
 }
 

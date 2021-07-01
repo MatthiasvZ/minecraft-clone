@@ -30,10 +30,10 @@ World::World()
 {
     atlas = new PT::Texture(getDir() + "/assets/texAtlas.bmp", 0, GL_NEAREST, GL_NEAREST);
 
-    camera.setClippingDistance(1000.0f);
-    camera.setPosX(CHUNKRD * 8);
+    camera.setClippingDistance(RENDERDISTANCE * 16);
+    camera.setPosX(0);
     camera.setPosY(80);
-    camera.setPosZ(CHUNKRD * 8);
+    camera.setPosZ(0);
 
     struct stat buffer;
     if (stat ("saves", &buffer) != 0)
@@ -95,7 +95,8 @@ void World::drawChunks(float deltaTime, const PT::Window& window, bool mouseLock
         me_ChunkAccess.lock();
         auto t2 = high_resolution_clock::now();
         duration<double, std::milli> dur1 = t2 - t1;
-        std::cerr << "time lost waiting for chunk lock = " << dur1.count() << std::endl << std::endl;
+        if (dur1.count() > 1.0f)
+            std::cerr << "time lost waiting for chunk lock = " << dur1.count() << std::endl << std::endl;
         glCleanUpRequired = false;
         for (size_t i {0}; i < chunkMeshes.size(); ++i)
         {
@@ -112,6 +113,16 @@ void World::drawChunks(float deltaTime, const PT::Window& window, bool mouseLock
         }
         me_ChunkAccess.unlock();
     }
+
+//    int emptyMeshes {0};
+//    for (int i {0}; i < chunkMeshes.size(); ++i)
+//        if (chunkMeshes[i] == nullptr)
+//            ++emptyMeshes;
+//    int emptyChunks {0};
+//    for (int i {0}; i < chunks.size(); ++i)
+//        if (chunks[i] == nullptr)
+//            ++emptyChunks;
+//    std::cerr << "Empty meshes = " << emptyMeshes << ", empty chunks = " << emptyChunks << std::endl;
     me_GLDataAccess.unlock();
 }
 

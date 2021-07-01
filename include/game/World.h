@@ -1,10 +1,10 @@
 #ifndef WORLD_H
 #define WORLD_H
 
-#define CHUNKRD 16     // 256 blocks render distance
-#define MAXHEIGHT 8    // 128 block height max.
-#define RENDERDISTANCE (11.31 * 16.0f * 1.0f)
-#define CHUNK_LOADING_INTERVAL 256 // load new chunks after n slots are free
+#define MAX_CHUNKS_V 8
+#define RENDERDISTANCE 16
+#define UNLOAD_DISTANCE 17
+#define CHUNK_LOADING_INTERVAL 1 // load new chunks after n slots are freed
 
 #include "game/Chunk.h"
 #include "game/ChunkMesh.h"
@@ -34,8 +34,8 @@ class World
     protected:
 
     private:
-        ChunkList<CHUNKRD * CHUNKRD * MAXHEIGHT> chunks;
-        ChunkMeshList<CHUNKRD * CHUNKRD * MAXHEIGHT> chunkMeshes;
+        ChunkList<2 * UNLOAD_DISTANCE * std::min(2 * UNLOAD_DISTANCE, MAX_CHUNKS_V) * 2 * UNLOAD_DISTANCE> chunks;
+        ChunkMeshList<2 * UNLOAD_DISTANCE * std::min(2 * UNLOAD_DISTANCE, MAX_CHUNKS_V) * 2 * UNLOAD_DISTANCE> chunkMeshes;
 
         static const unsigned int seed {1337};
         PT::SourcePackage srcpkg;
